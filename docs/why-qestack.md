@@ -356,7 +356,7 @@ All hard gates must pass. If one fails, the work is not accepted, whatever the s
 | G-SKIP: Skipped tests in scope | = 0 |
 | G-RED: Red-before-green | = 100% of tests written in the test-write phase |
 | G-FLAKY: Flaky tests | = 0 |
-| G-GREEN: Consistently failing tests | = 0, or each one is a reported product bug |
+| G-GREEN: Consistently failing tests | = 0. A failing test is a test defect or a product bug; a human decides and fixes one of them |
 | G-MUTATION: Mutation score on changed code | ≥ 75% |
 | G-SEED: Seeded-fault detection | ≥ 90% |
 | G-GUARD: Guard violations (weakened tests, protected files) | = 0 |
@@ -368,8 +368,8 @@ The TQS is a weighted score from 0 to 100.
 
 | Dimension | Weight | Inputs |
 |---|---|---|
-| Fault detection | 35% | 60% mutation score + 40% seeded-fault detection |
-| Requirement depth | 25% | 50% requirement coverage + 50% requirement depth |
+| Fault detection | 35% | 60% mutation score + 40% seeded-fault detection (held-out faults when there are enough) |
+| Requirement depth | 25% | Requirement depth only. The trace gate already requires 100% coverage, so coverage gives no extra points |
 | Assertion strength | 15% | 50% lint (1 − trivial/shallow/no-assert rate) + 50% judge R2 and R3 |
 | Independence | 15% | Judge R5 (independence) |
 | Maintainability | 10% | 1 − smell rate, combined with judge R6 and R7 |

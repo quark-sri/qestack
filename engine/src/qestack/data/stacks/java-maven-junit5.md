@@ -21,6 +21,7 @@ class OrderDiscountApiTest {
 - Categories: `positive`, `negative`, `boundary`, `error`, `security`, `contract`, `performance`, `resilience`, `idempotency`, `concurrency`.
 - Put the test case ID (`TC-###` from `test-plan.md`) at the start of `@DisplayName`.
 - Tag container-based tests with `@Tag("integration")`. Tag UI tests with `@Tag("ui")`. PIT excludes these tags because they are slow under mutation testing. Seeded faults measure them instead.
+- Name container-based test classes `*IT` (for example `OrderRepositoryIT`). Failsafe runs only these names by default. Surefire runs `*Test`.
 - Never use `@Disabled` in feature tests. The skip gate fails.
 
 ## 2. Assertion helpers
@@ -36,7 +37,7 @@ Name your own assertion helpers `assert...`, `verify...` or `expect...`. Then th
 
 ### 3.1 Feature filter for Surefire and Failsafe
 
-The gate tool runs only the tests of one feature. It passes `-Dqe.groups=feature-003`. Configure both plugins to read this property:
+The gate tool runs only the tests of one feature. It passes `-Dqe.groups=feature-003`. Configure both plugins to read this property. The gate tool also passes `-Dmaven.test.failure.ignore=true` and `-fae`. Then the Failsafe tests run also when unit tests fail (in the red phase all tests fail), and the gate tool reads the XML reports, not the exit code.
 
 ```xml
 <properties>
@@ -83,6 +84,12 @@ The gate tool passes the JUnit random orderers as system properties. If your Sur
 
 Then set `test_feature_random` in `.qestack/project.toml` to pass `-Dqe.method.order=org.junit.jupiter.api.MethodOrderer$Random` and `-Dqe.class.order=org.junit.jupiter.api.ClassOrderer$Random`.
 
+The gate tool gives each run a new random seed with `{seed}` (`-Djunit.jupiter.execution.order.random.seed={seed}`) and writes the seeds to `flaky.json`. To replay a flaky order, run the command again with the same seed.
+
+It also passes `-Dsurefire.rerunFailingTestsCount=0`. A rerun hides a flaky test. If a report still contains `flakyFailure` or `rerunFailure`, the gate counts the test as flaky.
+
+Time zone and locale cause many flaky Java tests. For high-risk work, run the flaky gate with 10 runs, and add a run with another `user.timezone` and `user.language` (for example through `<argLine>@{argLine} ${qe.jvm.args}</argLine>` and `-Dqe.jvm.args="-Duser.timezone=Asia/Kolkata -Duser.language=de"`).
+
 ### 3.3 PIT (mutation testing)
 
 ```xml
@@ -116,9 +123,10 @@ Then set `test_feature_random` in `.qestack/project.toml` to pass `-Dqe.method.o
 Notes:
 
 - Do not bind PIT to a lifecycle phase. The gate tool calls it directly.
-- The gate tool passes `-DtargetClasses=` with only the classes that the feature changed.
+- The gate tool passes `-DtargetClasses=` with only the classes that the feature changed, and `-DtargetTests=` with the test classes of the feature (`{feature_test_classes}`). Without `targetTests`, PIT uses the `targetClasses` pattern as the test filter and misses tests in other packages.
 - It passes `-DexcludedGroups=integration,ui`. If your PIT version uses another property name, override `commands.mutation` in `.qestack/project.toml`.
-- Multi-module build: run PIT in the module that holds the changed classes (`-pl <module>`), or use a PIT aggregation setup.
+- It passes `-DfailWhenNoMutations=false`. In a multi-module build, a module with no changed classes then does not fail the build.
+- Multi-module build: the gate tool reads every `mutations.xml` that the run wrote (one for each module). You can also run PIT only in the module that holds the changed classes (`-pl <module> -am`).
 - First run the command by hand once. Check that `target/pit-reports/mutations.xml` exists.
 
 ## 4. Java-specific test rules
@@ -137,10 +145,25 @@ Before implementation, tests must compile and fail. If a production class does n
 ```java
 public class DiscountService {
     public Money apply(Order order) {
-        throw new UnsupportedOperationException("not implemented: FR-007");
+        return Money.ZERO;   // neutral value: the assertions must fail, not the stub
     }
 }
 ```
 
 - Only public signatures from `plan.md` or `contracts/`. No logic.
+- Prefer a neutral return value (`null`, `0`, `BigDecimal.ZERO`, an empty list). Then each test fails on its assertion, and "red" proves that the assertion catches the missing behavior.
+- If the neutral value is the expected value of a test (for example "no discount" is 0), that test passes before the implementation. Then throw `UnsupportedOperationException("not implemented: FR-007")` in that method instead.
+- `red.json` counts tests that fail with an error (such as the exception of a stub) as `red_by_error`. Set `[gates] red_counts_errors = false` to require assertion failures only.
 - List each stub file in `.qestack/runs/<feature>/stubs.json` (a JSON array of paths).
+
+## 6. Check the commands once by hand
+
+These command properties are not verified with a real build yet (release 0.1, Task 3 in `docs/HANDOFF.md`). Run each command once in your project. If a property does not work with your plugin versions, override `[commands]` in `.qestack/project.toml`.
+
+| Property | Plugin | Check |
+|---|---|---|
+| `-Dmaven.test.failure.ignore=true` | Surefire, Failsafe | Failsafe tests run when a unit test fails |
+| `-Dsurefire.rerunFailingTestsCount=0` | Surefire | No reruns |
+| `-DfailIfNoTests=false`, `-Dsurefire.failIfNoSpecifiedTests=false` | Surefire | A module without feature tests does not fail |
+| `-Djunit.jupiter.*.order.default`, `-Djunit.jupiter.execution.order.random.seed` | Surefire to JUnit | Test order changes between runs (else use section 3.2) |
+| `-DtargetTests`, `-DexcludedGroups`, `-DfailWhenNoMutations`, `-DoutputFormats`, `-DtimestampedReports` | pitest-maven | `target/pit-reports/mutations.xml` exists and has only the feature tests in `killingTests` |

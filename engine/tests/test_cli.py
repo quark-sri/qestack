@@ -323,6 +323,207 @@ class FlowTests(unittest.TestCase):
             repo.close()
 
 
+STUB_IMPL = ('package com.acme.order;\npublic class Discount {\n  public double apply(double total) {\n'
+             '    throw new UnsupportedOperationException("FR-001");\n  }\n}\n')
+
+
+def write_junit(d, cases):
+    """cases: {method: inner xml of <testcase>}."""
+    (d / "target/surefire-reports").mkdir(parents=True, exist_ok=True)
+    body = "".join(f'<testcase classname="com.acme.order.DiscountTest" name="{k}()">{v}</testcase>' for k, v in cases.items())
+    (d / "target/surefire-reports/TEST-x.xml").write_text(f"<testsuite>{body}</testsuite>")
+
+
+class ReviewFixTests(unittest.TestCase):
+    """Fixes from the architecture review of release 0.1."""
+
+    def setUp(self):
+        self.repo = Repo("GoodDiscountTest.java")
+        self.d = self.repo.dir
+
+    def tearDown(self):
+        self.repo.close()
+
+    def seed_two_faults(self, second=('"ORD-400"', '"ORD-500"')):
+        prod = self.d / PROD_FILE
+        impl = prod.read_text()
+        run(self.d, "fault", "begin")
+        for fid, req, a, b in [("F01", "FR-001", ">= 100.0", "> 100.0"), ("F02", "FR-002", *second)]:
+            prod.write_text(impl.replace(a, b))
+            r = run(self.d, "fault", "save", "--id", fid, "--req", req, "--layer", "domain", "--desc", f"secret {fid}")
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        return impl
+
+    def test_report_and_feedback_hide_fault_details_and_holdout(self):
+        proj = self.d / ".qestack/project.toml"
+        proj.write_text(proj.read_text() + "\n[loop]\nholdout_ratio = 0.5\nholdout_min = 1\n")
+        self.seed_two_faults(second=("IllegalArgumentException", "IllegalStateException"))  # the fake runner cannot detect F02
+        run(self.d, "seed")
+        seed = self.repo.read_json("seed.json")
+        self.assertEqual(sum(f["holdout"] for f in seed["faults"]), 1)
+        self.assertEqual(seed["summary"]["rate_basis"], "holdout")
+        fb = self.repo.read_json("seed-feedback.json")
+        self.assertEqual(len(fb["faults"]), 1)
+        self.assertNotIn(fb["faults"][0]["id"], [f["id"] for f in seed["faults"] if f["holdout"]])
+        run(self.d, "lint")
+        run(self.d, "score")
+        report = (self.d / f"specs/{FEATURE}/quality-report.md").read_text()
+        self.assertNotIn("secret", report)
+        self.assertIn("secret", (self.d / RUNS / "faults/undetected.md").read_text())
+
+    def test_fault_begin_refuses_dirty_code_and_new_files_round_trip(self):
+        prod = self.d / PROD_FILE
+        impl = self.seed_two_faults()
+        prod.write_text(impl.replace("0.9", "0.8"))  # a fault left in the code
+        r = run(self.d, "fault", "begin")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("fault restore", r.stderr)
+        run(self.d, "fault", "restore")
+        self.assertEqual(prod.read_text(), impl)
+        new = self.d / "src/main/java/com/acme/order/Rounding.java"
+        new.write_text("package com.acme.order;\nclass Rounding {}\n")
+        r = run(self.d, "fault", "save", "--id", "F03", "--req", "FR-001", "--layer", "domain")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertFalse(new.exists())  # restore removes a file that the fault added
+        self.assertIn("--- /dev/null", (self.d / RUNS / "faults/F03.patch").read_text())
+        r = run(self.d, "fault", "save", "--id", "F04", "--req", "FR-001", "--layer", "database")
+        self.assertEqual(r.returncode, 2)  # not a known layer
+
+    def test_seed_reverts_a_fault_left_by_a_killed_run(self):
+        prod = self.d / PROD_FILE
+        impl = self.seed_two_faults()
+        fdir = self.d / RUNS / "faults"
+        git(self.d, "apply", str(fdir / "F01.patch"))
+        (fdir / ".applied").write_text("F01.patch")
+        self.assertNotEqual(prod.read_text(), impl)
+        run(self.d, "seed")
+        self.assertEqual(prod.read_text(), impl)
+        self.assertFalse((fdir / ".applied").exists())
+
+    def test_red_reports_errors_separately(self):
+        (self.d / PROD_FILE).write_text(STUB_IMPL)
+        write_junit(self.d, {"discountAtThreshold": "<failure/>", "noDiscountBelow": "<error/>",
+                             "negativeTotalOnlyNotNull": "<error/>"})
+        r = run(self.d, "red", "--skip-run")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        s = self.repo.read_json("red.json")["summary"]
+        self.assertEqual((s["red_by_assertion"], s["red_by_error"], s["rate"]), (1, 2, 1.0))
+        proj = self.d / ".qestack/project.toml"
+        proj.write_text(proj.read_text() + "\n[gates]\nred_counts_errors = false\n")
+        r = run(self.d, "red", "--skip-run")
+        self.assertEqual(r.returncode, 1)
+        self.assertEqual(len(self.repo.read_json("red.json")["error_only"]), 2)
+
+    def test_flaky_detects_rerun_passes_and_runtime_skips(self):
+        proj = self.d / ".qestack/project.toml"
+        runner = self.d / "rerun_runner.py"
+        runner.write_text(
+            "import pathlib\np = pathlib.Path('target/surefire-reports'); p.mkdir(parents=True, exist_ok=True)\n"
+            "(p / 'TEST-x.xml').write_text('<testsuite>"
+            "<testcase classname=\"com.acme.order.DiscountTest\" name=\"discountAtThreshold()\"><flakyFailure/></testcase>"
+            "<testcase classname=\"com.acme.order.DiscountTest\" name=\"noDiscountBelow()\"><skipped/></testcase>"
+            "<testcase classname=\"com.acme.order.DiscountTest\" name=\"negativeTotalOnlyNotNull()\"/></testsuite>')\n")
+        proj.write_text(proj.read_text().replace('test_feature_random = "python3 fake_runner.py"',
+                                                 'test_feature_random = "python3 rerun_runner.py {seed}"'))
+        r = run(self.d, "flaky", "--runs", "2")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        fl = self.repo.read_json("flaky.json")
+        self.assertEqual([f["key"].split(".")[-1] for f in fl["flaky"]], ["discountAtThreshold"])
+        self.assertEqual([f["key"].split(".")[-1] for f in fl["skipped_at_runtime"]], ["noDiscountBelow"])
+        self.assertEqual(len(fl["seeds"]), 2)
+
+    def test_shallow_tests_do_not_cover_requirements(self):
+        p = self.d / TEST_FILE
+        p.write_text(p.read_text().replace('        assertEquals("ORD-400", e.getMessage());\n', ""))
+        r = run(self.d, "lint")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        tests = {t["method"]: t for t in self.repo.read_json("lint.json")["tests"]}
+        self.assertEqual(tests["negativeTotalOnlyNotNull"]["classification"], "SHALLOW")
+        run(self.d, "trace")
+        rows = {x["id"]: x for x in self.repo.read_json("trace.json")["requirements"]}
+        self.assertFalse(rows["FR-002"]["covered"])
+
+    def test_hook_protects_results_and_locked_files_in_shell(self):
+        run(self.d, "lock")
+        hook = lambda p: run(self.d, "hook", stdin=json.dumps(p))
+        r = hook({"tool_name": "Write", "tool_input": {"file_path": f"{RUNS}/seed-feedback.json", "content": "{}"}})
+        self.assertEqual(r.returncode, 2, r.stderr)
+        r = hook({"tool_name": "Write", "tool_input": {"file_path": f"{RUNS}/judge.json", "content": "{}"}})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        r = hook({"tool_name": "Bash", "tool_input": {"command": f"echo '{{}}' > {RUNS}/red.json"}})
+        self.assertEqual(r.returncode, 2, r.stderr)
+        r = hook({"tool_name": "Bash", "tool_input": {"command": f"sed -i 's/assertEquals/assertNotNull/' {TEST_FILE}"}})
+        self.assertEqual(r.returncode, 2, r.stderr)
+        r = hook({"tool_name": "Bash", "tool_input": {"command": f"git diff {TEST_FILE} 2>&1"}})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        log = self.d / "hook.log"
+        run(self.d, "hook", stdin='{"tool_name": "Read", "agent_type": "x"}', env_extra={"QESTACK_HOOK_LOG": str(log)})
+        self.assertIn('"agent_type"', log.read_text())
+
+    def test_stub_in_existing_file_needs_review(self):
+        run(self.d, "snapshot")
+        (self.d / PROD_FILE).write_text((self.d / PROD_FILE).read_text() + "// stub\n")
+        (self.d / RUNS / "stubs.json").write_text(json.dumps([PROD_FILE]))
+        r = run(self.d, "guard", "--source-unchanged")
+        g = self.repo.read_json("guard.json")
+        self.assertEqual(g["violations"], [])
+        self.assertEqual([x["type"] for x in g["reviews"]], ["STUB_IN_EXISTING_FILE"])
+
+    def test_feedback_shows_mutated_line_and_context_lists_changes(self):
+        (self.d / "target/pit-reports").mkdir(parents=True)
+        (self.d / "target/pit-reports/mutations.xml").write_text(
+            "<mutations><mutation status='SURVIVED'><mutatedClass>com.acme.order.Discount</mutatedClass>"
+            "<mutatedMethod>apply</mutatedMethod><lineNumber>5</lineNumber><mutator>a.B</mutator>"
+            "<description>boundary</description></mutation></mutations>")
+        prod = self.d / PROD_FILE
+        prod.write_text(prod.read_text() + "\n")
+        run(self.d, "mutation", "--skip-run")
+        run(self.d, "feedback")
+        fb = (self.d / RUNS / "feedback-1.md").read_text()
+        self.assertIn("method `apply`, line: `return total >= 100.0 ? total * 0.9 : total;`", fb)
+        (self.d / "src/main/java/com/acme/order/New.java").write_text("class New {}\n")
+        ctx = json.loads(run(self.d, "context").stdout)
+        self.assertEqual(set(ctx["changed_source_files"]), {PROD_FILE, "src/main/java/com/acme/order/New.java"})
+        own = self.d / ".qestack/rubrics/test-judge.md"
+        own.parent.mkdir()
+        own.write_text("# project rubric\n")
+        ctx = json.loads(run(self.d, "context").stdout)
+        self.assertEqual(Path(ctx["rubrics"]["tests"]).resolve(), own.resolve())
+
+    def test_mutating_commands_need_an_exact_feature(self):
+        git(self.d, "checkout", "-q", "-b", "other-work")
+        r = run(self.d, "lock")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("--feature", r.stderr)
+        self.assertEqual(run(self.d, "lock", "--feature", "003").returncode, 0)
+        self.assertEqual(run(self.d, "lint").returncode, 0)  # read-only commands still use the newest feature
+
+    def test_judge_needs_assertion_depth_and_real_evidence(self):
+        run(self.d, "lint")
+        tests = []
+        for t in self.repo.read_json("lint.json")["tests"]:
+            sc = {f"R{i}": {"score": 4, "evidence": f"DiscountTest.java:{t['line']}"} for i in range(1, 8)}
+            if t["method"] == "noDiscountBelow":
+                sc["R3"] = {"score": 2, "evidence": "DiscountTest.java:20"}
+            if t["method"] == "discountAtThreshold":
+                sc["R2"] = {"score": 4, "evidence": "#looks-fine"}
+            tests.append({"key": t["key"], "verdict": "accept", "scores": sc})
+        (self.d / RUNS / "judge.json").write_text(json.dumps({"feature": FEATURE, "mode": "test-review", "iteration": 1, "tests": tests}))
+        run(self.d, "score")
+        js = self.repo.read_json("scorecard.json")["judge_summary"]
+        self.assertEqual(js["verdicts"]["revise"], 1)
+        self.assertEqual(js["invalid"], 1)
+
+
+class FillTests(unittest.TestCase):
+    def test_placeholders_are_shell_quoted(self):
+        r = subprocess.run([sys.executable, "-c",
+                            "from qestack.cli import fill; print(fill('x {a} {changed_files} {e}', "
+                            "{'a': 'com.acme.Foo*', 'changed_files': \"'a b'\", 'e': ''}))"],
+                           env=dict(os.environ, PYTHONPATH=str(SRC)), capture_output=True, text=True)
+        self.assertEqual(r.stdout.rstrip("\n"), "x 'com.acme.Foo*' 'a b' ", r.stderr)
+
+
 class InitShowTests(unittest.TestCase):
     def test_init_detects_stack_and_rulesets(self):
         d = Path(tempfile.mkdtemp())
@@ -352,6 +553,8 @@ class InitShowTests(unittest.TestCase):
             self.assertIn("kafka", r.stdout)
             r = run(d, "show", "rubrics/test-judge")
             self.assertIn("R1. Requirement fidelity", r.stdout)
+            r = run(d, "show", "../../../etc/passwd")
+            self.assertEqual(r.returncode, 1)
         finally:
             shutil.rmtree(d)
 

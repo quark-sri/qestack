@@ -40,7 +40,7 @@ Version 1.0. The fault seeder follows these rules. The judge checks the catalog 
 
 ## Judge checks
 
-The judge reviews `catalog.json` and the patches (in a separate seeder-review step), and reports:
+The judge reviews `catalog.json` and the patches (fault-review mode), and writes `<runs_dir>/faults/fault-review.json`. Each finding has the form `{"fault_id": "F03", "issue": "...", "fix": "..."}`. The judge reports:
 
 - faults that are not realistic or not observable from the spec,
 - requirement IDs with no fault,

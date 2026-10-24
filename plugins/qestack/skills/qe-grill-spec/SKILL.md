@@ -1,6 +1,7 @@
 ---
 name: qe-grill-spec
-description: Check that a specification is testable before test design. Finds requirements without IDs, vague rules, missing examples, missing error behavior and untestable statements, and asks the user one question at a time. Use before qe-plan, or when a spec has [NEEDS CLARIFICATION] items.
+description: qestack spec check before test design. Finds requirements without IDs, vague rules, missing examples, missing error behavior and untestable statements, and asks the user one question at a time. Use before qe-plan in a qestack repository, or when a spec has [NEEDS CLARIFICATION] items.
+argument-hint: "[feature, for example 003-order-discount]"
 ---
 
 # qe-grill-spec
@@ -9,9 +10,9 @@ Good tests need clear rules and concrete examples. This skill finds the gaps in 
 
 ## Steps
 
-1. Find the feature folder (speckit layout: `specs/<NNN-name>/spec.md`). If it is not clear, ask the user.
-2. Run `qestack trace --feature <feature> --plan-only` to see the requirement IDs that the engine finds. Requirements without an ID are not traceable.
-3. Read `spec.md`, `contracts/` and `data-model.md`. For each requirement, check:
+1. **Feature.** The feature is `$ARGUMENTS`. If it is empty, find the folder under `specs/` (speckit layout: `specs/<NNN-name>/spec.md`). If it is not clear, ask the user.
+2. **IDs.** Run `qestack trace --feature <feature> --plan-only`. Use only the list of requirement IDs that it prints. Before a test plan exists, every ID shows "MISSING IN PLAN" and the exit code is 1. That is expected. Requirements without an ID are not traceable.
+3. **Read** `spec.md`, and `contracts/` and `data-model.md` if they exist. For each requirement, check:
    - **ID:** It has an ID (`FR-###`, or a numbered acceptance scenario under a "User Story" heading).
    - **Example:** It has at least one concrete example with input and expected output.
    - **Limits:** Each number, size or date limit says if the limit itself is included.
@@ -22,7 +23,8 @@ Good tests need clear rules and concrete examples. This skill finds the gaps in 
 4. Make a numbered list of gaps, highest risk first (money, security, data integrity).
 5. Ask the user about the gaps, **one question at a time**. For each question, suggest a concrete answer that the user can accept or change.
 6. Collect the answers. Show the proposed spec changes as a diff. Write them to `spec.md` only after the user says "yes". (With speckit, the user can also run `/speckit.clarify`.)
-7. List the gaps that are still open. They become open questions in the test plan.
+7. **Open gaps.** For each gap that is still open, propose a marker `[NEEDS CLARIFICATION: <question>]` at the requirement in `spec.md`. Add the markers after the user says "yes". The engine and `qe-plan` read these markers, and the test plan lists them as open questions.
+8. **Report:** gaps found, gaps closed, open markers added. Next step: `qe-plan`.
 
 ## Rules
 

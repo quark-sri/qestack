@@ -49,11 +49,21 @@ trivial_statement_regexes = [
   '^assertThat\(.*\)\.isInstanceOf\([\w.]+\.class\)$',
   '^assertTrue\([\w.()]+\s*!=\s*null\)$',
   '^assertEquals\(([^,]+),\1\)$',
+  '^assertThat\((.+)\)\.isEqualTo\(\1\)$',
 ]
 shallow_statement_regexes = [
-  # API: only the HTTP status is checked
-  '^assert(?:Equals|That)\(.*\b(?:status|statusCode|getStatus|getStatusCode|httpStatus)\b',
+  # API: only the HTTP status is checked (not a domain field such as order.status())
+  '^assert(?:Equals|That)\(.*\b(?:statusCode|getStatusCode|httpStatus|getStatusCodeValue)\b',
+  '^assertThat\(.*\.status\(\)\)\.isEqualTo\([1-5]\d\d\)$',
   '^assertEquals\((?:20\d|30\d|40\d|50\d),[\w.()]+\)$',
+  # Exceptions: only the type is checked, not the error code or message
+  '^assertThrows\(',
+  '^assertThatThrownBy\(.*\)\.isInstanceOf\([\w.]+\.class\)$',
+  '^assertThatExceptionOfType\(.*\)\.isThrownBy\(.*\)$',
+  # Interactions: only "was called", with any arguments
+  '^verify\(.*\)\.\w+\((?:any\w*\(\)\s*,?\s*)*\)$',
+  # Collections: only the size is checked
+  '^assertThat\(.*\)\.hasSize\(\d+\)$',
   # UI: only visibility is checked
   '^assertThat\(.*\)\.isVisible\(\)$',
 ]
@@ -68,15 +78,22 @@ fixed_sleep = 'Thread\.sleep\s*\(|TimeUnit\.\w+\.sleep\s*\(|\.waitForTimeout\s*\
 swallowed_exception = 'catch\s*\([^)]*\)\s*\{\s*\}'
 console_output = 'System\.(?:out|err)\.print'
 random_without_seed = 'new\s+Random\s*\(\s*\)|Math\.random\s*\('
-current_time = '\b(?:LocalDate|LocalDateTime|Instant|ZonedDateTime|OffsetDateTime)\.now\s*\(\s*\)'
+current_time = '\b(?:LocalDate|LocalDateTime|LocalTime|Instant|ZonedDateTime|OffsetDateTime)\.now\s*\(|System\.currentTimeMillis\s*\(|Clock\.system\w*\s*\('
+order_dependence = '@TestMethodOrder\s*\(|@Order\s*\('
+conditional_execution = '\bassum(?:e|ing)\w*\s*\(|@(?:Enabled|Disabled)(?:If|On)\w*\b|disabledWithoutDocker\s*=\s*true'
 
 [commands]
 # Configure <groups>${qe.groups}</groups> in Surefire AND Failsafe (see java-maven-junit5.md).
 compile = "mvn -q -B -DskipTests test-compile"
-test_feature = "mvn -q -B verify -Dqe.groups={feature_tag} -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false"
-test_feature_random = "mvn -q -B verify -Dqe.groups={feature_tag} -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Djunit.jupiter.testmethod.order.default='org.junit.jupiter.api.MethodOrderer$Random' -Djunit.jupiter.testclass.order.default='org.junit.jupiter.api.ClassOrderer$Random'"
-# PIT on the changed classes only. Excludes the slow container tests (tag "integration").
-mutation = "mvn -q -B test-compile org.pitest:pitest-maven:mutationCoverage -DtargetClasses={target_classes} -DexcludedGroups=integration,ui -DoutputFormats=XML,HTML -DtimestampedReports=false"
+# -Dmaven.test.failure.ignore=true: Failsafe (integration) tests also run when unit tests fail
+# (in the red phase every test fails). The engine reads the XML reports, not the exit code.
+# -fae: in a multi-module build, the other modules continue after a failure.
+# -Dsurefire.rerunFailingTestsCount=0: a rerun must not hide a flaky test.
+# UNVERIFIED with a real build: check these properties in Task 3 (see java-maven-junit5.md).
+test_feature = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false"
+test_feature_random = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Djunit.jupiter.testmethod.order.default='org.junit.jupiter.api.MethodOrderer$Random' -Djunit.jupiter.testclass.order.default='org.junit.jupiter.api.ClassOrderer$Random' -Djunit.jupiter.execution.order.random.seed={seed}"
+# PIT on the changed classes, with the feature tests only. Excludes the slow container tests (tag "integration").
+mutation = "mvn -q -B -fae test-compile org.pitest:pitest-maven:mutationCoverage -DtargetClasses={target_classes} -DtargetTests={feature_test_classes} -DexcludedGroups=integration,ui -DfailWhenNoMutations=false -DoutputFormats=XML,HTML -DtimestampedReports=false"
 
 [reports]
 junit_globs = ["**/target/surefire-reports/TEST-*.xml", "**/target/failsafe-reports/TEST-*.xml"]

@@ -49,7 +49,7 @@ extra_shallow_statement_regexes = [
 # seed_min = 0.75
 #
 # Brownfield change with no red phase? Remove "red" and write the reason:
-# required = ["hollow", "no_assertion", "skipped", "trace", "flaky", "failing", "mutation", "seed", "guard", "judge"]
+# required = ["hollow", "no_assertion", "skipped", "trivial", "shallow", "trace", "flaky", "failing", "mutation", "seed", "guard", "judge"]
 # required_reason = "Legacy module; tests added after the code. A red check is not possible."
 
 [loop]

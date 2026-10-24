@@ -55,7 +55,9 @@ Does the test check all observable effects of the behavior?
 - **1:** Only existence, type, status or visibility is checked.
 - **0:** No meaningful assertion.
 
-Anchor to gate data: if mutation survivors or undetected faults point to lines that this test executes and its requirement area, R3 is at most 2 for this test.
+Anchor to gate data: if a surviving mutant is in a method that serves this test's requirement, or `seed-feedback.json` has an UNDETECTED fault with this test's requirement ID and layer, R3 is at most 2 for this test.
+
+Check the category tags too. A test tagged `boundary` uses a value at the limit, or just below or just above it. A test tagged `negative` or `error` checks a rejection. If a tag does not match the test, R1 is at most 2.
 
 ### R4. Negative and edge coverage (for the requirement group)
 
@@ -97,7 +99,7 @@ Does the test check the requirement, or does it mirror the implementation?
 
 1. Any dimension = 0 → **reject**
 2. Any dimension = 1 → at least **revise**
-3. R1 < 3 or R2 < 3 → at least **revise**
+3. R1, R2 or R3 < 3 → at least **revise**
 4. Average of R1 to R7 < 2.5 → at least **revise**
 5. Otherwise → **accept**
 

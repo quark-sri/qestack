@@ -60,7 +60,7 @@ The stack sets the rest (test markers, skip markers, tag syntax).
 
 ### `[commands]`
 
-Placeholders: `{feature_tag}`, `{feature}`, `{target_classes}`, `{changed_files}`, `{changed_files_csv}`, `{base_ref}`, `{run}`.
+Placeholders: `{feature_tag}`, `{feature}`, `{target_classes}`, `{feature_test_classes}`, `{changed_files}`, `{changed_files_csv}`, `{base_ref}`, `{run}`, `{seed}` (flaky runs only). The engine shell-quotes each value. `{changed_files}` is a list of quoted paths. Do not put a placeholder inside quotes in the command.
 
 | Key | Meaning |
 |---|---|
@@ -83,8 +83,9 @@ Placeholders: `{feature_tag}`, `{feature}`, `{target_classes}`, `{changed_files}
 | Key | Default |
 |---|---|
 | `trace_coverage_min` | 1.0 |
-| `hollow_max`, `no_assertion_max`, `skipped_max` | 0 |
+| `hollow_max`, `no_assertion_max`, `skipped_max`, `trivial_max`, `shallow_max` | 0 |
 | `red_min` | 1.0 |
+| `red_counts_errors` | true (false: only assertion failures count as red) |
 | `flaky_max`, `failing_max` | 0 |
 | `flaky_runs` | 5 |
 | `mutation_min` | 0.75 |
@@ -106,6 +107,7 @@ Placeholders: `{feature_tag}`, `{feature}`, `{target_classes}`, `{changed_files}
 | `min_improvement`, `patience` | 2.0, 2 | Escalate when the score does not improve |
 | `audit_random`, `audit_lowest` | 5, 5 | Human audit sample size |
 | `faults_min`, `faults_max` | 5, 15 | Hidden faults for each feature |
+| `holdout_ratio`, `holdout_min` | 0.4, 2 | Share of faults that never appear in the feedback. The seed gate uses only these faults when at least `holdout_min` of them are valid |
 
 ## Human decision files
 
@@ -123,3 +125,4 @@ These files are in `.qestack/locks/`. Only humans change them.
 | `QESTACK_FEATURE` | Feature name (otherwise from the branch) |
 | `QESTACK_BASE_REF` | Base ref (otherwise from `[git] base_ref`) |
 | `QESTACK_ROOT` | Repository root (otherwise from git) |
+| `QESTACK_HOOK_LOG` | File path. The guard hook appends each input it gets (to check the fields that Claude Code sends) |

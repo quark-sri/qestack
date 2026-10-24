@@ -27,7 +27,7 @@ an ID that tests in this repository cannot cover (a human must agree).
 
 | Req ID | Requirement summary | Test cases | Categories required | Layer |
 |---|---|---|---|---|
-| FR-001 | ... | TC-001, TC-002, TC-003 | positive, boundary, negative | unit, api |
+| FR-001 | ... | TC-001, TC-002, TC-003 | positive, boundary, negative | domain, api |
 | US1-AS1 | ... | TC-001 | positive | api |
 | EC-01 | ... | TC-004 | error | api, db |
 | SC-001 | ... | - | n/a - measured by the performance suite | - |
@@ -40,7 +40,7 @@ Repeat this block for each test case.
 
 - **Requirement IDs**: FR-001, US1-AS1
 - **Category**: positive | negative | boundary | error | security | contract | idempotency | ...
-- **Layer**: unit | api | integration-db | integration-kafka | ui
+- **Layer**: domain | api | db | kafka | ui (domain = unit tests of business rules; db and kafka = integration tests with containers). The fault seeder uses the same names.
 - **Preconditions / test data**: [the test creates its own data: ...]
 - **Action**: [request / method call / event]
 - **Expected result (oracle)**:

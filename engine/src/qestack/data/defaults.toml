@@ -101,7 +101,12 @@ trace_coverage_min = 1.0
 hollow_max = 0
 no_assertion_max = 0
 skipped_max = 0
+trivial_max = 0
+shallow_max = 0
 red_min = 1.0
+# true: a test that fails with an error (for example a stub that throws) counts as red.
+# false: only an assertion failure counts as red. Stubs must then return neutral values.
+red_counts_errors = true
 flaky_max = 0
 failing_max = 0
 flaky_runs = 5
@@ -113,7 +118,7 @@ judge_coverage_min = 1.0
 tqs_min = 80
 # A gate in this list FAILS when its data is missing (NOT_RUN). Remove a gate here only
 # with a written reason in .qestack/project.toml (for example "red" for brownfield code).
-required = ["hollow", "no_assertion", "skipped", "trace", "red", "flaky", "failing", "mutation", "seed", "guard", "judge"]
+required = ["hollow", "no_assertion", "skipped", "trivial", "shallow", "trace", "red", "flaky", "failing", "mutation", "seed", "guard", "judge"]
 
 [weights]
 fault_detection = 0.35
@@ -131,3 +136,7 @@ audit_lowest = 5
 max_feedback_mutants = 40
 faults_min = 5
 faults_max = 15
+# Held-out faults never appear in the feedback to the test writer. The seed gate uses
+# only them when at least holdout_min of them are valid. Otherwise it uses all faults.
+holdout_ratio = 0.4
+holdout_min = 2

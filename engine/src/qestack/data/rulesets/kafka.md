@@ -29,18 +29,22 @@ All agents read this file when `kafka` is in `[project] rulesets` of `.qestack/p
 ## 3. Rules
 
 - Use polling with a timeout (Awaitility `await().atMost(...).untilAsserted(...)` in Java, a polling helper in .NET). Never use a fixed sleep.
-- To prove that NO event was published, poll for a fixed, documented window, and say why the window is long enough. Use one shared helper for this.
+- If you must prove "no event" with a polling window (see the next rules first), use a fixed, documented window and say why it is long enough. Use one shared helper for this.
 - Use a unique consumer group for each test. Use a unique key or correlation ID in each test. Filter the records by that value. Then tests do not see each other's events.
 - Use a real broker for integration tests (Testcontainers Kafka or Redpanda). An embedded broker is acceptable if the team accepts the differences.
 - Deserialize the event with the contract schema, not with the production DTO class. If the test uses the production class, a schema error stays hidden.
 - Check the key and the headers, not only the value.
+- The test consumer uses `isolation.level=read_committed`. Without it, the test can read an event from a transaction that rolled back.
+- The test consumer uses `auto.offset.reset=earliest` with its unique group, or the test waits for the partition assignment before the action. Otherwise the test can miss the event.
+- To prove that NO event was published, prefer a check that does not wait: an outbox table check, or a second "barrier" event on the same key that must arrive first. Use a fixed polling window only when no such check is possible.
+- For Avro or Protobuf, run a schema registry compatibility check (BACKWARD, or the mode in the contract).
 
 ## 4. Required cases (when they apply)
 
 - Event content for each event type in the contract.
 - No event when the business action fails.
 - Duplicate delivery to the consumer (idempotency).
-- Bad message to the consumer (dead-letter topic).
+- Bad message to the consumer (dead-letter topic). Check the dead-letter record headers too: original topic, partition, offset and the exception.
 - Event order for the same key.
 
 ## 5. Seeded faults for this layer (for the fault seeder)

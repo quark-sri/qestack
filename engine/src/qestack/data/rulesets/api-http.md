@@ -12,7 +12,7 @@ A status code alone proves very little. For each API test case, check all of the
 | Body values | Each important field with the exact expected value from the spec | `total = 90.00`, `status = "DISCOUNTED"` |
 | Body shape | Required fields exist; no unexpected fields if the contract forbids them | JSON schema or field-by-field |
 | Headers | Headers in the contract | `Location`, `Content-Type`, `ETag`, correlation ID |
-| Error payload | Error code, message key, field errors | `code = "ORD-400"`, `field = "total"` |
+| Error payload | Error code, message key, field errors; no stack trace and no personal data in the body | `code = "ORD-400"`, `field = "total"` |
 | Persisted state | Database row or a follow-up GET | Order saved with the right values |
 | Side effects | Events, calls to other services | Kafka event published once |
 | No side effect on failure | A rejected request changes nothing | No row, no event |
@@ -32,13 +32,21 @@ The test designer adds these cases to `test-plan.md` when they apply. If one doe
 - Authentication missing or invalid → 401
 - Authorization: valid user, wrong role or wrong tenant → 403
 - Idempotency: same request twice (when the contract requires idempotency)
-- Unsupported media type or method
+- Unsupported media type or method → 415 or 405; a wrong `Accept` header → 406
+- Request body too large → 413 (when the contract sets a limit)
+- Mass assignment: the client sends a field that it must not set (`id`, `status`, `price`). The server ignores the field or rejects it with 400.
+- Object-level authorization: for each ID in the path, a valid user with another user's or tenant's ID gets 403 or 404, and sees no data
+- Optimistic concurrency: an old `If-Match` / `ETag` value → 412 (when the contract uses ETags)
+- Idempotency key reused with a different body → 409 or 422 (when the contract defines idempotency keys)
+- Pagination, sorting and filters: first page, last page, page size limit, an invalid sort field
+- A downstream service times out or returns 5xx (simulate it, for example with WireMock) → the status and error body from the contract
 
 ## 3. Oracles
 
 - Take expected values from `spec.md` examples, from `contracts/` (OpenAPI) and from `data-model.md`.
 - Write the expected value as a literal in the test, or build it from test data that the test itself creates. Do not call production code to compute it.
 - If the spec gives no example for a rule, the designer adds an open question. The writer does not guess.
+- If the contract is an OpenAPI file, validate each response against it (for example with a request/response validator library). Then the body shape is checked in every test, and the explicit assertions check the values.
 
 ## 4. Internal HTTP client library
 

@@ -13,10 +13,10 @@ qestack guardrails, version 1.0. These rules apply to ALL agents in all phases. 
 | Role | May read | May write | Must not |
 |---|---|---|---|
 | Test designer | spec, plan, contracts, data model, rulesets | `test-plan.md` | read the implementation; write code |
-| Test writer | test plan, spec, contracts, data model, public signatures, test utilities, rulesets, feedback file | test code, stubs (test-write phase only), `stubs.json`, `suspected-bugs.md`, `suspected-test-defects.md` | read the implementation body of the feature; change production code; read the fault catalog or `seed.json` |
+| Test writer | test plan, spec, contracts, data model, public signatures, test utilities, rulesets, feedback file | test code, stubs (test-write phase only), `stubs.json`, `suspected-bugs.md`, `suspected-test-defects.md` | read the implementation body of the feature; change production code; read `seed.json` or any file in `<runs_dir>/faults/` |
 | Code writer | spec, plan, tasks, tests | production code | change, weaken, skip or delete tests |
 | Fault seeder | spec, plan, implementation | fault patches and `catalog.json` (with `qestack fault`) | change tests; leave a fault in the code; tell other agents about the faults |
-| Judge | everything except the fault patches (it reads `seed-feedback.json`) | `judge.json`, `plan-review.json`, `fault-review.json` | change any code or test |
+| Judge | everything except `seed.json` and `<runs_dir>/faults/` (it reads `seed-feedback.json`). Exception: fault-review mode reads the faults | `judge.json`, `plan-review.json`, `faults/fault-review.json` | change any code or test |
 
 ## G3. Never weaken tests
 
@@ -29,7 +29,7 @@ These actions are never allowed to get a green build:
 - change an expected value so that it matches the current output of the code,
 - widen a tolerance or a timeout without a spec reason.
 
-The hook blocks the first four for locked tests. The guard gate detects them against the base branch.
+For locked tests, the hook blocks these changes: a removed test, fewer or weaker assertions, an added skip, and a removed requirement ID. The guard gate detects the same changes against the base branch. The judge checks the other items.
 
 ## G4. When a test fails
 
@@ -40,7 +40,17 @@ The hook blocks the first four for locked tests. The guard gate detects them aga
 
 ## G5. Protected files
 
-Agents must not change: `.qestack/project.toml`, `.qestack/project-rules.md`, local stacks, rulesets and rubrics in `.qestack/`, locks, the equivalent-mutant list, the red-exemption list, `.claude/settings.json`, the installed qestack engine and its bundled files, and the speckit phase commands. Only humans change them, through code review.
+Agents must not change these files:
+
+- `.qestack/project.toml` and `.qestack/project-rules.md`
+- local stacks, rulesets and rubrics in `.qestack/`
+- locks, the equivalent-mutant list and the red-exemption list
+- `.claude/settings.json` and the speckit phase commands
+- the installed qestack engine and its bundled files
+
+Only humans change them, through code review.
+
+Agents also do not write qestack result files: the gate JSON files, `history.jsonl`, `feedback-<n>.md`, `quality-report.md` and the files in `faults/`. Only qestack commands write them. The hook blocks agent edits. Agents may write `judge.json`, `plan-review.json`, `faults/fault-review.json`, `stubs.json` and `suspected-*.md`.
 
 ## G6. Honest reporting
 
@@ -51,7 +61,7 @@ Agents must not change: `.qestack/project.toml`, `.qestack/project-rules.md`, lo
 
 ## G7. Hidden faults stay hidden
 
-The fault patches and `seed.json` contain the fault details. Only the seeder and humans read them. The writer and the judge use `seed-feedback.json`, which has only the requirement ID and the layer.
+The fault patches, `catalog.json`, `seed.json` and `faults/undetected.md` contain the fault details. Only the seeder, the judge in fault-review mode and humans read them. The writer and the judge in test-review mode use `seed-feedback.json`, which has only the requirement ID and the layer. Held-out faults do not appear in `seed-feedback.json` at all. The seed gate uses them to measure the tests without bias.
 
 ## G8. Limits of automation
 

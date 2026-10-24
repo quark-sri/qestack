@@ -18,7 +18,10 @@ All agents read this file when `database` is in `[project] rulesets` of `.qestac
 
 - Read the state with a direct query or a repository call that is NOT the code under test. If the test reads with the same repository method that wrote the data, a mapping error stays hidden.
 - Use real database engines for integration tests (Testcontainers or a dedicated test schema). An in-memory database with another SQL dialect can hide defects.
-- Isolate data: unique keys for each test, a transaction rollback, or a clean schema for each test class.
+- Isolate data: unique keys for each test, or a clean schema (truncate tables) for each test class.
+- Do not use a test-managed transaction that rolls back (for example `@Transactional` on a Spring test) when the test checks commit behavior. Such a test does not see commit-time constraint violations, and after-commit listeners and the outbox do not run. Clean up with truncation or a fresh schema instead.
+- Before you read back saved data through JPA, call `flush()` and `clear()`, or read with plain JDBC in a new transaction. Otherwise the first-level cache returns the object that the code saved, not the row in the database.
+- Run the Flyway or Liquibase migrations on the real database engine. Test a new migration with existing data, not only with an empty schema.
 - Never depend on the order of rows unless the query has `ORDER BY`.
 - Check numeric precision and rounding for money columns.
 - Check time zones for timestamp columns.
@@ -30,6 +33,7 @@ All agents read this file when `database` is in `[project] rulesets` of `.qestac
 - Update that changes only the intended columns.
 - Delete or soft delete, and the effect on related rows.
 - Rollback when a later step fails.
+- Two concurrent updates of the same row: no lost update (version check or lock).
 
 ## 4. Seeded faults for this layer (for the fault seeder)
 

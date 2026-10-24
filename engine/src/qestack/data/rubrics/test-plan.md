@@ -58,7 +58,7 @@ Version 1.0. The `qe-test-judge` agent uses this rubric in plan-review mode, bef
 
 ## Output
 
-Write `.qestack/runs/<feature>/plan-review.json`:
+Write `<runs_dir>/plan-review.json` (from `qestack context`):
 
 ```json
 {

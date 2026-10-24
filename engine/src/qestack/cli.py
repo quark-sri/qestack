@@ -305,7 +305,17 @@ class Feature:
         }
 
 
-def resolve_feature(cfg: Cfg, arg: str | None) -> Feature:
+FEATURE_NAME_RX = re.compile(r"^[\w.-]+$")
+
+
+def resolve_feature(cfg: Cfg, arg: str | None, strict: bool = False) -> Feature:
+    f = _resolve_feature(cfg, arg, strict)
+    if not FEATURE_NAME_RX.match(f.name):
+        die(f"Feature name '{f.name}' has characters that are not allowed. Use letters, digits, '-', '_' and '.'.")
+    return f
+
+
+def _resolve_feature(cfg: Cfg, arg: str | None, strict: bool) -> Feature:
     specs = ROOT / cfg.get_path("paths.specs_dir", "specs")
     cands = []
     if arg and arg != "auto":
@@ -332,6 +342,8 @@ def resolve_feature(cfg: Cfg, arg: str | None) -> Feature:
                 return Feature(cfg, hits[0].name, hits[0])
     if arg and arg != "auto":
         die(f"Feature '{arg}' not found under {rel(specs)}/")
+    if dirs and strict:
+        die("This command changes files. Give the feature with --feature (the branch name does not match a feature).")
     if dirs:
         newest = max(dirs, key=lambda d: d.stat().st_mtime)
         warn(f"Feature not given and not found from branch; using newest: {newest.name}")
@@ -792,7 +804,9 @@ def cmd_lint(args, cfg):
             print(f"  {f['file']}:{f['line']}  {f['key'].split('::')[-1]}  {', '.join(f['problems'])}")
         if len(findings) > args.max:
             print(f"  ... {len(findings) - args.max} more (see lint.json)")
-    hard = summary["hollow"] + summary["no_assertion"] + summary["skipped"]
+    G = cfg.get("gates", {})
+    hard = (summary["hollow"] + summary["no_assertion"] + summary["skipped"]
+            + (summary["trivial"] > G.get("trivial_max", 0)) + (summary["shallow"] > G.get("shallow_max", 0)))
     return 1 if hard else 0
 
 
@@ -899,7 +913,7 @@ def depth_rule(cfg: Cfg, rid: str, plan):
 
 
 def counts_for_coverage(t) -> bool:
-    return not t["skipped"] and t["classification"] not in ("HOLLOW", "NO_ASSERTION")
+    return not t["skipped"] and t["classification"] == "OK"
 
 
 def compute_trace(cfg: Cfg, feature: Feature, tests):
@@ -994,9 +1008,13 @@ def cmd_trace(args, cfg):
 # --------------------------------------------------------------------------------------
 
 
+PRE_QUOTED = {"changed_files"}
+
+
 def fill(cmd: str, mapping: dict) -> str:
     for k, v in mapping.items():
-        cmd = cmd.replace("{" + k + "}", str(v))
+        v = str(v)
+        cmd = cmd.replace("{" + k + "}", v if k in PRE_QUOTED or v == "" else shlex.quote(v))
     return cmd
 
 
@@ -1038,7 +1056,7 @@ def norm_case_name(name: str) -> str:
 def parse_junit(cfg: Cfg, since: float | None = None):
     """Return {(simple_class, name): status} with status in passed/failed/error/skipped."""
     res = {}
-    rank = {"passed": 0, "skipped": 1, "failed": 2, "error": 3}
+    rank = {"passed": 0, "passed_on_rerun": 1, "skipped": 2, "failed": 3, "error": 4}
     for pat in cfg.get_path("reports.junit_globs", []):
         for f in globmod.glob(str(ROOT / pat), recursive=True):
             if since and os.path.getmtime(f) < since - 2:
@@ -1056,6 +1074,8 @@ def parse_junit(cfg: Cfg, since: float | None = None):
                     st = "error"
                 elif tc.find("skipped") is not None:
                     st = "skipped"
+                elif any(tc.find(x) is not None for x in ("flakyFailure", "flakyError", "rerunFailure", "rerunError")):
+                    st = "passed_on_rerun"  # Surefire rerunFailingTestsCount hid a failure
                 else:
                     st = "passed"
                 k = (cls, name)
@@ -1064,15 +1084,19 @@ def parse_junit(cfg: Cfg, since: float | None = None):
     return res
 
 
-def status_for(test, results):
+def status_for(test, results, raw: bool = False):
+    st = None
     for k in ((test["class"], test["method"]), (test["class"], test.get("display_name", ""))):
         if k in results:
-            return results[k]
-    # fall back to method name only (unique match)
-    hits = [v for (c, n), v in results.items() if n == test["method"]]
-    if len(hits) == 1:
-        return hits[0]
-    return None
+            st = results[k]
+            break
+    else:
+        hits = [v for (c, n), v in results.items() if n == test["method"]]  # method name only (unique match)
+        if len(hits) == 1:
+            st = hits[0]
+    if st == "passed_on_rerun" and not raw:
+        return "passed"
+    return st
 
 
 # --------------------------------------------------------------------------------------
@@ -1092,13 +1116,17 @@ def cmd_red(args, cfg):
         code, out, _ = run_cmd(fill(cfg.get_path("commands.test_feature", ""), {"feature_tag": feature.tag, "feature": feature.name}), cfg, "test_feature")
     results = parse_junit(cfg, None if args.skip_run else t0)
     exempt = set(read_json(feature.locks / f"{feature.name}.red-exempt.json", []) or [])
-    ok, viol, notrun, exempted = [], [], [], []
+    errors_count = cfg.get_path("gates.red_counts_errors", True)
+    ok, viol, notrun, exempted, by_error, error_only = [], [], [], [], [], []
     for t in tests:
         st = status_for(t, results)
         if t["key"] in exempt:
             exempted.append(t["key"])
-        elif st in ("failed", "error"):
+        elif st == "failed":
             ok.append(t["key"])
+        elif st == "error":
+            by_error.append(t["key"])
+            (ok if errors_count else error_only).append(t["key"])
         elif st == "passed":
             viol.append(t["key"])
         else:
@@ -1108,21 +1136,29 @@ def cmd_red(args, cfg):
         status = "INVALID"
         warn("No test results found. The build or test compilation probably failed. Check the output below.")
         print(out[-3000:])
-    considered = len(ok) + len(viol)
+    considered = len(ok) + len(viol) + len(error_only)
     result = {"tool": "qestack.red", "created": now_iso(), "feature": feature.name, "git_head": git_head(),
               "status": status, "exit_code": code,
-              "summary": {"tests": len(tests), "red": len(ok), "green_before_impl": len(viol), "not_run": len(notrun),
+              "summary": {"tests": len(tests), "red": len(ok), "red_by_assertion": len(ok) - (len(by_error) if errors_count else 0),
+                          "red_by_error": len(by_error), "green_before_impl": len(viol), "not_run": len(notrun),
                           "exempt": len(exempted), "rate": round(len(ok) / considered, 4) if considered else 0.0},
-              "red": ok, "violations": viol, "not_run": notrun, "exempt": exempted}
+              "red": ok, "red_by_error": by_error, "error_only": error_only, "violations": viol, "not_run": notrun,
+              "exempt": exempted}
     write_json(feature.runs / "red.json", result)
     s = result["summary"]
     print(f"red: {s['red']}/{s['tests']} failed before implementation (rate {s['rate']:.0%}); "
+          f"by assertion={s['red_by_assertion']} by error={s['red_by_error']} "
           f"passed-too-early={s['green_before_impl']} not_run={s['not_run']} exempt={s['exempt']} status={status}")
+    if by_error and errors_count:
+        print("  NOTE: a test that fails with an error (for example a stub that throws) proves less than an assertion failure. "
+              "Set gates.red_counts_errors = false to require assertion failures.")
+    for k in error_only:
+        print(f"  FAILS ONLY WITH AN ERROR: {k}")
     for k in viol:
         print(f"  PASSES BEFORE IMPLEMENTATION: {k}")
     for k in notrun[:20]:
         print(f"  NOT RUN: {k}")
-    return 0 if status == "OK" and not viol and not notrun else 1
+    return 0 if status == "OK" and not viol and not notrun and not error_only else 1
 
 
 # --------------------------------------------------------------------------------------
@@ -1137,37 +1173,47 @@ def cmd_flaky(args, cfg):
     cmd = cfg.get_path("commands.test_feature_random", "") or cfg.get_path("commands.test_feature", "")
     hist = {t["key"]: [] for t in tests}
     invalid_runs = 0
+    seeds = []
     for i in range(runs):
         clean_reports(cfg)
         t0 = time.time()
-        code, out, secs = run_cmd(fill(cmd, {"feature_tag": feature.tag, "feature": feature.name, "run": i + 1}), cfg, f"run {i + 1}/{runs}")
+        seed = random.randrange(1, 2**31)
+        seeds.append(seed)
+        code, out, secs = run_cmd(fill(cmd, {"feature_tag": feature.tag, "feature": feature.name, "run": i + 1, "seed": seed}),
+                                  cfg, f"run {i + 1}/{runs} seed {seed}")
         res = parse_junit(cfg, t0)
         if not res:
             invalid_runs += 1
             warn(f"Run {i + 1}: no results (exit {code}).\n{out[-1500:]}")
             continue
         for t in tests:
-            hist[t["key"]].append(status_for(t, res) or "missing")
-    flaky, failing, missing = [], [], []
+            hist[t["key"]].append(status_for(t, res, raw=True) or "missing")
+    flaky, failing, missing, rt_skipped = [], [], [], []
     for k, h in hist.items():
         s = set(h)
+        if "skipped" in s:
+            rt_skipped.append({"key": k, "history": h})
         if not h or s == {"missing"}:
             missing.append(k)
-        elif "passed" in s and (s & {"failed", "error"}):
+        elif "passed_on_rerun" in s or ("passed" in s and (s & {"failed", "error"})):
             flaky.append({"key": k, "history": h})
         elif s <= {"failed", "error", "missing"}:
             failing.append({"key": k, "history": h})
-    result = {"tool": "qestack.flaky", "created": now_iso(), "feature": feature.name, "runs": runs,
+    result = {"tool": "qestack.flaky", "created": now_iso(), "feature": feature.name, "runs": runs, "seeds": seeds,
               "invalid_runs": invalid_runs, "status": "INVALID" if invalid_runs == runs else "OK",
-              "summary": {"tests": len(tests), "flaky": len(flaky), "failing": len(failing), "missing": len(missing)},
-              "flaky": flaky, "failing": failing, "missing": missing}
+              "summary": {"tests": len(tests), "flaky": len(flaky), "failing": len(failing), "missing": len(missing),
+                          "skipped_at_runtime": len(rt_skipped)},
+              "flaky": flaky, "failing": failing, "missing": missing, "skipped_at_runtime": rt_skipped}
     write_json(feature.runs / "flaky.json", result)
-    print(f"flaky: {len(tests)} tests x {runs} runs | flaky={len(flaky)} failing={len(failing)} missing={len(missing)}")
+    print(f"flaky: {len(tests)} tests x {runs} runs | flaky={len(flaky)} failing={len(failing)} missing={len(missing)} "
+          f"skipped at run time={len(rt_skipped)}")
     for f in flaky:
-        print(f"  FLAKY   {f['key']}  {f['history']}")
+        print(f"  FLAKY   {f['key']}  {f['history']}  (run seeds: {seeds})")
     for f in failing:
         print(f"  FAILING {f['key']}")
-    return 0 if not flaky and not failing and result["status"] == "OK" else 1
+    for f in rt_skipped:
+        print(f"  SKIPPED AT RUN TIME {f['key']}  (an assumption, a condition or a missing Docker disabled it)")
+    return 0 if not flaky and not failing and not rt_skipped and result["status"] == "OK" else 1
 
 
 # --------------------------------------------------------------------------------------
@@ -1249,8 +1295,11 @@ def cmd_mutation(args, cfg):
             print("mutation: no changed source files; gate is N/A")
             return 0
     fqns = [java_fqn(f) for f in changed_src if java_fqn(f)]
+    feature_tests = scope_tests(scan_all_tests(cfg), feature)
+    test_fqns = sorted({java_fqn(t["file"]) for t in feature_tests if java_fqn(t["file"])})
     mapping = {
         "target_classes": ",".join(f"{c}*" for c in fqns),
+        "feature_test_classes": ",".join(f"{c}*" for c in test_fqns),
         "changed_files": " ".join(shlex.quote(f) for f in changed_src),
         "changed_files_csv": ",".join(changed_src),
         "base_ref": base or "", "feature_tag": feature.tag, "feature": feature.name,
@@ -1260,11 +1309,16 @@ def cmd_mutation(args, cfg):
     if not args.skip_run:
         code, out, secs = run_cmd(fill(cfg.get_path("commands.mutation", ""), mapping), cfg, "mutation")
     fmt = cfg.get_path("reports.mutation_format", "pit-xml")
-    rp = newest(cfg.get_path("reports.mutation_path", ""))
-    if rp is None or (not args.skip_run and os.path.getmtime(rp) < t0 - 2):
+    reports = [Path(p) for p in globmod.glob(str(ROOT / cfg.get_path("reports.mutation_path", "")), recursive=True)]
+    if not args.skip_run:
+        reports = [p for p in reports if os.path.getmtime(p) >= t0 - 2]  # one report for each module of this run
+    if not reports:
         print(out[-3000:])
         die("Mutation report not found or not updated. Check reports.mutation_path and the mutation command.", 1)
-    muts = parse_pit(rp, changed_src) if fmt == "pit-xml" else parse_stryker(rp, changed_src)
+    rp = max(reports, key=os.path.getmtime)
+    muts = []
+    for p in sorted(reports):
+        muts += parse_pit(p, changed_src) if fmt == "pit-xml" else parse_stryker(p, changed_src)
     eq = read_json(feature.locks / f"{feature.name}.equivalent.json", []) or []
     eq_keys = {(e.get("file"), int(e.get("line", 0)), e.get("mutator")) for e in eq}
     kept, excluded = [], 0
@@ -1283,7 +1337,7 @@ def cmd_mutation(args, cfg):
         bf["total"] += 1
         bf["killed"] += m["status"] == "killed"
     result = {"tool": "qestack.mutation", "created": now_iso(), "feature": feature.name, "status": "OK" if total else "NO_MUTANTS",
-              "base": base, "report": rel(rp), "changed_source_files": changed_src,
+              "base": base, "report": rel(rp), "reports": [rel(p) for p in sorted(reports)], "changed_source_files": changed_src,
               "summary": {"score": score, "killed": killed, "survived": sum(m["status"] == "survived" for m in surv),
                           "no_coverage": sum(m["status"] == "no_coverage" for m in surv), "total": total,
                           "equivalent_excluded": excluded},
@@ -1312,9 +1366,32 @@ def run_feature_tests(cfg: Cfg, feature: Feature, tests, label: str):
     return code, out, res, failed
 
 
+def holdout_ids(cfg: Cfg, feature: Feature, ids, catalog) -> set:
+    """Stable choice of held-out faults. A catalog entry can set "holdout" explicitly."""
+    fixed = {i for i in ids if isinstance(catalog.get(i, {}).get("holdout"), bool)}
+    chosen = {i for i in fixed if catalog[i]["holdout"]}
+    free = sorted((i for i in ids if i not in fixed), key=lambda i: hashlib.sha256(f"{feature.name}:{i}".encode()).hexdigest())
+    n = round(len(ids) * cfg.get_path("loop.holdout_ratio", 0.4)) - len(chosen)
+    return chosen | set(free[:max(0, n)])
+
+
+def recover_applied_fault(fdir: Path) -> None:
+    """Revert a fault patch that a killed 'seed' run left in the production code."""
+    marker = fdir / ".applied"
+    if not marker.exists():
+        return
+    p = fdir / marker.read_text(encoding="utf-8").strip()
+    if p.exists() and git("apply", "-R", "--check", str(p)).returncode == 0:
+        git("apply", "-R", str(p))
+        warn(f"An earlier seed run stopped with fault {p.stem} applied. The fault is now reverted.")
+    marker.unlink()
+
+
 def cmd_seed(args, cfg):
-    feature = resolve_feature(cfg, args.feature)
+    import signal
+    feature = resolve_feature(cfg, args.feature, strict=True)
     fdir = feature.runs / "faults"
+    recover_applied_fault(fdir)
     patches = sorted(fdir.glob("*.patch"))
     catalog = {c.get("id"): c for c in (read_json(fdir / "catalog.json", []) or [])}
     if not patches:
@@ -1334,6 +1411,13 @@ def cmd_seed(args, cfg):
         if baseline_failed:
             warn(f"{len(baseline_failed)} test(s) already fail without faults; they do not count as detection.")
     results = []
+    marker = fdir / ".applied"
+
+    def on_term(signum, frame):
+        recover_applied_fault(fdir)
+        sys.exit(128 + signum)
+
+    signal.signal(signal.SIGTERM, on_term)
     for p in patches:
         fid = p.stem
         meta = catalog.get(fid, {})
@@ -1344,6 +1428,7 @@ def cmd_seed(args, cfg):
             entry.update(status="INVALID", reason="patch does not apply: " + chk.stderr.strip()[:300])
             results.append(entry)
             continue
+        marker.write_text(p.name, encoding="utf-8")
         git("apply", str(p), check=True)
         try:
             if compile_cmd:
@@ -1363,20 +1448,38 @@ def cmd_seed(args, cfg):
             rv = git("apply", "-R", str(p))
             if rv.returncode != 0:
                 die(f"Could not revert fault patch {rel(p)}: {rv.stderr}. Restore the files with git before you continue.")
-    valid = [r for r in results if r["status"] != "INVALID"]
-    det = [r for r in valid if r["status"] == "DETECTED"]
-    rate = round(len(det) / len(valid), 4) if valid else None
-    result = {"tool": "qestack.seed", "created": now_iso(), "feature": feature.name, "status": "OK" if valid else "NO_VALID_FAULTS",
-              "summary": {"faults": len(results), "valid": len(valid), "detected": len(det), "rate": rate,
-                          "baseline_failing": len(baseline_failed)},
-              "faults": results}
-    write_json(feature.runs / "seed.json", result)
-    # redacted version for the test writer and the judge: no fault details
-    redacted = [{"id": r["id"], "req_id": r.get("req_id"), "layer": r.get("layer"), "status": r["status"]} for r in results]
-    write_json(feature.runs / "seed-feedback.json", {"feature": feature.name, "summary": result["summary"], "faults": redacted})
-    print(f"seed: detected {len(det)}/{len(valid)} valid faults ({'n/a' if rate is None else f'{rate:.0%}'}); invalid={len(results) - len(valid)}")
+            marker.unlink(missing_ok=True)
+    holdout = holdout_ids(cfg, feature, [r["id"] for r in results], catalog)
     for r in results:
-        if r["status"] != "DETECTED":
+        r["holdout"] = r["id"] in holdout
+
+    def rate_of(rs):
+        v = [r for r in rs if r["status"] != "INVALID"]
+        d = [r for r in v if r["status"] == "DETECTED"]
+        return len(v), len(d), (round(len(d) / len(v), 4) if v else None)
+
+    n_valid, n_det, all_rate = rate_of(results)
+    h_valid, h_det, h_rate = rate_of([r for r in results if r["holdout"]])
+    f_valid, f_det, f_rate = rate_of([r for r in results if not r["holdout"]])
+    use_holdout = h_valid >= cfg.get_path("loop.holdout_min", 2)
+    rate = h_rate if use_holdout else all_rate
+    summary = {"faults": len(results), "valid": n_valid, "detected": n_det, "rate": rate,
+               "rate_basis": "holdout" if use_holdout else "all", "all_rate": all_rate,
+               "holdout_valid": h_valid, "holdout_detected": h_det, "holdout_rate": h_rate,
+               "feedback_valid": f_valid, "feedback_detected": f_det, "feedback_rate": f_rate,
+               "baseline_failing": len(baseline_failed)}
+    result = {"tool": "qestack.seed", "created": now_iso(), "feature": feature.name,
+              "status": "OK" if n_valid else "NO_VALID_FAULTS", "summary": summary, "faults": results}
+    write_json(feature.runs / "seed.json", result)
+    # Redacted version for the test writer and the judge: no fault details, no held-out faults.
+    redacted = [{"id": r["id"], "req_id": r.get("req_id"), "layer": r.get("layer"), "status": r["status"]}
+                for r in results if not r["holdout"]]
+    write_json(feature.runs / "seed-feedback.json", {"feature": feature.name, "summary": summary, "faults": redacted})
+    print(f"seed: detected {n_det}/{n_valid} valid faults ({'n/a' if all_rate is None else f'{all_rate:.0%}'}); "
+          f"held out {h_det}/{h_valid}; gate uses {summary['rate_basis']} ({'n/a' if rate is None else f'{rate:.0%}'}); "
+          f"invalid={len(results) - n_valid}")
+    for r in results:
+        if r["status"] != "DETECTED" and not r["holdout"]:
             print(f"  {r['status']:<10} {r['id']} [{r.get('req_id') or '-'}] {r.get('reason', '')}")
     thr = cfg.get_path("gates.seed_min", 0.9)
     return 0 if rate is not None and rate >= thr else 1
@@ -1449,7 +1552,7 @@ def all_locks(cfg: Cfg):
 
 
 def cmd_lock(args, cfg):
-    feature = resolve_feature(cfg, args.feature)
+    feature = resolve_feature(cfg, args.feature, strict=True)
     tests = scope_tests(scan_all_tests(cfg), feature)
     files = sorted({t["file"] for t in tests})
     if not files:
@@ -1487,7 +1590,7 @@ def cmd_lock(args, cfg):
 
 
 def cmd_snapshot(args, cfg):
-    feature = resolve_feature(cfg, args.feature)
+    feature = resolve_feature(cfg, args.feature, strict=True)
     files = find_files(cfg, "source_globs")
     data = {"created": now_iso(), "git_head": git_head(),
             "files": {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in files}}
@@ -1553,10 +1656,16 @@ def cmd_guard(args, cfg):
             stubs = set(read_json(feature.runs / "stubs.json", []) or [])
             cur = {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in find_files(cfg, "source_globs")}
             for f in sorted(set(cur) | set(snap["files"])):
-                if f in stubs:
+                if cur.get(f) == snap["files"].get(f):
                     continue
-                if cur.get(f) != snap["files"].get(f):
-                    violations.append({"type": "SOURCE_CHANGED_IN_TEST_PHASE", "test": f, "detail": "production code changed by a test-only phase"})
+                if f in stubs and f not in snap["files"]:
+                    continue  # a new stub file
+                if f in stubs:
+                    # The writer lists the stubs itself, so a stub in an existing file needs a human check.
+                    reviews.append({"type": "STUB_IN_EXISTING_FILE", "test": f,
+                                    "detail": "check that the change only adds stub members"})
+                    continue
+                violations.append({"type": "SOURCE_CHANGED_IN_TEST_PHASE", "test": f, "detail": "production code changed by a test-only phase"})
     # dedupe reviews
     seen, rv = set(), []
     for x in reviews:
@@ -1586,10 +1695,37 @@ def _block(msg: str):
     sys.exit(2)
 
 
+ENGINE_OUTPUTS = {"lint.json", "trace.json", "trace-plan.json", "red.json", "flaky.json", "mutation.json", "seed.json",
+                  "seed-feedback.json", "guard.json", "scorecard.json", "judge-basis.json", "source-snapshot.json",
+                  "calibration.json", "history.jsonl", "quality-report.md"}
+
+
+def engine_output(cfg: Cfg, rp: str) -> bool:
+    """True for files that only the engine writes. Agents must not forge gate results."""
+    runs = cfg.get_path("paths.runs_dir", ".qestack/runs").rstrip("/") + "/"
+    specs = cfg.get_path("paths.specs_dir", "specs").rstrip("/") + "/"
+    name = rp.rsplit("/", 1)[-1]
+    if rp.startswith(specs):
+        return name == "quality-report.md"
+    if not rp.startswith(runs):
+        return False
+    if "/faults/" in rp:
+        return name != "fault-review.json"  # patches, catalog, clean copy: only 'qestack fault' writes them
+    return name in ENGINE_OUTPUTS or bool(re.match(r"feedback-\d+\.md$", name))
+
+
 def cmd_hook(args, cfg_unused=None):
     """Claude Code PreToolUse hook. Exit 2 blocks the tool call. Fails open on internal errors."""
+    raw = sys.stdin.read()
+    log = os.environ.get("QESTACK_HOOK_LOG")
+    if log:  # to check which fields Claude Code sends (for example the agent identity)
+        try:
+            with open(log, "a", encoding="utf-8") as fh:
+                fh.write(raw.strip() + "\n")
+        except OSError:
+            pass
     try:
-        data = json.load(sys.stdin)
+        data = json.loads(raw)
     except Exception:
         return 0
     if not (QE_DIR / "project.toml").exists():
@@ -1608,14 +1744,17 @@ def cmd_hook(args, cfg_unused=None):
             p = Path(path)
             if not p.is_absolute():
                 p = Path(data.get("cwd") or ROOT) / p
-            rp = rel(p)
-            if rp.startswith("/") or rp.startswith(".."):
-                return 0
             try:
                 p.resolve().relative_to(PKG_DIR)
                 _block("This file belongs to the installed qestack engine. Agents must not change it.")
             except ValueError:
                 pass
+            rp = rel(p)
+            if rp.startswith("/") or rp.startswith(".."):
+                return 0
+            if engine_output(cfg, rp):
+                _block(f"'{rp}' is a result file of the qestack engine. Only qestack commands write it. "
+                       "Run the qestack command again instead of editing the result.")
             if is_protected(cfg, rp):
                 _block(f"'{rp}' is a protected qestack file (settings, thresholds, rubrics, locks). "
                        "Agents must not change it. Ask the user to make this change.")
@@ -1645,7 +1784,7 @@ def cmd_hook(args, cfg_unused=None):
             cmd = ti.get("command", "") or ""
             if re.search(r"\bqestack\s+lock\b.*--force", cmd):
                 _block("Only a human may force a lock update (qestack lock --force).")
-            scrubbed = cmd
+            scrubbed = re.sub(r"\d?>&\d|\d?>\s*/dev/null", " ", cmd)
             write_ops = re.compile(r"(>|\btee\b|\brm\b|\bmv\b|\bcp\b|\bsed\s+-i|\bperl\s+-\S*i|\btruncate\b|\bchmod\b|\bln\b|"
                                    r"\bgit\s+(?:checkout|restore|rm|mv)\b|\bpython3?\s+-c\b|\bdd\b)")
             if write_ops.search(scrubbed):
@@ -1653,6 +1792,13 @@ def cmd_hook(args, cfg_unused=None):
                     prefix = pat.split("*")[0].rstrip("/")
                     if prefix and len(prefix) > 6 and prefix in scrubbed:
                         _block(f"This shell command may change the protected path '{prefix}'. Agents must not change it.")
+                for f in all_locks(cfg):
+                    if f in scrubbed or (len(Path(f).name) > 8 and re.search(r"(?<![\w.])" + re.escape(Path(f).name) + r"\b", scrubbed)):
+                        _block(f"This shell command may change the locked test file '{f}'. Use Edit to strengthen the tests; "
+                               "the guard checks Edit and Write.")
+                for tok in re.findall(r"[\w./-]+", scrubbed):
+                    if engine_output(cfg, rel(Path(data.get("cwd") or ROOT) / tok) if not tok.startswith("/") else rel(Path(tok))):
+                        _block(f"This shell command may change the qestack result file '{tok}'. Only qestack commands write it.")
     except SystemExit:
         raise
     except Exception as e:  # fail open, but say so
@@ -1665,14 +1811,15 @@ def cmd_hook(args, cfg_unused=None):
 # --------------------------------------------------------------------------------------
 
 DIMS = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
-EVIDENCE_RX = re.compile(r"(\S+:\d+)|(#\S+)|(\S+\.(?:md|java|cs|ts|py|feature)\b)")
+EVIDENCE_RX = re.compile(r"(\S+:\d+)|(\S+\.md#\S+)")
 
 
 def judge_rules(scores: dict) -> str:
     vals = [scores.get(d) for d in DIMS if isinstance(scores.get(d), (int, float))]
     if not vals or any(v == 0 for v in vals):
         return "reject"
-    if any(v <= 1 for v in vals) or scores.get("R1", 0) < 3 or scores.get("R2", 0) < 3 or (sum(vals) / len(vals)) < 2.5:
+    if (any(v <= 1 for v in vals) or scores.get("R1", 0) < 3 or scores.get("R2", 0) < 3 or scores.get("R3", 0) < 3
+            or (sum(vals) / len(vals)) < 2.5):
         return "revise"
     return "accept"
 
@@ -1765,11 +1912,16 @@ def compute_score(cfg: Cfg, feature: Feature, ci: bool = False):
         s = lint["summary"]
         gates.append(gate("hollow", "PASS" if s["hollow"] <= G.get("hollow_max", 0) else "FAIL", s["hollow"], f"<= {G.get('hollow_max', 0)}"))
         gates.append(gate("no_assertion", "PASS" if s["no_assertion"] <= G.get("no_assertion_max", 0) else "FAIL", s["no_assertion"], f"<= {G.get('no_assertion_max', 0)}"))
-        gates.append(gate("skipped", "PASS" if s["skipped"] <= G.get("skipped_max", 0) else "FAIL", s["skipped"], f"<= {G.get('skipped_max', 0)}"))
+        rt_skipped = len((flaky or {}).get("skipped_at_runtime", []))
+        n_skip = s["skipped"] + rt_skipped
+        gates.append(gate("skipped", "PASS" if n_skip <= G.get("skipped_max", 0) else "FAIL", n_skip, f"<= {G.get('skipped_max', 0)}",
+                          f"{rt_skipped} skipped at run time" if rt_skipped else ""))
+        for g in ("trivial", "shallow"):
+            gates.append(gate(g, "PASS" if s[g] <= G.get(f"{g}_max", 0) else "FAIL", s[g], f"<= {G.get(f'{g}_max', 0)}"))
         if s["total"] == 0:
             gates.append(gate("tests_exist", "FAIL", 0, "> 0", f"no tests tagged {feature.tag}"))
     else:
-        for g in ("hollow", "no_assertion", "skipped"):
+        for g in ("hollow", "no_assertion", "skipped", "trivial", "shallow"):
             nr(g, 0)
     if trace:
         c = trace["summary"]["coverage"]
@@ -1840,7 +1992,7 @@ def compute_score(cfg: Cfg, feature: Feature, ci: bool = False):
     smell_ok = (1 - lint["summary"]["smell_rate"]) if lint and lint["summary"]["total"] else None
     dims = {
         "fault_detection": wavg([(mscore, 0.6), (srate, 0.4)]),
-        "requirement_depth": wavg([(trace["summary"]["coverage"] if trace else None, 0.5), (trace["summary"]["depth_ratio"] if trace else None, 0.5)]),
+        "requirement_depth": trace["summary"]["depth_ratio"] if trace else None,
         "assertion_strength": wavg([(lint_strength, 0.5), (jmean(["R2", "R3"], 8), 0.5)]),
         "independence": jmean(["R5"], 4),
         "maintainability": wavg([(smell_ok, 0.5), (jmean(["R6", "R7"], 8), 0.5)]),
@@ -1976,10 +2128,23 @@ def render_report(cfg: Cfg, feature: Feature, sc: dict, decision, reason, hist, 
     if sd and sd.get("faults"):
         und = [f for f in sd["faults"] if f["status"] != "DETECTED"]
         if und:
-            a("## 5. Seeded faults not detected (full details, for humans only)")
+            # Agents can read this report, so it has no fault details and no held-out faults.
+            a("## 5. Seeded faults not detected")
             a("")
             for f in und:
-                a(f"- **{f['id']}** [{f.get('req_id') or '-'} / {f.get('layer') or '-'}] {f['status']}: {f.get('description', '')} {f.get('reason', '')}")
+                if not f.get("holdout"):
+                    a(f"- **{f['id']}** [{f.get('req_id') or '-'} / {f.get('layer') or '-'}] {f['status']}")
+            n_hold = sum(1 for f in und if f.get("holdout"))
+            if n_hold:
+                a(f"- {n_hold} held-out fault(s) not detected")
+            fdir = feature.runs / "faults"
+            if fdir.exists():
+                det = ["# Seeded faults not detected (for humans only; do not give this file to an agent)", ""]
+                det += [f"- **{f['id']}**{' (held out)' if f.get('holdout') else ''} [{f.get('req_id') or '-'} / "
+                        f"{f.get('layer') or '-'}] {f['status']}: {f.get('description', '')} {f.get('reason', '')}" for f in und]
+                (fdir / "undetected.md").write_text("\n".join(det) + "\n", encoding="utf-8")
+                a("")
+                a(f"Fault details for humans: `{rel(fdir / 'undetected.md')}` (not committed).")
             a("")
     j = sc["judge"]
     if j:
@@ -2083,6 +2248,15 @@ def cmd_score(args, cfg):
     return {"ACCEPT": 0, "CONTINUE": 1, "FAIL": 1, "ESCALATE": 3}[decision]
 
 
+def mutated_line(path: str, line: int) -> str:
+    """The one source line of a surviving mutant, so that the writer does not open the production file."""
+    p = ROOT / path
+    if not line or not p.is_file():
+        return ""
+    lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
+    return lines[line - 1].strip()[:200].replace("`", "'") if line <= len(lines) else ""
+
+
 def cmd_feedback(args, cfg):
     feature = resolve_feature(cfg, args.feature)
     sc = compute_score(cfg, feature)
@@ -2129,6 +2303,9 @@ def cmd_feedback(args, cfg):
         a("")
         for s in m["survivors"][:N]:
             a(f"- `{s['file']}:{s['line']}` {s['mutator']}: {s['description']}" + (" (no test executes this line)" if s["status"] == "no_coverage" else ""))
+            src = mutated_line(s["file"], s["line"])
+            if src:
+                a(f"  - method `{s.get('method') or '?'}`, line: `{src}`")
         if len(m["survivors"]) > N:
             a(f"- ... {len(m['survivors']) - N} more")
         a("")
@@ -2211,13 +2388,36 @@ def cmd_calibrate(args, cfg):
 # --------------------------------------------------------------------------------------
 
 
+LAYERS = ["domain", "api", "db", "kafka", "ui"]
+
+
 def cmd_fault(args, cfg):
     import difflib
     import shutil
-    feature = resolve_feature(cfg, args.feature)
+    feature = resolve_feature(cfg, args.feature, strict=True)
     fdir = feature.runs / "faults"
     base = fdir / ".base"
+    manifest = base / ".manifest.json"
+    recover_applied_fault(fdir)
+
+    def diff_against_base():
+        known = set(read_json(manifest, []) or [])
+        out = []
+        for f in sorted(set(find_files(cfg, "source_globs")) | known):
+            b, cur_p = base / f, ROOT / f
+            old = b.read_text(encoding="utf-8", errors="replace") if f in known and b.exists() else None
+            cur = cur_p.read_text(encoding="utf-8", errors="replace") if cur_p.exists() else None
+            if cur != old:
+                out.append((f, old, cur))
+        return out
+
     if args.action == "begin":
+        if manifest.exists() and not args.force:
+            dirty = diff_against_base()
+            if dirty:
+                die("The source code differs from the saved clean copy: " + ", ".join(f for f, _, _ in dirty[:5])
+                    + ". A fault may still be in the code. Run 'qestack fault restore' first. "
+                      "If the code change is intended, use 'fault begin --force'.", 1)
         if base.exists():
             shutil.rmtree(base)
         files = find_files(cfg, "source_globs")
@@ -2225,21 +2425,24 @@ def cmd_fault(args, cfg):
             dst = base / f
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / f, dst)
+        write_json(manifest, files)
         (fdir / ".gitignore").write_text("*\n")
         print(f"fault begin: {len(files)} source file(s) saved. Edit ONE fault, then run 'fault save'.")
         return 0
-    if not base.exists():
+    if not manifest.exists():
         die("Run 'qestack fault begin' first.")
-    changed = []
-    for f in find_files(cfg, "source_globs"):
-        b = base / f
-        cur = (ROOT / f).read_text(encoding="utf-8", errors="replace")
-        old = b.read_text(encoding="utf-8", errors="replace") if b.exists() else ""
-        if cur != old:
-            changed.append((f, old, cur))
+    changed = diff_against_base()
+
+    def restore(items):
+        for f, old, cur in items:
+            if old is None:
+                (ROOT / f).unlink(missing_ok=True)
+            else:
+                (ROOT / f).parent.mkdir(parents=True, exist_ok=True)
+                (ROOT / f).write_text(old, encoding="utf-8")
+
     if args.action == "restore":
-        for f, old, cur in changed:
-            (ROOT / f).write_text(old, encoding="utf-8")
+        restore(changed)
         print(f"fault restore: {len(changed)} file(s) restored")
         return 0
     if args.action == "save":
@@ -2249,15 +2452,13 @@ def cmd_fault(args, cfg):
             die("--id and --req are required", 1)
         diff = []
         for f, old, cur in changed:
-            if not old.endswith("\n"):
-                old += "\n"
-            if not cur.endswith("\n"):
-                cur += "\n"
-            diff += difflib.unified_diff(old.splitlines(True), cur.splitlines(True), f"a/{f}", f"b/{f}", n=3)
+            a_lines = [] if old is None else (old if old.endswith("\n") else old + "\n").splitlines(True)
+            b_lines = [] if cur is None else (cur if cur.endswith("\n") else cur + "\n").splitlines(True)
+            diff += difflib.unified_diff(a_lines, b_lines, "/dev/null" if old is None else f"a/{f}",
+                                         "/dev/null" if cur is None else f"b/{f}", n=3)
         patch = fdir / f"{args.id}.patch"
         patch.write_text("".join(diff), encoding="utf-8")
-        for f, old, cur in changed:  # restore the clean code
-            (ROOT / f).write_text(old, encoding="utf-8")
+        restore(changed)
         chk = git("apply", "--check", str(patch))
         cat_p = fdir / "catalog.json"
         cat = [c for c in (read_json(cat_p, []) or []) if c.get("id") != args.id]
@@ -2306,6 +2507,8 @@ def cmd_gate(args, cfg):
 def data_file(name: str) -> Path | None:
     """Resolve 'guardrails', 'rubrics/test-judge', 'rulesets/kafka', ... (project folder first)."""
     name = name.strip().strip("/")
+    if ".." in Path(name).parts:
+        return None
     cands = []
     for base in (QE_DIR, DATA_DIR):
         p = base / name
@@ -2319,7 +2522,7 @@ def data_file(name: str) -> Path | None:
 def docs_for_agents(cfg: Cfg):
     """Guidance files every agent must read, as absolute paths."""
     pr = project_settings().get("project", {})
-    out = [str(DATA_DIR / "guardrails.md")]
+    out = [str(data_file("guardrails.md"))]
     if pr.get("stack"):
         p = find_layer("stacks", pr["stack"], "md")
         if p:
@@ -2338,17 +2541,22 @@ def cmd_context(args, cfg):
     feature = resolve_feature(cfg, args.feature)
     d = feature.to_dict()
     pr = project_settings().get("project", {})
+    base = resolve_base(cfg, None)
+    src_globs, exc = cfg.get_path("paths.source_globs", []), cfg.get_path("paths.exclude_globs", [])
     d.update({
         "engine": {"command": "qestack", "version": TOOL_VERSION, "data_dir": str(DATA_DIR)},
+        "base_ref": base or "",
+        "changed_source_files": [f for f in changed_files(base) if matches_any(f, src_globs) and not matches_any(f, exc)],
         "stack": pr.get("stack", ""),
         "rulesets": pr.get("rulesets", []),
         "guidance_docs": docs_for_agents(cfg),
-        "rubrics": {"tests": str(DATA_DIR / "rubrics" / "test-judge.md"),
-                    "plan": str(DATA_DIR / "rubrics" / "test-plan.md"),
-                    "faults": str(DATA_DIR / "rubrics" / "fault-catalog.md")},
-        "templates": {"test_plan": str(DATA_DIR / "templates" / "test-plan.md"),
-                      "judge_schema": str(DATA_DIR / "templates" / "judge-output.schema.json")},
-        "guardrails": str(DATA_DIR / "guardrails.md"),
+        # data_file(): a copy in .qestack/ (for example .qestack/rubrics/test-judge.md) wins over the bundled file
+        "rubrics": {"tests": str(data_file("rubrics/test-judge.md")),
+                    "plan": str(data_file("rubrics/test-plan.md")),
+                    "faults": str(data_file("rubrics/fault-catalog.md"))},
+        "templates": {"test_plan": str(data_file("templates/test-plan.md")),
+                      "judge_schema": str(data_file("templates/judge-output.schema.json"))},
+        "guardrails": str(data_file("guardrails.md")),
         "contracts_dir": rel(feature.dir / "contracts"),
         "data_model": rel(feature.dir / "data-model.md"),
         "test_globs": cfg.get_path("paths.test_globs", []),
@@ -2581,9 +2789,10 @@ def main(argv=None):
     p.add_argument("action", choices=["begin", "save", "restore"])
     p.add_argument("--id")
     p.add_argument("--req", help="requirement ID the fault breaks")
-    p.add_argument("--layer", help="domain | api | db | kafka | ui | security ...")
+    p.add_argument("--layer", choices=LAYERS, help="the layer that the fault breaks")
     p.add_argument("--category", help="rule | boundary | validation | state | event | error-handling ...")
     p.add_argument("--desc")
+    p.add_argument("--force", action="store_true", help="begin: save the current code as clean, also when it differs from the last saved copy")
     sub.add_parser("hook", help="Claude Code PreToolUse hook (reads JSON on stdin)")
     p = sub.add_parser("init", help="create .qestack/ in this repository")
     p.add_argument("--stack", help="stack name (default: detected)")
