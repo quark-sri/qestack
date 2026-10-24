@@ -4,7 +4,7 @@
 
 AI agents write tests very fast. Many of these tests are green and give high coverage, but they do not find bugs. qestack gives your AI agent a process to write the right tests, and it measures the result with evidence, not with opinions.
 
-> Status: **0.1 alpha, private review.** The engine and the Java and .NET stacks have automated tests. Read [Limits](#limits) before you use it.
+> Status: **0.1 alpha, private review.** Release 0.1 supports Java with Maven and JUnit 5. The .NET stack is in the repository but is experimental and not supported in 0.1. Read [Limits](#limits) before you use it.
 
 ## Why
 
@@ -66,11 +66,11 @@ Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md stand
 | Stacks (exactly one) | Rulesets (zero or more) |
 |---|---|
 | `java-maven-junit5`: Java, Maven, JUnit 5, PIT | `api-http`: any HTTP client, including internal libraries |
-| `dotnet`: C#, xUnit / NUnit / MSTest, Stryker.NET | `database`: persisted state, constraints, transactions |
+| `dotnet` (experimental, not supported in 0.1) | `database`: persisted state, constraints, transactions |
 | | `kafka`: producers, consumers, keys, headers, idempotency, DLQ |
 | | `ui-playwright`: Playwright for Java and .NET |
 
-Planned: Java with Gradle, TypeScript (Vitest, Jest), Python (pytest). See the [roadmap](docs/PLAN.md#7-roadmap).
+Planned: .NET (full support), Java with Gradle, TypeScript (Vitest, Jest), Python (pytest). See the [roadmap](docs/PLAN.md#7-roadmap).
 
 ## How it works
 

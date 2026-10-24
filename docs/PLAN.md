@@ -32,7 +32,7 @@ qestack is the quality layer for AI-written tests. It gives AI agents a process 
 | Use coverage as the target | Uses mutation score and hidden faults as the target |
 | Let the writer review its own work | Uses an independent judge with a rubric and evidence |
 | Trust the agent not to cheat | Locks tests and blocks weakening edits |
-| Focus on JavaScript and UI | Starts with Java and .NET, API, database and Kafka; adds more stacks later |
+| Focus on JavaScript and UI | Starts with Java (Maven, JUnit 5), API, database and Kafka; adds more stacks later |
 
 Related projects (see `docs/landscape.md`): Agentic QE, qa-skills, claude-qa-automation, Playwright Test Agents, TDD Guard, Mutahunter, Meta ACH (research). None of them combines all the qestack gates.
 
@@ -81,7 +81,7 @@ In a user repository, qestack keeps its files in one folder:
 | Level | Name | Example | Rule |
 |---|---|---|---|
 | 1 | Core defaults | `data/defaults.toml` | Ships with the engine |
-| 2 | Stack | `java-maven-junit5`, `dotnet` | Exactly one |
+| 2 | Stack | `java-maven-junit5` (`dotnet` is experimental) | Exactly one |
 | 3 | Rulesets | `api-http`, `database`, `kafka`, `ui-playwright` | Zero or more |
 | 4 | Project settings | `.qestack/project.toml` | One per repository |
 
@@ -117,8 +117,8 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 | Release | Target | Scope |
 |---|---|---|
-| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stacks: Java/Maven/JUnit 5, .NET. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. One static example. Private review. |
-| 0.2 | Week 5–8 | Stacks: Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
+| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. Private review. |
+| 0.2 | Week 5–8 | Stacks: .NET (full support), Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
 | 0.3 | Week 9–14 | Defects4J benchmark. LLM equivalent-mutant check. Judge calibration dataset. HTML report. |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |
 | 1.0 | Month 6 | Stable configuration schema. Stable result file formats. Contributor guide for stacks and rulesets proven by outside contributions. |

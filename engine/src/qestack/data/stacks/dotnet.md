@@ -1,4 +1,6 @@
-# Stack: .NET (C#)
+# Stack: .NET (C#) - EXPERIMENTAL
+
+> Status: experimental. Release 0.1 supports only the Java/Maven stack. This stack has unit tests for the test parser, but its build commands are not verified. Full support is planned for release 0.2.
 
 All agents read this file when `[project] stack` in `.qestack/project.toml` is `dotnet`.
 
