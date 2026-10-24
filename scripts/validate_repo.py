@@ -114,6 +114,30 @@ for f in agents:
             err(f"{f.relative_to(ROOT)}: '{k}' missing")
     long_sentences(f, body)
 
+# qe-skills personas: tool-neutral body, required sections; only test-review-panel uses them
+QE = ROOT / "plugins" / "qe-skills"
+personas = {f.stem for f in agents if f.parent.parent == QE}
+for f in (f for f in agents if f.parent.parent == QE):
+    fm, body = frontmatter(f)
+    rp = f.relative_to(ROOT)
+    for section in ("## Scope", "## Evidence rule", "## Output", "## Limits"):
+        if section not in body:
+            err(f"{rp}: section '{section}' missing")
+    for m in TOOL_NAMES.finditer(body):
+        err(f"{rp}: names the tool '{m.group(0)}'")
+persona_rx = re.compile(r"`(" + "|".join(map(re.escape, sorted(personas))) + r")`") if personas else None
+for d in skills:
+    f = d / "SKILL.md"
+    if d.parent.parent != QE or d.name == "test-review-panel" or not f.exists() or not persona_rx:
+        continue
+    for m in persona_rx.finditer(f.read_text(encoding="utf-8")):
+        err(f"{f.relative_to(ROOT)}: names the persona '{m.group(1)}'; only test-review-panel may depend on personas")
+panel = QE / "skills" / "test-review-panel" / "SKILL.md"
+panel_body = panel.read_text(encoding="utf-8") if panel.exists() else ""
+for n in sorted(personas):
+    if f"`{n}`" not in panel_body:
+        err(f"plugins/qe-skills/agents/{n}.md: not in the test-review-panel skill")
+
 # JSON files
 for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),
           PLUGIN / "hooks" / "hooks.json", *DATA.rglob("*.json")]:

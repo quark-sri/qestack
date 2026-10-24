@@ -36,11 +36,12 @@ The result of each feature is `specs/<feature>/quality-report.md` with the decis
 
 ## QE skills for any project (no engine needed)
 
-The `qe-skills` plugin is a library of 34 Quality Engineering skills. They work in any repository, with any language and any test framework, and they need no engine.
+The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine.
 
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
+- **Reviewer personas.** Eight read-only reviewer agents, each with one job, a checklist and an evidence rule (file and line). Only `test-review-panel` uses them: it starts them in parallel and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
 - **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
 
 | Category | Skills |
@@ -51,10 +52,21 @@ The `qe-skills` plugin is a library of 34 Quality Engineering skills. They work 
 | Automation | `unit-testing`, `api-testing`, `database-testing`, `messaging-testing`, `contract-testing`, `ui-automation`, `service-virtualization`, `test-data-management` |
 | Infrastructure | `test-environments`, `ci-cd-integration` |
 | Non-functional | `performance-testing`, `security-testing`, `accessibility-testing` |
-| Test quality | `testcase-reviewer`, `test-coverage-map`, `mutation-probe`, `flaky-test-detective` |
+| Test quality | `testcase-reviewer`, `test-review-panel`, `test-coverage-map`, `mutation-probe`, `flaky-test-detective` |
 | Code and spec | `bug-hunter`, `roast-my-code`, `spec-drift` |
 | Run and triage | `test-runner`, `change-impact`, `bug-report` |
 | Process | `release-readiness`, `quality-postmortem` |
+
+| Persona | Agent | Finds |
+|---|---|---|
+| AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, weaker assertions, skips, test-only code, false 'all pass' claims |
+| Hallucination Checker | `hallucination-checker` | APIs, fixtures, properties, flags, paths and versions that do not exist |
+| Domain Oracle Reviewer | `domain-oracle-reviewer` | wrong expected results, misread or invented rules, missing negative and error cases |
+| Saboteur | `saboteur` | faults that the tests do not catch (it breaks the code and restores it) |
+| Test Automation Architect | `test-automation-architect` | wrong test level, pyramid shape, page objects, helpers, data and pipeline fit |
+| Determinism and Flakiness Engineer | `determinism-flakiness-engineer` | sleeps, real clock, unseeded random data, shared state, order, retries |
+| Maintainability Craftsperson | `maintainability-craftsperson` | names, duplication, mystery data, hidden assertions, over-mocking, failure messages |
+| Suite Cost and Speed Reviewer | `suite-cost-speed-reviewer` | slow tests at the wrong level, repeated setup, parallel runs, pipeline cost |
 
 ```
 /plugin marketplace add quark-sri/qestack

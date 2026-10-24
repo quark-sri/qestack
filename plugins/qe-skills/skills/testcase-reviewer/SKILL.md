@@ -66,3 +66,4 @@ Top 5 fixes: ...
 - `mutation-probe`: measures whether the tests catch faults.
 - `test-coverage-map`: the untested areas.
 - `unit-testing` and `api-testing`: rewrite the weak tests.
+- `test-review-panel`: a deeper review by eight independent personas.

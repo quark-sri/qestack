@@ -71,3 +71,4 @@ After release: smoke checks, monitors to watch, rollback trigger
 - `risk-based-testing`: the high-risk items.
 - `test-runner`: the current results.
 - `quality-postmortem`: learn from what escaped.
+- `test-review-panel`: a merged review of the release changes.

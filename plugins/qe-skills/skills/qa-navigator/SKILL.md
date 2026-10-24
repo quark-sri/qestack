@@ -45,6 +45,7 @@ Read `.agents/qa-project-context.md` if it exists. If it does not exist and the 
 | Test security weaknesses | `security-testing` |
 | Test accessibility | `accessibility-testing` |
 | Review the quality of tests | `testcase-reviewer` |
+| Review tests or a change with a panel of personas | `test-review-panel` |
 | Find what is not tested | `test-coverage-map` |
 | Check if the tests catch injected faults | `mutation-probe` |
 | Find the cause of a flaky test | `flaky-test-detective` |
@@ -61,6 +62,7 @@ Read `.agents/qa-project-context.md` if it exists. If it does not exist and the 
 
 - New feature: `requirement-gaps` → `edge-case-hunter` → `test-case-designer` → the automation skill for the layer → `testcase-reviewer` → `mutation-probe`.
 - Pull request: `change-impact` → `test-runner` → `testcase-reviewer` for the changed tests.
+- AI-written change: `test-runner` → `test-review-panel`.
 - New QA engineer on an old codebase: `qa-project-context` → `test-coverage-map` → `risk-based-testing` → `test-strategy`.
 - Before a release: `risk-based-testing` → `release-readiness`.
 - After an incident: `bug-report` → `quality-postmortem`.

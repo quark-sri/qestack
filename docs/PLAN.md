@@ -115,7 +115,7 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 ### 6.1 QE skills for any project (plugin `qe-skills`)
 
-34 skills for QA disciplines across the SDLC. They need no engine and no `.qestack/` folder.
+35 skills for QA disciplines across the SDLC, and 8 reviewer personas (agents). They need no engine and no `.qestack/` folder.
 
 | Rule | How |
 |---|---|
@@ -123,11 +123,12 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 | Stack recipes | `references/java.md`, `typescript.md`, `python.md`, loaded only for the project's stack |
 | Shared context | `.agents/qa-project-context.md`, written by `qa-project-context`, read by every skill |
 | Routing | Each description has "Use when", "Not for" and "Related"; the validator checks that related skills exist |
+| Personas | Read-only agents with one job, a checklist and an evidence rule; only `test-review-panel` uses them, so the other skills stay self-contained; the validator checks this |
 | Structure | Objective, Context, Discovery questions, Principles, Workflow, Anti-patterns, Done when, Related skills |
 
 Categories: foundation, strategy, design, automation, infrastructure, non-functional, test quality, code and spec, run and triage, process. See the README for the full list.
 
-Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-testing`, `observability-driven-testing`, `test-suite-curation`, `qa-metrics`, `ai-feature-testing`, a review panel of agent personas for AI-written tests, and recipes for .NET and Go.
+Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-testing`, `observability-driven-testing`, `test-suite-curation`, `qa-metrics`, `ai-feature-testing`, and recipes for .NET and Go.
 
 ## 7. Roadmap
 
