@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugins" / "qestack"
+PLUGINS = sorted(p for p in (ROOT / "plugins").iterdir() if (p / ".claude-plugin" / "plugin.json").exists())
 DATA = ROOT / "engine" / "src" / "qestack" / "data"
 errors, warnings = [], []
 
@@ -46,7 +47,10 @@ def long_sentences(path, body, limit=30):
 
 
 # Skills
-skills = sorted(p for p in (PLUGIN / "skills").iterdir() if p.is_dir())
+skills = sorted(p for pl in PLUGINS if (pl / "skills").exists() for p in (pl / "skills").iterdir() if p.is_dir())
+names = [d.name for d in skills]
+for n in sorted({n for n in names if names.count(n) > 1}):
+    err(f"skill name '{n}' is used by more than one plugin")
 for d in skills:
     f = d / "SKILL.md"
     if not f.exists():
@@ -59,9 +63,14 @@ for d in skills:
     if not desc or len(desc) > 1024:
         err(f"{f.relative_to(ROOT)}: description missing or longer than 1024 characters")
     long_sentences(f, body)
+    for ref in sorted((d / "references").glob("*.md")) if (d / "references").exists() else []:
+        if ref.name not in body:
+            err(f"{ref.relative_to(ROOT)}: not linked from SKILL.md")
+        long_sentences(ref, ref.read_text(encoding="utf-8"))
 
 # Agents
-for f in sorted((PLUGIN / "agents").glob("*.md")):
+agents = sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
+for f in agents:
     fm, body = frontmatter(f)
     if fm.get("name") != f.stem:
         err(f"{f.relative_to(ROOT)}: name '{fm.get('name')}' does not match file name")
@@ -71,7 +80,7 @@ for f in sorted((PLUGIN / "agents").glob("*.md")):
     long_sentences(f, body)
 
 # JSON files
-for f in [ROOT / ".claude-plugin" / "marketplace.json", PLUGIN / ".claude-plugin" / "plugin.json",
+for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),
           PLUGIN / "hooks" / "hooks.json", *DATA.rglob("*.json")]:
     try:
         json.loads(f.read_text(encoding="utf-8"))
@@ -116,11 +125,16 @@ for r in (DATA / "rulesets").glob("*.md"):
 # Versions agree
 init = (ROOT / "engine" / "src" / "qestack" / "__init__.py").read_text()
 engine_v = re.search(r'__version__ = "([^"]+)"', init).group(1)
-plugin_v = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text())["version"]
 market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
-market_v = market["plugins"][0]["version"]
-if len({engine_v, plugin_v, market_v}) != 1:
-    err(f"versions differ: engine {engine_v}, plugin {plugin_v}, marketplace {market_v}")
+versions = {"engine": engine_v}
+for pl in PLUGINS:
+    versions[f"plugin {pl.name}"] = json.loads((pl / ".claude-plugin" / "plugin.json").read_text())["version"]
+for e in market["plugins"]:
+    versions[f"marketplace {e['name']}"] = e.get("version")
+    if not (ROOT / e["source"]).resolve().is_dir():
+        err(f"marketplace: source {e['source']} not found")
+if len(set(versions.values())) != 1:
+    err("versions differ: " + ", ".join(f"{k} {v}" for k, v in versions.items()))
 
 # Relative links in markdown
 for f in ROOT.rglob("*.md"):
@@ -135,6 +149,6 @@ for w in warnings:
     print(f"WARN  {w}")
 for e in errors:
     print(f"ERROR {e}")
-print(f"\nskills: {len(skills)}, agents: {len(list((PLUGIN / 'agents').glob('*.md')))}, "
+print(f"\nplugins: {len(PLUGINS)}, skills: {len(skills)}, agents: {len(agents)}, "
       f"errors: {len(errors)}, warnings: {len(warnings)}")
 sys.exit(1 if errors else 0)

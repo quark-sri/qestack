@@ -34,6 +34,34 @@ Typical problems with AI-written tests:
 
 The result of each feature is `specs/<feature>/quality-report.md` with the decision **ACCEPT** or **ESCALATE**. A human reads the report and a small audit sample, not every line of test code.
 
+## QE skills for any project (no engine needed)
+
+The `qe-skills` plugin has Quality Engineering skills that work in any repository, with any language and any test framework. They need no setup and no engine. Each skill finds the project's own build and test commands, and applies QE methods: test design techniques, defect taxonomies, risk analysis and evidence-based review.
+
+| Phase | Skill | What it gives you |
+|---|---|---|
+| Requirements | `requirement-gaps` | Missing acceptance criteria, vague words, undefined limits and errors, as questions |
+| Requirements | `edge-case-hunter` | Edge, boundary and negative cases with concrete inputs and expected results |
+| Design | `test-case-designer` | Traceable test cases from formal techniques (boundaries, decision tables, state transitions) |
+| Design | `risk-map` | Impact × likelihood for each area, and the test depth that each area needs |
+| Code | `bug-hunter` | Suspected bugs from a defect taxonomy, each one proven by a failing test or reproduction steps |
+| Code | `roast-my-code` | A direct review for testability, hidden bugs and error handling, with a fix for each point |
+| Code | `spec-drift` | Differences between the spec, the contract, the docs, the code and the tests |
+| Tests | `testcase-reviewer` | A score for each test (T1–T7) and the tests that pass while the product is wrong |
+| Tests | `test-coverage-map` | What is tested by requirement, code area and test level, not only by line coverage |
+| Tests | `mutation-probe` | A quick mutation score: small faults injected one at a time, the code always restored |
+| Run | `test-runner` | Runs the right tests and triages each failure: product bug, test defect, environment, flaky |
+| Run | `flaky-test-detective` | Reproduces a flaky test, finds the root cause and a real fix instead of a retry |
+| Run | `change-impact` | What a change can break, which tests to run, which tests are missing |
+| Run | `bug-report` | A clear, reproducible defect report with evidence |
+
+```
+/plugin marketplace add quark-sri/qestack
+/plugin install qe-skills@qestack
+```
+
+Use the gated qestack workflow below when you want measured proof (locks, hidden faults, mutation gates, an independent judge) for each feature.
+
 ## Install
 
 You need Python 3.11 or later, git, and Claude Code.

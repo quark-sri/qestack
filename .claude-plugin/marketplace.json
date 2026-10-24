@@ -4,7 +4,7 @@
     "name": "quark-sri"
   },
   "metadata": {
-    "description": "qestack AI test quality: skills, agents and gates that prove AI-written tests catch bugs.",
+    "description": "qestack: skills, plugins and agents for AI Quality Engineering.",
     "version": "0.1.0"
   },
   "plugins": [
@@ -14,7 +14,28 @@
       "description": "qestack AI test quality: spec-first test design, blind test writing, red-before-green, test locks, hidden faults, mutation score and an independent judge.",
       "version": "0.1.0",
       "category": "testing",
-      "keywords": ["testing", "test-quality", "qa", "mutation-testing", "test-automation"]
+      "keywords": [
+        "testing",
+        "test-quality",
+        "qa",
+        "mutation-testing",
+        "test-automation"
+      ]
+    },
+    {
+      "name": "qe-skills",
+      "source": "./plugins/qe-skills",
+      "description": "qestack QE skills for any project and any stack: requirement gaps, edge cases, test design, risk map, bug hunting, code roast, spec drift, test review, coverage map, mutation probe, test runs, flaky tests, change impact and bug reports. No engine needed.",
+      "version": "0.1.0",
+      "category": "testing",
+      "keywords": [
+        "quality-engineering",
+        "testing",
+        "qa",
+        "test-automation",
+        "test-design",
+        "bug-hunting"
+      ]
     }
   ]
 }

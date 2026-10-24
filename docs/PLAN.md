@@ -113,6 +113,19 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 **Speckit adapter:** `qestack init --speckit` adds `/speckit.testplan`, `/speckit.testwrite` and `/speckit.testquality`, which call the same skills.
 
+### 6.1 QE skills for any project (plugin `qe-skills`)
+
+These skills need no engine and no `.qestack/` folder. They name no specific tools: each skill finds the project's own commands. They follow the same principles: evidence over opinion, the spec is the source of truth, and the engineer decides.
+
+| Phase | Skills |
+|---|---|
+| Requirements and design | `requirement-gaps`, `edge-case-hunter`, `test-case-designer`, `risk-map` |
+| Code review | `bug-hunter`, `roast-my-code`, `spec-drift` |
+| Test review | `testcase-reviewer`, `test-coverage-map`, `mutation-probe` |
+| Run and triage | `test-runner`, `flaky-test-detective`, `change-impact`, `bug-report` |
+
+Candidates for later releases: `test-data-designer`, `api-contract-tester`, `accessibility-checker`, `performance-test-planner`, `security-test-planner`, `exploratory-charter`, `test-automation-strategy`, `release-readiness`.
+
 ## 7. Roadmap
 
 | Release | Target | Scope |

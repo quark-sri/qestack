@@ -18,7 +18,7 @@ git clone https://github.com/quark-sri/qestack ~/qestack
 scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>/.agents/skills
 ```
 
-The script makes symbolic links, so `git pull` updates the skills.
+The script makes symbolic links, so `git pull` updates the skills. It links the skills of both plugins. The `qe-skills` skills need no engine.
 
 ## Without sub-agents
 

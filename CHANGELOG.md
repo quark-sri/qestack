@@ -13,6 +13,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Claude Code plugin: 10 skills, 4 agents, guard hook, marketplace manifest.
 - Speckit adapter: `/speckit.testplan`, `/speckit.testwrite`, `/speckit.testquality`.
 - Documentation, project plan, CI workflow, static example.
+- Plugin `qe-skills`: 14 Quality Engineering skills for any project, with no engine: `requirement-gaps`, `edge-case-hunter`, `test-case-designer`, `risk-map`, `bug-hunter`, `roast-my-code`, `spec-drift`, `testcase-reviewer`, `test-coverage-map`, `mutation-probe`, `test-runner`, `flaky-test-detective`, `change-impact`, `bug-report`.
+- `scripts/validate_repo.py` checks every plugin, the reference files of each skill, duplicate skill names and the marketplace sources.
 
 ### Changed (architecture review)
 
