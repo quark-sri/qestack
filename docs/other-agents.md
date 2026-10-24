@@ -18,11 +18,11 @@ git clone https://github.com/quark-sri/qestack ~/qestack
 scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>/.agents/skills
 ```
 
-The script makes symbolic links, so `git pull` updates the skills. It links the skills of both plugins. The `qe-skills` skills need no engine. The reviewer personas are files inside the `test-review-panel` skill, so they come with it. Only that skill uses them. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
+The script makes symbolic links, so `git pull` updates the skills. It links the skills of both plugins. The `qe-skills` skills need no engine. The reviewer personas are agent files in `plugins/qe-skills/agents/`. The script does not link them. Only the `test-review-panel` skill uses them. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
 
 ## Without sub-agents
 
-Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review panel persona, give the new session the text of `plugins/qe-skills/agents/test-reviewer.md` (or `test-saboteur.md` for a persona that changes code) and the persona file. A new session has no memory of writing the tests, so the review is still independent.
+Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review persona, give the new session the text of its file in `plugins/qe-skills/agents/`, for example `domain-oracle-reviewer.md`. A new session has no memory of writing the tests, so the review is still independent.
 
 ## Without the hook
 

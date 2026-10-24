@@ -114,60 +114,49 @@ for f in agents:
             err(f"{f.relative_to(ROOT)}: '{k}' missing")
     long_sentences(f, body)
 
-# qe-skills personas: persona files in the test-review-panel skill, run by the test-reviewer agent.
+# qe-skills personas: one agent per persona, minimal tools, one shared "Reviewer rules" section.
 # Only test-review-panel may use them, so that the other skills stay self-contained.
 QE = ROOT / "plugins" / "qe-skills"
 PANEL = QE / "skills" / "test-review-panel"
-persona_files = sorted((PANEL / "references" / "personas").glob("*.md"))
-personas = {p.stem for p in persona_files}
+persona_agents = sorted((QE / "agents").glob("*.md"))
+personas = {p.stem for p in persona_agents}
 panel_body = (PANEL / "SKILL.md").read_text(encoding="utf-8") if (PANEL / "SKILL.md").exists() else ""
-for p in persona_files:
+EDIT_TOOLS = re.compile(r"\b(Edit|Write|MultiEdit|NotebookEdit)\b")
+rules = {}
+for p in persona_agents:
     fm, body = frontmatter(p)
     rp = p.relative_to(ROOT)
-    if fm.get("name") != p.stem:
-        err(f"{rp}: name '{fm.get('name')}' does not match file name")
-    for k in ("title", "description"):
-        if not fm.get(k):
-            err(f"{rp}: '{k}' missing")
-    if fm.get("mode") not in ("read-only", "changes-code"):
-        err(f"{rp}: mode must be 'read-only' or 'changes-code'")
-    if fm.get("runs-commands") not in ("yes", "no"):
-        err(f"{rp}: runs-commands must be 'yes' or 'no'")
-    sections = ["## Scope", "## Evidence rule", "## Output", "## Limits"]
-    if fm.get("mode") == "changes-code":
+    edits = bool(EDIT_TOOLS.search(fm.get("tools", "")))
+    sections = ["## Reviewer rules", "## Scope", "## Evidence rule", "## Output", "## Limits"]
+    if edits:
         sections.append("## Safety rules")
     for section in sections:
         if section not in body:
             err(f"{rp}: section '{section}' missing")
+    if edits != ("changes production code" in fm.get("description", "")):
+        err(f"{rp}: the description must say 'changes production code' if and only if the tools can edit")
+    m = re.search(r"## Reviewer rules\n(.*?)\n## ", body, re.S)
+    if m:
+        rules[p.stem] = m.group(1)
     for m in TOOL_NAMES.finditer(body + " " + fm.get("description", "")):
         err(f"{rp}: names the tool '{m.group(0)}'")
-    if f"references/personas/{p.name}" not in panel_body:
-        err(f"{rp}: not linked from the test-review-panel skill")
-    long_sentences(p, body)
-MODE_AGENTS = {"read-only": "test-reviewer", "changes-code": "test-saboteur"}
-for mode in sorted({frontmatter(p)[0].get("mode") for p in persona_files} & MODE_AGENTS.keys()):
-    a = QE / "agents" / f"{MODE_AGENTS[mode]}.md"
-    if not a.exists():
-        err(f"{a.relative_to(ROOT)}: missing; the '{mode}' personas need it")
-    elif mode == "read-only" and re.search(r"\b(Edit|Write|NotebookEdit)\b", frontmatter(a)[0].get("tools", "")):
-        err(f"{a.relative_to(ROOT)}: runs read-only personas and must have no edit tools")
-for a in (QE / "agents").glob("*.md"):
-    for m in TOOL_NAMES.finditer(frontmatter(a)[1]):
-        err(f"{a.relative_to(ROOT)}: names the tool '{m.group(0)}'")
+    if f"`{p.stem}`" not in panel_body:
+        err(f"{rp}: not in the test-review-panel skill")
+if len(set(rules.values())) > 1:
+    first = sorted(rules)[0]
+    for n in sorted(rules):
+        if rules[n] != rules[first]:
+            err(f"plugins/qe-skills/agents/{n}.md: 'Reviewer rules' differs from {first}.md; keep it the same in all personas")
 for token in ("qa-reviews/", "panel-report.md", "findings.json", "references/findings-format.md"):
-    if persona_files and token not in panel_body:
+    if persona_agents and token not in panel_body:
         err(f"{(PANEL / 'SKILL.md').relative_to(ROOT)}: does not name '{token}' (review folder and findings format)")
-for a in MODE_AGENTS.values():
-    if (QE / "agents" / f"{a}.md").exists() and "findings-format.md" not in (QE / "agents" / f"{a}.md").read_text(encoding="utf-8"):
-        err(f"plugins/qe-skills/agents/{a}.md: does not return the findings block (findings-format.md)")
-panel_names = sorted(personas | {"test-reviewer", "test-saboteur"})
-persona_rx = re.compile(r"`(" + "|".join(map(re.escape, panel_names)) + r")`")
+persona_rx = re.compile(r"`(" + "|".join(map(re.escape, sorted(personas))) + r")`") if personas else None
 for d in skills:
     f = d / "SKILL.md"
-    if d.parent.parent != QE or d == PANEL or not f.exists():
+    if d.parent.parent != QE or d == PANEL or not f.exists() or not persona_rx:
         continue
     for m in persona_rx.finditer(f.read_text(encoding="utf-8")):
-        err(f"{f.relative_to(ROOT)}: names '{m.group(1)}'; only test-review-panel may use the personas")
+        err(f"{f.relative_to(ROOT)}: names the persona '{m.group(1)}'; only test-review-panel may use the personas")
 
 # JSON files
 for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),

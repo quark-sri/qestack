@@ -41,7 +41,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
-- **Reviewer personas.** Eight persona files, each with one job, a checklist and an evidence rule (file and line). They live in the `test-review-panel` skill, which is the only skill that uses them. It starts one reviewer agent for each persona and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
+- **Reviewer personas.** Eight agents, each with one job, a checklist, an evidence rule (file and line) and only the tools that its job needs. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin stay self-contained and do not depend on the personas.
 - **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
 
 | Category | Skills |
@@ -57,7 +57,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | Run and triage | `test-runner`, `change-impact`, `bug-report` |
 | Process | `release-readiness`, `quality-postmortem` |
 
-| Persona | Persona file | Finds |
+| Persona | Agent | Finds |
 |---|---|---|
 | AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, weaker assertions, skips, test-only code, false 'all pass' claims |
 | Hallucination Checker | `hallucination-checker` | APIs, fixtures, properties, flags, paths and versions that do not exist |
@@ -68,15 +68,23 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | Maintainability Craftsperson | `maintainability-craftsperson` | names, duplication, mystery data, hidden assertions, over-mocking, failure messages |
 | Suite Cost and Speed Reviewer | `suite-cost-speed-reviewer` | slow tests at the wrong level, repeated setup, parallel runs, pipeline cost |
 
+**Use one persona.** Ask for it by name, for example "use the domain-oracle-reviewer agent on src/test/orders". In Claude Code, `/agents` lists them.
+
 **How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qe-skills:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
 
 1. The panel chooses the personas for the work. AI-written work always gets the AI Behavior Auditor and the Hallucination Checker.
-2. The `mode` of each persona file chooses the agent. The `test-reviewer` agent runs the `read-only` personas, in parallel. It has no edit tool. The `test-saboteur` agent runs the `changes-code` personas (today only the Saboteur), alone and last. It changes one place in the production code at a time and restores it.
-3. Each reviewer gets the same scope and one persona file. A reviewer does not see the other reports.
+2. The read-only personas run in parallel. They have no edit tool. The Saboteur runs alone and last. It changes one place in the production code at a time and restores it.
+3. Each persona gets the same brief. A persona does not see the other reports.
 4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
 5. The reviewers only return their reports. The panel saves the run in `qa-reviews/<date>-<scope>/`: `panel-report.md` for people, `findings.json` for pipelines and trends, and `personas/<name>.md` with each full report. It can also offer to publish the report as a page or a pull request comment.
 
-The persona files are in [`plugins/qe-skills/skills/test-review-panel/references/personas/`](plugins/qe-skills/skills/test-review-panel/references/personas/). To add a persona, add a file with the same frontmatter and sections, and link it from the panel table. The validator checks the file, the link and the agent for its mode.
+**Write your own persona.** The personas are in [`plugins/qe-skills/agents/`](plugins/qe-skills/agents/). Copy one, and keep three things:
+
+- the "Reviewer rules" section unchanged, so that your persona returns the same findings block
+- the sections Scope, Checklist, Method, Evidence rule, Output and Limits, plus Safety rules if it can edit files
+- the fewest tools that the job needs; give an edit tool only to a persona that must change code
+
+To add it to the panel, add a row to the table in `test-review-panel`. The validator checks the sections, the shared rules, the tools and the table.
 
 ```
 /plugin marketplace add quark-sri/qestack

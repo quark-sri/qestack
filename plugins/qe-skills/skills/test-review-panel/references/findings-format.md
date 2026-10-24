@@ -4,35 +4,16 @@ All reviewers return their findings in this format, and the lead writes the revi
 
 ## What each reviewer returns
 
-The reviewer returns one message with two parts:
+Each persona agent returns one message with two parts:
 
 1. **The persona report** in the output format of the persona, for people.
-2. **A findings block** at the end: one fenced JSON block with this shape.
+2. **A findings block** at the end: one fenced JSON block. The "Reviewer rules" section of each persona agent defines its shape. The section is the same in all persona agents, and the validator checks this.
 
-```json
-{
-  "persona": "domain-oracle-reviewer",
-  "mode": "read-only",
-  "scope": "src/test/orders",
-  "tree_changed": false,
-  "findings": [
-    {
-      "id": "DO-1",
-      "severity": "blocker",
-      "summary": "Boundary at 100.00 expects no discount",
-      "evidence": [{ "file": "src/test/orders/DiscountTest.java", "line": 31, "quote": "assertEquals(100.00, total)" }],
-      "scenario": "Rule R3 gives 10% off at 100.00 or more; the test locks in the wrong total",
-      "fix": "Expect 90.00 at exactly 100.00",
-      "status": "proven"
-    }
-  ],
-  "questions": ["Rule R5 is silent about refunds after 30 days"]
-}
-```
+The lead checks each block with these rules:
 
 | Field | Rule |
 |---|---|
-| `persona`, `mode`, `scope` | Copied from the persona file and the brief |
+| `persona`, `scope` | The agent name and the scope of the brief |
 | `tree_changed` | `true` if any file is different from the start. The lead stops the panel if it is `true` |
 | `id` | The persona prefix and a number, for example `AB-1`, `HC-2`, `SB-3` |
 | `severity` | `blocker`, `major` or `minor`, with the rules of the persona |
