@@ -1,30 +1,39 @@
 ---
 name: flaky-test-detective
-description: Find the root cause of a flaky test, a test that passes and fails with no code change. Reproduces the flakiness (repeat runs, random order, parallel runs, other time zone or locale, slow resources), classifies the cause (timing, order dependence, shared state, time, randomness, concurrency, environment, external services) and proposes a real fix instead of a retry. Use when the user says a test is flaky, intermittent, "fails only in CI", or "passes on my machine".
+description: "Find the root cause of a flaky test, a test that passes and fails with no code change: reproduce it with repeated, random-order, parallel and slowed runs and other time zones or locales, classify the cause (timing, order dependence, shared state, data collisions, time, randomness, concurrency, environment, external services, framework misuse), and fix the test or report a real race in the product. Use when: 'flaky test', 'intermittent failure', 'fails only in CI', 'passes on my machine', 'random test failures', 'quarantine tests'. Not for: a test that always fails (use test-runner) or a whole pipeline design (use ci-cd-integration). Related: test-runner, test-data-management, test-environments, ci-cd-integration."
 argument-hint: "[test name or file]"
 ---
 
 # flaky-test-detective
 
-A retry hides a flaky test. It does not fix it. A flaky test also hides real bugs: the team stops trusting red. This skill finds the cause and fixes the test, or proves that the product has a real race.
+## Objective
 
-## Input
+A retry hides a flaky test; it does not fix it. A flaky test also hides real bugs, because the team stops trusting red. This skill reproduces the flakiness, proves the cause, and fixes the test, or shows that the product has a real race.
 
-The test is `$ARGUMENTS`. If it is empty, ask the user. Collect what is known: failure messages, how often it fails, where (local, CI, which agent), and recent changes.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its test commands, environments and flaky test policy.
+2. If it does not exist, find the test command in the repository. Suggest `qa-project-context` once. Do not stop the work for it.
 
-1. **Read** the test, its setup and cleanup, its shared fixtures and helpers, and the code that it calls. Check each item in [the catalog of flaky causes](references/flaky-causes.md). Note the suspects.
-2. **Reproduce.** Use the test command of the project (see `test-runner`). Try these, one at a time, and record each result:
+## Discovery questions
+
+1. Which test, and what are the failure messages?
+2. How often does it fail, and where (local, pipeline, which agent)?
+3. What changed around the time it started?
+
+## Workflow
+
+1. **Read** the test, its setup and cleanup, shared fixtures and helpers, and the code that it calls. Check each item of [the catalog of flaky causes](references/flaky-causes.md). Note the suspects.
+2. **Reproduce,** one variation at a time, and record each result:
    - the test alone, 10 to 20 times
-   - the test with its neighbors (the whole class or file), in a random order
-   - the full suite, as CI runs it (parallel, same order)
-   - another time zone and another locale
-   - a slower environment: limited CPU, many tests in parallel
-   A failure rate of 1 in 20 needs about 60 runs to show with high confidence. Say how many runs you did.
-3. **Isolate.** When a combination fails, make it smaller: the fewest tests, the shortest sequence, one setting. A failure that needs another test first is an order dependence. Find that other test.
-4. **Prove the cause.** Change one thing that removes the suspected cause (a fixed clock, an own data set, a wait for a condition). The test must pass every time in the setup that failed before.
-5. **Decide:** a TEST DEFECT (fix the test) or a PRODUCT BUG (a real race or a time bug in the code: report it, do not hide it in the test).
+   - with its neighbors (the class or file) in random order
+   - the full suite as the pipeline runs it (parallel, same order)
+   - another time zone and locale
+   - a slower machine: limited CPU, many parallel tests
+   A failure rate of 1 in 20 needs about 60 runs to show with high confidence. State the number of runs.
+3. **Isolate** the smallest failing combination. A failure that needs another test first is an order dependence; find that test.
+4. **Prove the cause:** remove it (a fixed clock, own data, a wait for a condition), and run the failing setup again. It must pass every time.
+5. **Decide:** a TEST DEFECT (fix the test), or a PRODUCT BUG (a real race or time bug: report it, do not hide it in the test).
 
 ## Output
 
@@ -36,11 +45,24 @@ Reproduced: <yes/no>, <how>, <n runs>
 Cause: <category> - <one line>
 Evidence: <file:line, run results>
 Fix: <change>   (test defect | product bug)
-Prevention: <rule for the team, for example "no shared static state in tests">
+Prevention: <rule for the team>
 ```
 
-## Rules
+## Anti-patterns
 
-- Do not add retries, longer sleeps or a skip as the fix. Name them only as a short-term step, with a ticket.
-- Replace a fixed sleep with a wait for a condition, with a timeout.
-- If you cannot reproduce it, say so. List the suspects, ranked, and the data to collect next time (logs, seed, order, time).
+- **Retries, longer sleeps or a skip as the fix.** Use them only as a short-term step, with a ticket and an owner.
+- **A fixed sleep instead of a wait for a condition.**
+- **"Cannot reproduce" without data.** List the ranked suspects and the data to collect next time (logs, seed, order, time).
+
+## Done when
+
+- The flakiness is reproduced with a stated number of runs, or the suspects and the data to collect are listed.
+- The cause is proven by a change that makes the failing setup pass every time.
+- The fix is a test change or a product bug report, and a prevention rule is stated.
+
+## Related skills
+
+- `test-runner`: the run commands.
+- `test-data-management`: data collisions.
+- `test-environments`: environment differences.
+- `ci-cd-integration`: the flaky test policy.

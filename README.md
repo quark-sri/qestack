@@ -36,31 +36,34 @@ The result of each feature is `specs/<feature>/quality-report.md` with the decis
 
 ## QE skills for any project (no engine needed)
 
-The `qe-skills` plugin has Quality Engineering skills that work in any repository, with any language and any test framework. They need no setup and no engine. Each skill finds the project's own build and test commands, and applies QE methods: test design techniques, defect taxonomies, risk analysis and evidence-based review.
+The `qe-skills` plugin is a library of 34 Quality Engineering skills. They work in any repository, with any language and any test framework, and they need no engine.
 
-| Phase | Skill | What it gives you |
-|---|---|---|
-| Requirements | `requirement-gaps` | Missing acceptance criteria, vague words, undefined limits and errors, as questions |
-| Requirements | `edge-case-hunter` | Edge, boundary and negative cases with concrete inputs and expected results |
-| Design | `test-case-designer` | Traceable test cases from formal techniques (boundaries, decision tables, state transitions) |
-| Design | `risk-map` | Impact × likelihood for each area, and the test depth that each area needs |
-| Code | `bug-hunter` | Suspected bugs from a defect taxonomy, each one proven by a failing test or reproduction steps |
-| Code | `roast-my-code` | A direct review for testability, hidden bugs and error handling, with a fix for each point |
-| Code | `spec-drift` | Differences between the spec, the contract, the docs, the code and the tests |
-| Tests | `testcase-reviewer` | A score for each test (T1–T7) and the tests that pass while the product is wrong |
-| Tests | `test-coverage-map` | What is tested by requirement, code area and test level, not only by line coverage |
-| Tests | `mutation-probe` | A quick mutation score: small faults injected one at a time, the code always restored |
-| Run | `test-runner` | Runs the right tests and triages each failure: product bug, test defect, environment, flaky |
-| Run | `flaky-test-detective` | Reproduces a flaky test, finds the root cause and a real fix instead of a retry |
-| Run | `change-impact` | What a change can break, which tests to run, which tests are missing |
-| Run | `bug-report` | A clear, reproducible defect report with evidence |
+- **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
+- **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
+- **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
+- **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
+
+| Category | Skills |
+|---|---|
+| Foundation | `qa-project-context`, `qa-navigator` |
+| Strategy | `test-strategy`, `test-planning`, `risk-based-testing`, `requirement-gaps`, `exploratory-testing` |
+| Design | `test-case-designer`, `edge-case-hunter` |
+| Automation | `unit-testing`, `api-testing`, `database-testing`, `messaging-testing`, `contract-testing`, `ui-automation`, `service-virtualization`, `test-data-management` |
+| Infrastructure | `test-environments`, `ci-cd-integration` |
+| Non-functional | `performance-testing`, `security-testing`, `accessibility-testing` |
+| Test quality | `testcase-reviewer`, `test-coverage-map`, `mutation-probe`, `flaky-test-detective` |
+| Code and spec | `bug-hunter`, `roast-my-code`, `spec-drift` |
+| Run and triage | `test-runner`, `change-impact`, `bug-report` |
+| Process | `release-readiness`, `quality-postmortem` |
 
 ```
 /plugin marketplace add quark-sri/qestack
 /plugin install qe-skills@qestack
 ```
 
-Use the gated qestack workflow below when you want measured proof (locks, hidden faults, mutation gates, an independent judge) for each feature.
+Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>` links them (see [other agents](docs/other-agents.md)).
+
+Use the gated qestack workflow below when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
 
 ## Install
 

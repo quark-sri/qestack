@@ -1,12 +1,20 @@
 {
   "name": "qe-skills",
   "version": "0.1.0",
-  "description": "qestack QE skills: Quality Engineering skills for any project and any stack. Requirement gaps, edge cases, test design, risk, bug hunting, code roast, spec drift, test review, coverage map, mutation probe, test runs, flaky tests, change impact and bug reports.",
+  "description": "qestack QE skills: 34 Quality Engineering skills for any project and any stack, from requirements and test design to automation, non-functional testing, test review, triage and release. Tool-neutral methods with stack recipes for Java, TypeScript and Python. No engine needed.",
   "author": {
     "name": "quark-sri"
   },
   "homepage": "https://github.com/quark-sri/qestack",
   "repository": "https://github.com/quark-sri/qestack",
   "license": "Apache-2.0",
-  "keywords": ["quality-engineering", "testing", "qa", "test-automation", "test-design", "bug-hunting", "code-review"]
+  "keywords": [
+    "quality-engineering",
+    "testing",
+    "qa",
+    "test-automation",
+    "test-design",
+    "bug-hunting",
+    "code-review"
+  ]
 }

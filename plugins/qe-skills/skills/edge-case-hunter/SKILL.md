@@ -1,48 +1,65 @@
 ---
 name: edge-case-hunter
-description: Hunt the edge, boundary and negative cases for a feature, function, API endpoint, form or data flow. Uses a catalog of edge cases by data type and by domain (numbers, strings, dates, money, collections, files, concurrency, state, security, integrations). Use when the user asks "what edge cases am I missing?", "what could break this?", or wants negative and boundary cases before or after writing tests.
+description: "Hunt the edge, boundary and negative cases of a feature, function, endpoint, form or data flow, with a catalog for numbers, text, dates and time, money, collections, identifiers, files, state, concurrency, users and security, integrations and configuration. Each case has a concrete input and the expected result. Use when: 'what edge cases am I missing', 'what could break this', 'negative tests for this', 'boundary cases'. Not for: a full test design (use test-case-designer) or bugs in source code (use bug-hunter). Related: test-case-designer, requirement-gaps, exploratory-testing, bug-hunter."
 argument-hint: "[feature, function, endpoint or file]"
 ---
 
 # edge-case-hunter
 
-Most escaped defects live at the edges: the limit value, the empty input, the second request, the end of the month. This skill lists the edge cases that matter for one target, with a concrete input and the expected result for each one.
+## Objective
 
-## Input
+Most escaped defects live at the edges: the limit value, the empty input, the second request, the end of the month. This skill lists the edge cases that matter for one target, with a concrete input and the expected result for each one, and shows which ones the tests already cover.
 
-The target is `$ARGUMENTS`: a requirement, a function, an endpoint, a screen or a message flow. If it is empty, ask the user. Read the requirement or contract first. Read the code only to find the inputs, the outputs and the dependencies, not to decide the expected result.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its risk areas and conventions.
+2. If it does not exist, continue with the target alone.
+
+## Discovery questions
+
+1. What is the target, and where is its requirement or contract?
+2. Do tests exist for it? Where?
+
+## Workflow
 
 1. **Model the target.** List:
    - each input (parameters, fields, headers, files, messages, configuration, time, the current user)
-   - each output and side effect (return value, response, stored data, events, calls to other systems, logs)
-   - each state that changes the behavior (status, feature flag, role, tenant, cache, existing data)
-   - each dependency that can fail (database, other services, queue, file system, clock, network)
-2. **Hunt.** For each input, state and dependency, go through the matching sections of [the edge case catalog](references/edge-case-catalog.md). Keep only the cases that apply to this target.
-3. **Combine.** Add the combinations that matter: two inputs at their limits together, a valid input in a wrong state, a retry after a partial failure.
-4. **Expected result.** For each case, write the expected result from the requirement. If the requirement does not say, write "UNDEFINED" and a question for the requirement owner. Do not guess.
-5. **Check existing tests** if they exist. Mark each case as covered, partly covered or missing. Search the test code for the input value or the behavior.
-6. **Rank** by risk: likelihood that the code is wrong times the impact of the failure.
+   - each output and side effect (return value, response, stored data, messages, calls to other systems)
+   - each state that changes the behavior (status, feature flag, role, tenant, existing data)
+   - each dependency that can fail
+2. **Hunt.** For each input, state and dependency, use the matching sections of [the edge case catalog](references/edge-case-catalog.md). Keep only the cases that apply.
+3. **Combine** the cases that matter together: two inputs at their limits, a valid input in a wrong state, a retry after a partial failure.
+4. **Expected result** from the requirement. If the requirement does not say, write "UNDEFINED" and a question. Do not guess.
+5. **Existing tests.** Mark each case as covered, partly covered or missing.
+6. **Rank** by risk: the likelihood that the code is wrong times the impact.
 
 ## Output
 
 ```
 ## Edge cases: <target>
 
-| # | Area | Case | Input / setup | Expected result (source) | Risk | Covered? |
+| # | Area | Case | Input / setup | Expected (source) | Risk | Covered? |
 |---|---|---|---|---|---|---|
 
-### Undefined behavior (questions)
-- ...
-
-### Top 5 to add first
-1. ...
+Undefined behavior (questions): ...
+Top 5 to add first: ...
 ```
 
-## Rules
+## Anti-patterns
 
-- Each case is concrete: a real value or a real setup, not "test invalid input".
-- The expected result comes from the requirement, a contract or a documented rule. Never from what the code does now.
-- Prefer cases that a wrong implementation would fail. Skip cases that every implementation passes.
-- Next step for the user: `test-case-designer` to turn the cases into test cases.
+- **"Test invalid input".** Each case needs a real value or setup.
+- **The expected result from the code.** It confirms the current behavior, also when it is wrong.
+- **Cases that every implementation passes.** They add run time and no protection.
+
+## Done when
+
+- Each input, state and dependency was checked against the catalog.
+- Each kept case has a concrete input, an expected result with a source or "UNDEFINED", a risk and a coverage status.
+- The top cases to add are listed.
+
+## Related skills
+
+- `test-case-designer`: turns the cases into test cases.
+- `requirement-gaps`: for the undefined behavior.
+- `exploratory-testing`: tries the cases by hand.
+- `bug-hunter`: checks the code for the risky cases.

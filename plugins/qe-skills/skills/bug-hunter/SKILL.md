@@ -1,33 +1,34 @@
 ---
 name: bug-hunter
-description: Hunt for real bugs in code, a change, a module or a feature. Reads the code against its requirements with a defect taxonomy (logic, boundaries, null and empty, errors, state, concurrency, data, security, integration, time), ranks suspects by evidence, and proves each one with a failing test or exact reproduction steps. Use when the user asks to find bugs, "what is wrong with this code?", to review a risky change, or to investigate a reported defect.
+description: "Hunt for real bugs in code, a change, a module or a feature: read the code against its intent with a defect taxonomy (logic, boundaries, null and empty, numbers and data, errors, state, concurrency, time, security, integration, configuration), trace real values, rank suspects by evidence, and prove each one with a failing test or exact reproduction steps. Use when: 'find bugs', 'what is wrong with this code', 'review this risky change for defects', 'investigate this defect', 'bug hunt'. Not for: style and design feedback (use roast-my-code) or a defect report from a known failure (use bug-report). Related: bug-report, roast-my-code, edge-case-hunter, security-testing."
 argument-hint: "[file, folder, change or feature]"
 ---
 
 # bug-hunter
 
-A bug is a difference between what the code does and what it must do. This skill finds such differences and proves them. A suspicion without proof is a lead, not a bug.
+## Objective
 
-## Input
+A bug is a difference between what the code does and what it must do. This skill finds such differences and proves them. A suspicion without proof is a lead, not a bug. The result is a short list of proven bugs, each with a failing test or exact steps.
 
-The target is `$ARGUMENTS`: files, a folder, a change (a branch or a commit range), or a feature. If it is empty, ask the user. Small targets give better results. For a large target, start with `risk-map` or ask the user for the most important area.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its risk areas, test commands and conventions.
+2. If it does not exist, read the documentation and the tests of the target. Suggest `qa-project-context` once. Do not stop the work for it.
 
-1. **Learn the intent.** Read the requirements, the contract, the documentation, the comments and the tests of the target. Write down in 3 to 5 lines what the code must do. Where no source says it, use common sense, and mark it as an assumption.
-2. **Map the code.** List the entry points, the inputs, the outputs, the side effects, and the dependencies that can fail.
-3. **Hunt.** Go through [the bug taxonomy](references/bug-taxonomy.md) for each entry point. Trace real values through the code: a normal value, a limit value, an empty value, a failure of each dependency. Read the callers too. A bug often sits between two correct-looking functions.
-4. **Collect suspects.** For each suspect, write:
-   - location (file and line)
-   - category from the taxonomy
-   - the input or the sequence of events that triggers it
-   - expected result (with the source) and actual result (from reading the code)
-   - confidence: high (the trace is clear), medium, low
-5. **Prove.** For each high and medium suspect:
-   - If the user agrees, write the smallest failing test that shows the bug, in the style of the existing tests, and run it. The test must fail for the reason that you predicted. Do not change production code.
-   - Otherwise, give exact reproduction steps.
-   - If the proof fails, say so, and lower the confidence or drop the suspect.
-6. **Report** in the format below, proven bugs first.
+## Discovery questions
+
+1. What is the target? Small targets give better results. For a large target, start with `risk-based-testing` or ask for the most important area.
+2. Where is the intent: requirements, a contract, documentation, a ticket?
+3. May you add failing tests to prove the bugs?
+
+## Workflow
+
+1. **Learn the intent.** Write in 3 to 5 lines what the code must do. Where no source says it, use common sense, and mark it as an assumption.
+2. **Map the code:** entry points, inputs, outputs, side effects, and dependencies that can fail.
+3. **Hunt** with [the bug taxonomy](references/bug-taxonomy.md) for each entry point. Trace real values: a normal value, a limit, an empty value, a failure of each dependency. Read the callers too; bugs often sit between two correct-looking functions.
+4. **Collect suspects:** location, category, trigger, expected result (with the source), actual result (from the trace), confidence.
+5. **Prove** each high and medium suspect: with the user's agreement, write the smallest failing test in the style of the project and run it. It must fail for the predicted reason. Otherwise give exact reproduction steps. If the proof fails, drop the suspect or lower its confidence.
+6. **Report** proven bugs first.
 
 ## Output
 
@@ -39,20 +40,24 @@ Suspects: <n> | Proven: <p> | Dropped: <d>
 
 | # | Severity | Confidence | Location | Category | Trigger | Expected | Actual | Proof |
 |---|---|---|---|---|---|---|---|---|
-
-### Details for each proven bug
-#### B1: <title>
-- Trigger: ...
-- Expected (source): ...
-- Actual: ...
-- Proof: <test name and its failure message, or the reproduction steps>
-- Suggested fix direction: <one line; do not change the code>
 ```
 
-## Rules
+## Anti-patterns
 
-- Compare with the intent, not with your preferred style. Style findings belong to `roast-my-code`.
-- Do not fix the code unless the user asks. A proven bug and a failing test are the result.
-- Do not report a suspect as a bug before you have proof. Label it as a lead.
-- Severity: critical (data loss, security, money, crash of a main path), major (wrong result for a common case), minor (rare case, workaround exists).
-- For a proven bug, offer `bug-report` to write the defect report.
+- **Style findings reported as bugs.** They belong to `roast-my-code`.
+- **Suspects reported as bugs** without proof.
+- **Fixing the code** without being asked. The proven bug and the failing test are the result.
+- **Comparing with the current behavior** instead of the intent.
+
+## Done when
+
+- Each entry point was checked against the taxonomy with real values.
+- Each reported bug has a failing test or exact steps, a severity and the source of the expected result.
+- Unproven suspects are listed as leads, with their confidence.
+
+## Related skills
+
+- `bug-report`: the defect report for each proven bug.
+- `roast-my-code`: design and readability feedback.
+- `edge-case-hunter`: the inputs to trace.
+- `security-testing`: security bugs in depth.

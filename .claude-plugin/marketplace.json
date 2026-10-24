@@ -25,7 +25,7 @@
     {
       "name": "qe-skills",
       "source": "./plugins/qe-skills",
-      "description": "qestack QE skills for any project and any stack: requirement gaps, edge cases, test design, risk map, bug hunting, code roast, spec drift, test review, coverage map, mutation probe, test runs, flaky tests, change impact and bug reports. No engine needed.",
+      "description": "qestack QE skills: 34 Quality Engineering skills for any project and any stack, from requirements and test design to automation, non-functional testing, test review, triage and release. Tool-neutral methods with stack recipes for Java, TypeScript and Python. No engine needed.",
       "version": "0.1.0",
       "category": "testing",
       "keywords": [

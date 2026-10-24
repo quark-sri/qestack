@@ -1,52 +1,69 @@
 ---
 name: roast-my-code
-description: A direct, honest code review with a quality engineering focus. Roasts code, a change or a test suite for testability, hidden bugs, error handling, design smells, readability and missing tests, with a severity and a concrete fix for each point. Use when the user says "roast my code", "be brutal", "tear this apart", or wants a no-nonsense review before a merge.
+description: "A direct, honest code review with a quality engineering focus: correctness risks, testability (hidden clock, randomness, global state, static calls, network), error handling, design smells, readability, missing or weak tests, and security and data handling, each point rated with evidence and a concrete fix, in a mild, medium or savage tone. Use when: 'roast my code', 'be brutal', 'tear this apart', 'honest review before merge', 'what is bad about this code'. Not for: proving bugs (use bug-hunter) or reviewing tests only (use testcase-reviewer). Related: bug-hunter, testcase-reviewer, unit-testing, security-testing."
 argument-hint: "[file, folder or change] [mild|medium|savage]"
 ---
 
 # roast-my-code
 
-The roast is direct, but it is fair and useful. Each point attacks the code, never the person. Each point has evidence and a fix. A joke is allowed only when the point under it is real.
+## Objective
 
-## Input
+The roast is direct, but fair and useful. Each point attacks the code, never the person. Each point has evidence and a fix. The tone changes only the wording, never the facts.
 
-The target and the tone are in `$ARGUMENTS`. If there is no target, ask the user. The tone is `mild`, `medium` (default) or `savage`. The tone changes only the wording, never the facts.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its conventions and risk areas.
+2. If it does not exist, read the code, its tests and its callers. Do not stop the work for the context file.
 
-1. **Understand the purpose** of the code from its names, its documentation, its tests and its callers. A roast of code that you do not understand is noise.
-2. **Review** the target in this order. Stop a category when you have the five most important points in it.
-   1. **Correctness:** bugs and likely bugs (use the questions of `bug-hunter`).
-   2. **Testability:** hidden dependencies (clock, random, global state, static calls, network) that make tests hard; long functions with many branches; logic inside constructors or in the UI layer.
-   3. **Error handling:** swallowed errors, broad catches, errors turned into success, missing cleanup.
-   4. **Design:** duplicated logic, mixed responsibilities, leaky abstractions, magic numbers, primitive types for domain values (money as a float).
-   5. **Readability:** misleading names, dead code, commented-out code, deep nesting, comments that say what instead of why.
-   6. **Tests:** missing tests for the risky paths, tests that check nothing, tests that copy the logic of the code.
-   7. **Security and data:** input that is not validated, secrets in code, personal data in logs.
+## Discovery questions
+
+1. What is the target, and what is the tone (`mild`, `medium` by default, `savage`)?
+2. Is there a team style guide or architecture rule to respect?
+
+## Workflow
+
+1. **Understand the purpose** from the names, the documentation, the tests and the callers. A roast of code that you do not understand is noise.
+2. **Review in this order,** at most five points for each category:
+   1. Correctness: likely bugs (the questions of `bug-hunter`).
+   2. Testability: hidden dependencies (clock, randomness, global state, static calls, network); long functions with many branches; logic in constructors or the UI layer.
+   3. Error handling: swallowed errors, broad catches, errors turned into success, missing cleanup.
+   4. Design: duplicated logic, mixed responsibilities, leaky abstractions, magic numbers, primitive types for domain values (money as a float).
+   5. Readability: misleading names, dead code, commented-out code, deep nesting, comments that say what instead of why.
+   6. Tests: missing tests for the risky paths, tests that check nothing, tests that copy the logic.
+   7. Security and data: unvalidated input, secrets in code, personal data in logs.
 3. **Rate** each point: `HOT` must fix (bug, security, data loss), `WARM` should fix (risk, cost), `MILD` nice to fix.
-4. **Give the fix** for each point: one or two lines, or a small code sketch.
-5. **Give credit.** Name what the code does well. An honest roast also shows what to keep.
+4. **Fix** for each point: one or two lines, or a small code sketch.
+5. **Credit:** name what the code does well.
 
 ## Output
 
 ```
 ## Roast: <target> (tone: <tone>)
 
-Verdict in one line: <...>
+Verdict in one line: ...
 
 | # | Heat | Location | Point | Fix |
 |---|---|---|---|---|
 
-### What is good
-- ...
-
-### If you fix only three things
-1. ...
+What is good: ...
+If you fix only three things: ...
 ```
 
-## Rules
+## Anti-patterns
 
-- Evidence for each point: file and line.
-- No point without a fix. No personal remarks. No insults about the author.
-- Do not change the code unless the user asks.
-- Keep each point short. Put the hottest points first.
+- **Personal remarks** or insults about the author.
+- **Points without a fix** or without a file and line.
+- **A list of 50 nitpicks.** Keep the points that matter, hottest first.
+- **Changing the code** without being asked.
+
+## Done when
+
+- Each point has a heat, a location and a fix.
+- The good parts and the top three fixes are named.
+
+## Related skills
+
+- `bug-hunter`: proves the correctness points.
+- `testcase-reviewer`: the tests in depth.
+- `unit-testing`: tests for the risky paths.
+- `security-testing`: the security points in depth.

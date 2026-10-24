@@ -115,16 +115,19 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 ### 6.1 QE skills for any project (plugin `qe-skills`)
 
-These skills need no engine and no `.qestack/` folder. They name no specific tools: each skill finds the project's own commands. They follow the same principles: evidence over opinion, the spec is the source of truth, and the engineer decides.
+34 skills for QA disciplines across the SDLC. They need no engine and no `.qestack/` folder.
 
-| Phase | Skills |
+| Rule | How |
 |---|---|
-| Requirements and design | `requirement-gaps`, `edge-case-hunter`, `test-case-designer`, `risk-map` |
-| Code review | `bug-hunter`, `roast-my-code`, `spec-drift` |
-| Test review | `testcase-reviewer`, `test-coverage-map`, `mutation-probe` |
-| Run and triage | `test-runner`, `flaky-test-detective`, `change-impact`, `bug-report` |
+| Tool-neutral method | `SKILL.md` names no tools; the validator checks this |
+| Stack recipes | `references/java.md`, `typescript.md`, `python.md`, loaded only for the project's stack |
+| Shared context | `.agents/qa-project-context.md`, written by `qa-project-context`, read by every skill |
+| Routing | Each description has "Use when", "Not for" and "Related"; the validator checks that related skills exist |
+| Structure | Objective, Context, Discovery questions, Principles, Workflow, Anti-patterns, Done when, Related skills |
 
-Candidates for later releases: `test-data-designer`, `api-contract-tester`, `accessibility-checker`, `performance-test-planner`, `security-test-planner`, `exploratory-charter`, `test-automation-strategy`, `release-readiness`.
+Categories: foundation, strategy, design, automation, infrastructure, non-functional, test quality, code and spec, run and triage, process. See the README for the full list.
+
+Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-testing`, `observability-driven-testing`, `test-suite-curation`, `qa-metrics`, `ai-feature-testing`, a review panel of agent personas for AI-written tests, and recipes for .NET and Go.
 
 ## 7. Roadmap
 

@@ -1,69 +1,66 @@
 ---
 name: requirement-gaps
-description: Find gaps in requirements before anyone designs or writes tests. Checks a user story, spec, ticket, PRD or API contract for missing acceptance criteria, vague words, undefined limits, missing error behavior, unstated assumptions and conflicts, then asks focused questions. Use when the user asks "is this story testable?", "what is missing in this spec?", or gives requirements before test design.
-argument-hint: "[path to the spec, story or ticket text]"
+description: "Find gaps in requirements before tests or code exist: missing acceptance criteria and examples, vague words, undefined limits, units and rounding, missing error behavior and side effects, undefined states, roles and concurrency, conflicts between requirements. Gives focused questions with proposed answers. Use when: 'is this story testable', 'review these acceptance criteria', 'what is missing in this spec', 'refine this ticket'. Not for: designing test cases (use test-case-designer) or comparing the spec with the code (use spec-drift). Related: edge-case-hunter, test-case-designer, spec-drift."
+argument-hint: "[spec, story, ticket or contract]"
 ---
 
 # requirement-gaps
 
-Tests can only be as good as the rules behind them. This skill finds what the requirement does not say, before the gap becomes a bug or a wrong test. It does not write tests or code.
+## Objective
 
-## Input
+Tests can only be as good as the rules behind them. A gap in a requirement becomes a bug or a wrong test later, and it costs more each phase. This skill finds what the requirement does not say, and turns each gap into a question with a proposed answer. It does not write tests or code.
 
-The requirement source is `$ARGUMENTS`: a file, a folder, a ticket text, or a description from the user. If it is empty, ask the user for it. Also read the related contracts, data models, designs and glossaries if they exist.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its requirement ID format and the glossary.
+2. If it does not exist, continue with the requirement source alone.
 
-1. **Inventory.** List each requirement as one line. Give each one an ID if it has none (`R1`, `R2`, ...). Keep the original wording.
-2. **Check each requirement** against the checklist below. Write one finding for each gap. Quote the exact text.
-3. **Check the requirement set as a whole:**
-   - two requirements that contradict each other
-   - a business object or state that one requirement uses and no requirement defines
-   - a rule for "create" with no rule for "update", "delete" or "read"
-   - roles and permissions: who may do it, and who may not
-   - non-functional needs that the domain implies (audit, privacy, performance, accessibility) but that the text does not state
-4. **Rank** the gaps: high (money, security, data loss, legal, irreversible actions), medium (wrong result for some users), low (wording).
-5. **Ask.** Give the user the high gaps first, as questions. For each question, propose a concrete answer that the user can accept or change. Ask about one area at a time.
-6. **Report** in the format below.
+## Discovery questions
 
-## Checklist for each requirement
+1. Where is the requirement: a file, a ticket, a contract, a design? Get all related sources.
+2. Who answers the questions: a product owner, an analyst, a domain expert?
 
-| Area | Gap to find |
-|---|---|
-| Example | No concrete example with input and expected output |
-| Limits | A number, length, size, date or count with no limit, or a limit that does not say if it is included ("over 100": is 100 in?) |
-| Units and precision | Money without currency or rounding rule; time without time zone; size without unit |
-| Errors | Invalid input with no defined result (message, code, status, state after the error) |
-| Effects | It does not say what is saved, sent or changed, and what must NOT change on failure |
-| States | A status field with no list of allowed transitions |
-| Actors | No actor, or "the system" does something with no trigger |
-| Vague words | "fast", "easy", "user-friendly", "appropriate", "some", "etc.", "and/or", "should" (is it a must?) |
-| Defaults | An optional input with no default value |
-| Concurrency | Two users or two requests at the same time, with no rule |
-| Time | Expiry, scheduling, daylight saving, end of month, leap year, with no rule |
-| Data | Empty, null, duplicate, very large, special characters, other languages, with no rule |
-| Testability | A statement that no test can check ("the code is clean", "works well") |
+## Workflow
+
+1. **Inventory.** List each requirement as one line, with its ID (give `R1`, `R2`, ... if there is none). Keep the original words.
+2. **Check each requirement** against [the gap checklist](references/gap-checklist.md). Write one finding for each gap, with the exact quote.
+3. **Check the set:**
+   - contradictions between requirements
+   - objects or states that no requirement defines
+   - "create" with no rule for update, delete or read
+   - roles that may and may not act
+   - non-functional needs that the domain implies (audit, privacy, performance, accessibility)
+4. **Rank:** high (money, security, data loss, legal, irreversible), medium (wrong result for some users), low (wording).
+5. **Ask** the high gaps first. For each one, propose a concrete answer that the owner can accept or change.
 
 ## Output
 
 ```
 ## Requirement gaps: <source>
 
-Summary: <n> requirements, <h> high / <m> medium / <l> low gaps
+<n> requirements | high <h> | medium <m> | low <l>
 
 | # | Req | Area | Quote | Gap | Risk | Question (proposed answer) |
 |---|---|---|---|---|---|---|
 
-### Set-level gaps
-- ...
-
-### Ready for test design
-<the requirements with no high or medium gap>
+Set-level gaps: ...
+Ready for test design: <requirement IDs>
 ```
 
-## Rules
+## Anti-patterns
 
-- Do not invent business rules. A gap is a question, not an answer.
-- Do not read the implementation to find the rule. The code can be wrong.
-- Quote the requirement text for each finding, so that the author can find it.
-- Next steps for the user: `edge-case-hunter`, then `test-case-designer`.
+- **Inventing rules.** A gap is a question, not an answer. The owner decides.
+- **Reading the code to find the rule.** The code can be wrong.
+- **Wording-only review.** Spelling and style are low value. Missing errors and limits are high value.
+
+## Done when
+
+- Each requirement was checked against the checklist.
+- Each gap has a quote, a risk and a question with a proposed answer.
+- The requirements that are ready for test design are listed.
+
+## Related skills
+
+- `edge-case-hunter`: the edge cases of the clarified requirement.
+- `test-case-designer`: the test cases.
+- `spec-drift`: compares the requirement with the code and the tests later.

@@ -1,55 +1,65 @@
 ---
 name: spec-drift
-description: Detect drift between what is specified, what is built and what is tested. Compares requirements, API contracts, documentation, the implementation and the tests, and reports each mismatch (missing, extra, different behavior, outdated docs, tests that assert old behavior). Use when the user asks "does the code still match the spec?", before a release, after a refactor, or when the docs and the API seem out of date.
-argument-hint: "[spec or contract path] [code area]"
+description: "Detect drift between what is specified, documented, built and tested: extract the claims from requirements, contracts, documentation, code and tests, match them, and report each mismatch (missing in code, extra in code, different behavior, stale docs, tests that assert old behavior, untested claims) with the likely truth and the side to change. Use when: 'does the code still match the spec', 'are the docs up to date', 'API drift', 'check the implementation against the requirements', 'before release consistency check'. Not for: gaps inside the requirements themselves (use requirement-gaps) or contract tests between services (use contract-testing). Related: requirement-gaps, contract-testing, test-coverage-map, api-testing."
+argument-hint: "[spec or contract] [code area]"
 ---
 
 # spec-drift
 
+## Objective
+
 Over time, the spec, the code, the documentation and the tests tell different stories. Each difference is a bug, a missing feature, dead code or a stale document. This skill finds the differences and says which side is probably wrong.
 
-## Input
+## Context
 
-The sources are in `$ARGUMENTS`: a spec, a contract (for example an API description), a documentation page, and the code area. If a source is missing, ask the user or search the repository for it.
+1. Read `.agents/qa-project-context.md` if it exists. Use its requirement sources and contract files.
+2. If it does not exist, search the repository for the specs, contracts and documentation. Do not stop the work for the context file.
 
-## Steps
+## Discovery questions
 
-1. **Extract the claims.** From each source, list the concrete claims. Examples: endpoints or functions, fields and types, required and optional fields, allowed values, limits. Also error codes and messages, default values, status transitions, side effects and permissions.
+1. Which sources are in scope: a spec, a contract, a documentation page, a code area, the tests?
+2. Which source is the approved truth when two sources differ?
+
+## Workflow
+
+1. **Extract the claims** from each source. Examples: endpoints or functions, fields and types, required and optional fields, allowed values, limits. Also error codes and messages, defaults, status transitions, side effects and permissions.
    - spec and contract: what must be
    - documentation: what users are told
-   - code: what is implemented (read the code paths, validation and mappings)
-   - tests: what is checked (read the assertions, not the test names)
-2. **Match the claims** across the sources by a key (endpoint and field, function and parameter, requirement ID).
-3. **Classify each difference:**
-   - MISSING IN CODE: specified, not implemented
-   - EXTRA IN CODE: implemented, not specified (an undocumented behavior or a forgotten feature)
-   - DIFFERENT: both exist, with a different value, type, limit, code or rule
-   - STALE DOC: the documentation differs from the spec and the code
-   - TEST ASSERTS OLD BEHAVIOR: a test checks a value that the spec no longer has
-   - UNTESTED CLAIM: specified and implemented, but no test checks it
-4. **Decide the likely truth** for each difference. The newest approved spec usually wins. If you cannot tell, write "ask the owner".
-5. **Rank** by impact: a contract change that breaks clients is high.
+   - code: what is implemented (code paths, validation, mappings)
+   - tests: what is checked (the assertions, not the test names)
+2. **Match the claims** by a key (endpoint and field, function and parameter, requirement ID).
+3. **Classify each difference:** MISSING IN CODE, EXTRA IN CODE, DIFFERENT, STALE DOC, TEST ASSERTS OLD BEHAVIOR, UNTESTED CLAIM.
+4. **Decide the likely truth.** The newest approved spec usually wins. If you cannot tell, write "ask the owner".
+5. **Rank** by impact. A contract change that breaks clients is high.
 
 ## Output
 
 ```
 ## Spec drift: <scope>
 
-Sources: spec <...>, contract <...>, docs <...>, code <...>, tests <...>
 Claims compared: <n> | Differences: <d>
 
 | # | Type | Key | Spec says | Code does | Docs say | Tests check | Likely truth | Impact |
 |---|---|---|---|---|---|---|---|---|
 
-### Actions
-- Code to fix: ...
-- Spec or docs to update: ...
-- Tests to fix or add: ...
-- Questions for the owner: ...
+Actions: code to fix / spec or docs to update / tests to fix or add / questions for the owner
 ```
 
-## Rules
+## Anti-patterns
 
-- Quote each source with its location (file and line, or section).
-- Do not change code, specs or tests in this skill. Report the drift.
-- A difference is not always a code bug. Say which side to change, and why.
+- **Assuming the code is right** because it runs in production.
+- **Reading test names instead of assertions.** A test named "rejects negative totals" may check nothing.
+- **Changing sources in this skill.** Report the drift; the owners decide.
+
+## Done when
+
+- Each claim in scope is matched across the sources, with a location for each quote.
+- Each difference has a type, a likely truth and an impact.
+- The actions are listed for code, docs, spec and tests.
+
+## Related skills
+
+- `requirement-gaps`: gaps inside the spec.
+- `contract-testing`: stops contract drift between services.
+- `test-coverage-map`: the untested claims in depth.
+- `api-testing`: tests for the drifted endpoints.

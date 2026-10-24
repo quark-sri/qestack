@@ -1,59 +1,79 @@
 ---
 name: test-case-designer
-description: Design test cases from requirements with formal test design techniques (equivalence classes, boundary values, decision tables, state transitions, pairwise, error guessing). Produces a traceable test case list with exact expected results and the cheapest test level for each case. Use when the user asks to design, plan or list test cases for a feature, story or API, before or instead of writing test code.
-argument-hint: "[feature, story or spec path]"
+description: "Design test cases from requirements with formal techniques: equivalence classes, boundary values, decision tables, state transitions, pairwise and error guessing. Gives traceable cases with exact expected results, the defect each case catches, and the cheapest test level. Use when: 'design test cases', 'write test scenarios for this story', 'what should we test for this feature', 'generate tests from this spec'. Not for: finding requirement gaps (use requirement-gaps) or writing test code for one layer (use unit-testing, api-testing, ui-automation and so on). Related: requirement-gaps, edge-case-hunter, risk-based-testing, testcase-reviewer."
+argument-hint: "[feature, story or spec]"
 ---
 
 # test-case-designer
 
-A good test case can fail. It has a concrete input, an exact expected result from the requirement, and a reason to exist: the defect that it catches. This skill designs such cases. It does not write test code.
+## Objective
 
-## Input
+A good test case can fail. It has a concrete input, an exact expected result from the requirement, and a reason to exist: the defect that it catches. This skill designs such cases with formal techniques, and puts each case at the cheapest level that can prove it.
 
-The requirement source is `$ARGUMENTS`. If it is empty, ask the user. Read the requirements, contracts and data models. Do not read the implementation to choose expected results. If the requirements have gaps, recommend `requirement-gaps` first.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its test levels, conventions and requirement ID format.
+2. If it does not exist, find the test levels in the repository. Suggest `qa-project-context` once. Do not stop the work for it.
 
-1. **Requirement list.** Give each requirement, acceptance criterion and edge case an ID (use the existing IDs).
-2. **Risk.** Mark each requirement high, medium or low. High: money, security, data integrity, irreversible actions, external events, legal rules.
-3. **Choose the technique** for each requirement. See [the design techniques](references/design-techniques.md). Use more than one technique for a high-risk requirement.
-4. **Design the cases.** For each case, write:
-   - ID (`TC-001`, ...) and the requirement IDs that it covers
-   - category: positive, negative, boundary, error, security, concurrency, idempotency, resilience
-   - preconditions and test data (the test creates its own data)
-   - action
-   - expected result: each observable effect (output, stored state, messages sent, calls made, error code and message), and what must NOT change
-   - source of the expected result (requirement ID, example, contract)
-   - "Fails when": the defect that this case catches
-5. **Choose the level.** Choose the cheapest level that can prove the case: unit, component, API or service, integration (with real infrastructure), end-to-end UI. Put business rules in unit or API tests. Use end-to-end tests only for user journeys.
-6. **Traceability check.** Each requirement has at least one positive case. Each requirement with a limit has boundary cases. Each requirement with an error rule has an error case. List the requirements that do not.
-7. **Remove waste.** Merge cases that catch the same defect. Remove cases that no wrong implementation could fail.
+## Discovery questions
+
+1. Where are the requirements, contracts and data models?
+2. Are there open gaps? If yes, run `requirement-gaps` first, or mark the affected cases as blocked.
+3. Which format does the team use for test cases: a document, a test management system, comments in code?
+
+## Principles
+
+1. **The requirement is the oracle.** Never take an expected result from the implementation.
+2. **Each case catches a named defect.** If no wrong implementation can fail a case, remove it.
+3. **The cheapest level wins.** Business rules in unit or API tests. Infrastructure effects in integration tests. Only journeys in end-to-end tests.
+4. **Technique follows the rule shape.** See [the design techniques](references/design-techniques.md).
+
+## Workflow
+
+1. **Requirement list** with IDs. Mark each one high, medium or low risk.
+2. **Technique** for each requirement. Use more than one technique for high risk.
+3. **Cases.** For each case, write:
+   - the ID and the covered requirement IDs
+   - the category: positive, negative, boundary, error, security, concurrency, idempotency, resilience
+   - the setup and data, and the action
+   - the expected result: each observable effect, and what must NOT change
+   - the source of the expected result
+   - "fails when": the defect that it catches
+   - the level
+4. **Traceability check.** Each requirement has a positive case. Each limit has boundary cases. Each error rule has an error case. List the requirements that do not.
+5. **Remove waste.** Merge cases that catch the same defect.
 
 ## Output
 
 ```
 ## Test design: <feature>
 
-### Traceability
 | Req | Risk | Technique | Test cases | Categories | Gaps |
 |---|---|---|---|---|---|
 
-### Test cases
 #### TC-001: <short name>
-- Covers: R1, AC-2   | Category: boundary | Level: unit
-- Setup: ...
-- Action: ...
-- Expected: ... (source: R1 example 2)
-- Must not change: ...
+- Covers: R1, AC-2 | Category: boundary | Level: unit
+- Setup: ...   Action: ...
+- Expected: ... (source: R1 example 2)   Must not change: ...
 - Fails when: the limit uses ">" instead of ">="
-
-### Open questions
-- ...
 ```
 
-## Rules
+## Anti-patterns
 
-- Expected results are exact values, not "works", "success" or "correct".
-- Never compute an expected value with the logic of the code under test.
-- One case checks one behavior. A boundary set can be one parameterized case with one expected result for each row.
-- Next step for the user: write the tests, then `testcase-reviewer` and `mutation-probe` to check them.
+- **"Verify it works".** An expected result that is not an exact value or effect.
+- **The expected value from the code.** The test then confirms the bug.
+- **Everything end-to-end.** Slow, flaky, and the failure does not point to the cause.
+- **Two invalid inputs in one case.** The first error hides the second.
+
+## Done when
+
+- Each requirement has cases from the right technique, with exact expected results and a source.
+- Each case names the defect that it catches and its level.
+- Requirements without enough cases, and the blocked cases, are listed.
+
+## Related skills
+
+- `requirement-gaps`: before the design.
+- `edge-case-hunter`: more edge cases for high-risk rules.
+- `unit-testing`, `api-testing`, `ui-automation`: write the tests.
+- `testcase-reviewer`: reviews the written tests.

@@ -1,35 +1,38 @@
 ---
 name: test-runner
-description: Find out how a project runs its tests, run the right subset (all, one module, one file, one test, by tag, or the tests related to a change), and triage every failure as product bug, test defect, environment problem or flaky test, with evidence. Works for any language and build system. Use when the user asks to run the tests, "why do the tests fail?", or wants a clear test result summary.
+description: "Find out how a project runs its tests, run the right subset (all, a module, a file, one test, a tag, or the tests related to a change), collect the results, and triage every failure as product bug, test defect, environment problem or flaky test, with evidence. Works for any language and build system. Use when: 'run the tests', 'why do the tests fail', 'which tests are failing', 'summarize the test results', 'triage the CI failures'. Not for: designing the pipeline (use ci-cd-integration) or a flaky test root cause (use flaky-test-detective). Related: flaky-test-detective, bug-report, change-impact, ci-cd-integration."
 argument-hint: "[all | path | test name | tag | changed]"
 ---
 
 # test-runner
 
-A test run is useful only when each failure has a cause. This skill runs the tests the way the project runs them, and explains each failure.
+## Objective
 
-## Input
+A test run is useful only when each failure has a cause. This skill runs the tests the way the project runs them, reports the numbers exactly, and explains each failure with evidence.
 
-The scope is `$ARGUMENTS`: `all`, a path, a test name, a tag or group, or `changed` (the tests related to the current change). If it is empty, ask the user. For a large suite, suggest a smaller scope first.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its test commands, environments and report paths.
+2. If it does not exist, find the commands as below. Suggest `qa-project-context` once. Do not stop the work for it.
 
-1. **Find the test command.** Look in this order, and use the first one that the project documents:
-   1. the project documentation (README, contributing guide, developer docs)
-   2. scripts and task files in the repository
-   3. the continuous integration configuration (it shows the real commands and the environment)
-   4. the build files and the test framework configuration
-   Write down the command, how to select a subset, where the reports go, and the services that the tests need (database, queue, containers, environment variables).
-2. **Check the environment.** Check that the needed runtime, services and settings exist. If something is missing, tell the user what to start or set. Do not install system software without asking.
-3. **Run** the command for the scope. For a long run, run it in the background and wait for it to finish. Keep the full output and the machine-readable report if the framework writes one.
-4. **Collect results:** total, passed, failed, errored, skipped, and the time. List the skipped tests with their reason.
-5. **Triage each failure.** Read the failure message, the stack trace, the test code and the requirement. Classify:
-   - PRODUCT BUG: the test matches the requirement, and the code gives a wrong result
+## Discovery questions
+
+1. What is the scope: `all`, a path, a test name, a tag, or `changed`?
+2. Which environment and services do the tests need?
+
+## Workflow
+
+1. **Find the test command.** Look in the project documentation, then the scripts and task files, then the pipeline configuration (it shows the real commands and the environment). Then look in the build files and the test framework configuration. Note how to select a subset and where the reports go.
+2. **Check the environment:** runtime, services, settings. If something is missing, tell the user what to start or set. Do not install system software without asking.
+3. **Run** the command for the scope. For a long run, run it in the background and wait for it. Keep the full output and the machine-readable report.
+4. **Collect:** total, passed, failed, errored, skipped, time. List the skipped tests with their reason.
+5. **Triage each failure** from the message, the stack trace, the test code and the requirement:
+   - PRODUCT BUG: the test matches the requirement; the code gives a wrong result
    - TEST DEFECT: the test is wrong (wrong expected value, wrong setup, outdated after an intended change)
-   - ENVIRONMENT: a missing service, a port, a credential, a version, the network, disk, memory
-   - FLAKY: it passes on a rerun with no change; timing, order or shared data
-   - UNKNOWN: not enough evidence; say what you need
-6. **Confirm flaky suspects.** Run each failing test again, alone, 2 or 3 times. A test that sometimes passes is flaky. Hand it to `flaky-test-detective`.
+   - ENVIRONMENT: a missing service, port, credential, version, network, disk or memory
+   - FLAKY: it passes on a rerun with no change
+   - UNKNOWN: say what evidence is needed
+6. **Confirm flaky suspects:** run each one alone 2 or 3 times. Hand confirmed ones to `flaky-test-detective`.
 
 ## Output
 
@@ -42,13 +45,24 @@ Result: <passed>/<total> passed | failed <f> | errors <e> | skipped <s> | time <
 | Test | Triage | Evidence (message, file:line) | Next action |
 |---|---|---|---|
 
-### Skipped tests
-- <test>: <reason>
+Skipped tests: <test> - <reason>
 ```
 
-## Rules
+## Anti-patterns
 
-- Do not change a test to make it pass. A failing correct test shows a product bug. That is a good result.
-- Do not change production code in this skill, unless the user asks.
-- Report the numbers exactly as the run shows them. If the run did not finish, say so.
-- For a product bug, offer `bug-report`.
+- **Changing a test to make it pass.** A correct test that fails shows a product bug.
+- **"All tests pass" without a run,** or with numbers from an earlier commit.
+- **Rerun until green** and report green.
+
+## Done when
+
+- The command, the environment and the commit are stated.
+- The numbers are exactly as the run shows them, including skipped tests.
+- Each failure has a triage class and evidence.
+
+## Related skills
+
+- `flaky-test-detective`: the confirmed flaky tests.
+- `bug-report`: the product bugs.
+- `change-impact`: the tests to run for a change.
+- `ci-cd-integration`: the pipeline.

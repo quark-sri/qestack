@@ -68,8 +68,43 @@ for d in skills:
             err(f"{ref.relative_to(ROOT)}: not linked from SKILL.md")
         long_sentences(ref, ref.read_text(encoding="utf-8"))
 
+# qe-skills rules: tool-neutral SKILL.md, routing parts in the description, shared context, existing related skills
+TOOL_NAMES = re.compile(
+    r"\b(maven|mvn|gradle|junit|testng|pytest|jest|vitest|mocha|cypress|playwright|selenium|selenide|pitest|stryker|"
+    r"mutmut|docker|testcontainers|wiremock|mockito|assertj|rest assured|supertest|msw|k6|gatling|jmeter|locust|pact|"
+    r"axe|lighthouse|bash|grep|glob tool|agent tool|webfetch)\b", re.I)
+all_skill_names = set(names)
+for d in skills:
+    if d.parent.parent.name != "qe-skills":
+        continue
+    f = d / "SKILL.md"
+    if not f.exists():
+        continue
+    fm, body = frontmatter(f)
+    desc = fm.get("description", "")
+    rp = f.relative_to(ROOT)
+    if ": " in desc and not (desc.startswith('"') and desc.endswith('"')):
+        err(f"{rp}: description has ': ' and must be one double-quoted line (valid YAML)")
+    if '"' in desc.strip('"'):
+        err(f"{rp}: description has a double quote inside; use single quotes for trigger phrases")
+    for part in ("Use when:", "Not for:", "Related:"):
+        if part not in desc:
+            err(f"{rp}: description has no '{part}' part")
+    rel_m = re.search(r"Related:\s*([^.]*)", desc)
+    for n in (re.split(r",\s*", rel_m.group(1)) if rel_m else []):
+        n = n.strip().strip('"')
+        if n and n not in all_skill_names:
+            err(f"{rp}: related skill '{n}' does not exist")
+    for section in ("## Done when", "## Related skills"):
+        if section not in body:
+            err(f"{rp}: section '{section}' missing")
+    if d.name != "qa-project-context" and "qa-project-context.md" not in body:
+        err(f"{rp}: does not read .agents/qa-project-context.md")
+    for m in TOOL_NAMES.finditer(re.sub(r"\[[^\]]*\]\(references/[^)]*\)", "", body + " " + desc)):
+        err(f"{rp}: names the tool '{m.group(0)}'; put tool details in references/")
+
 # Agents
-agents = sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
+agents =sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
 for f in agents:
     fm, body = frontmatter(f)
     if fm.get("name") != f.stem:

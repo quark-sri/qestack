@@ -1,32 +1,39 @@
 ---
 name: testcase-reviewer
-description: Review test cases or automated tests like a senior test architect. Scores each test on requirement fidelity, oracle correctness, assertion depth, negative and edge coverage, independence from the implementation, determinism and clarity, with evidence and a concrete fix. Finds tests that pass while the product is wrong. Use when the user asks to review tests, "are these tests any good?", or to check AI-written tests before a merge.
+description: "Review automated tests or manual test cases like a senior test architect: score each test on requirement fidelity, oracle correctness, assertion depth, negative and edge coverage, independence from the implementation, determinism and clarity, with evidence and a concrete fix, and find tests that pass while the product is wrong. Use when: 'review my tests', 'are these tests any good', 'test smells', 'review AI-written tests', 'test quality audit'. Not for: finding untested areas (use test-coverage-map) or measuring tests with injected faults (use mutation-probe). Related: mutation-probe, test-coverage-map, unit-testing, api-testing."
 argument-hint: "[test files, test folder or test case document]"
 ---
 
 # testcase-reviewer
 
-A test is good when it fails on wrong behavior. Green tests, coverage and many assertions do not prove this. This skill looks for the reasons why a test could pass while the product is wrong.
+## Objective
 
-## Input
+A test is good when it fails on wrong behavior. Green tests, coverage and many assertions do not prove this. This skill reviews tests against the requirement, scores them with a rubric, and finds the reasons why a test could pass while the product is wrong.
 
-The tests are in `$ARGUMENTS`: test files, a test folder, or a document with manual test cases. If it is empty, ask the user. Also find the requirement or the documented behavior for each test. Without it, review against the test name and the comments, and say so.
+## Context
 
-## Steps
+1. Read `.agents/qa-project-context.md` if it exists. Use its conventions, test levels and requirement ID format.
+2. If it does not exist, read the existing tests and the documentation. Suggest `qa-project-context` once. Do not stop the work for it.
 
-1. **Map** each test to the behavior or the requirement that it checks.
-2. **Score** each test with [the review rubric](references/review-rubric.md): dimensions T1 to T7, 0 to 4 each, with evidence (file and line) for each score below 4.
-3. **Find the common weak patterns:**
-   - checks only "not null", "not empty", a type, a count, or a status code
-   - the expected value comes from the code under test (the same function, formula or mapper), or from a snapshot of the current output
-   - the unit under test is mocked, or the test checks only that a mock was called
-   - no negative or boundary case for a rule with a limit
-   - assertions in a loop or in a condition that can run zero times
+## Discovery questions
+
+1. Which tests are in scope? Where are the requirements or the documented behavior for them?
+2. Were the tests written by an AI agent or in this conversation? Then say so; an independent session gives a fairer review.
+
+## Workflow
+
+1. **Map** each test to the behavior or requirement that it checks. Without a requirement, review against the test name and the documentation, and say so.
+2. **Score** each test with [the review rubric](references/review-rubric.md): T1 to T7, 0 to 4 each, with evidence (file and line) for each score below 4.
+3. **Find the weak patterns:**
+   - checks only "not null", "not empty", a type, a count or a status code
+   - the expected value comes from the code under test, or from a snapshot of the current output
+   - the unit under test is mocked, or only a mock call is checked
+   - assertions in a loop or a condition that can run zero times
    - caught exceptions, early returns, disabled or skipped tests
-   - fixed sleeps, the real clock, random data without a seed, shared data between tests, order dependence
-   - one test checks many behaviors; the name does not match the checks
-4. **Group gaps** for each requirement: which positive, negative, boundary and error cases are missing.
-5. **Verdict** for each test: accept, revise or reject (rules in the rubric).
+   - fixed sleeps, the real clock, unseeded randomness, shared data, order dependence
+   - one test checks many behaviors, or the name does not match the checks
+4. **Group gaps** for each requirement: the missing positive, negative, boundary and error cases.
+5. **Verdict** for each test (rules in the rubric), and the top fixes.
 
 ## Output
 
@@ -38,17 +45,24 @@ Tests: <n> | accept <a> | revise <r> | reject <x>
 | Test | T1 | T2 | T3 | T4 | T5 | T6 | T7 | Verdict | Main problem | Fix |
 |---|---|---|---|---|---|---|---|---|---|---|
 
-### Missing cases by requirement
-- R1: no boundary case at the limit 100
-
-### Top 5 fixes
-1. ...
+Missing cases by requirement: ...
+Top 5 fixes: ...
 ```
 
-## Rules
+## Anti-patterns
 
-- Judge against the requirement, not against the implementation.
-- Each score below 4 has evidence and a concrete fix.
-- Do not reward length, comments or nice names. Reward tests that would fail on a wrong implementation.
-- If you wrote these tests in this conversation, say so. A separate session gives a more independent review.
-- Do not change the tests unless the user asks. To measure strength, offer `mutation-probe`.
+- **Rewarding length,** comments or good names instead of the power to fail.
+- **Reviewing against the implementation.** The code can be wrong; the requirement is the reference.
+- **Scores without evidence.** Each score below 4 needs a file and line and a fix.
+
+## Done when
+
+- Each test in scope has scores T1 to T7, a verdict and evidence for each score below 4.
+- Each revise or reject has a concrete fix.
+- The missing cases for each requirement are listed.
+
+## Related skills
+
+- `mutation-probe`: measures whether the tests catch faults.
+- `test-coverage-map`: the untested areas.
+- `unit-testing` and `api-testing`: rewrite the weak tests.
