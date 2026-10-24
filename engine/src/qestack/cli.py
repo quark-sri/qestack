@@ -60,7 +60,26 @@ def _git_root() -> Path:
     return Path.cwd()
 
 
-ROOT = Path(os.environ["QESTACK_ROOT"]) if os.environ.get("QESTACK_ROOT") else _git_root()
+BUILD_FILES = ("pom.xml", "build.gradle", "build.gradle.kts", "package.json", "pyproject.toml")
+
+
+def _find_root() -> Path:
+    """The project root: QESTACK_ROOT, else the nearest folder up to the git root with .qestack/,
+    else the current folder if it is a sub-project with its own build file (monorepo), else the git root."""
+    if os.environ.get("QESTACK_ROOT"):
+        return Path(os.environ["QESTACK_ROOT"])
+    top, cwd = _git_root().resolve(), Path.cwd().resolve()
+    for d in (cwd, *cwd.parents):
+        if (d / ".qestack" / "project.toml").is_file():
+            return d
+        if d == top:
+            break
+    if cwd != top and cwd.is_relative_to(top) and (any((cwd / b).exists() for b in BUILD_FILES) or any(cwd.glob("*.csproj"))):
+        return cwd
+    return top
+
+
+ROOT = _find_root()
 QE_DIR = ROOT / ".qestack"
 DATA_DIR = Path(__file__).resolve().parent / "data"
 PKG_DIR = Path(__file__).resolve().parent
@@ -266,7 +285,8 @@ def resolve_base(cfg: Cfg, arg: str | None) -> str | None:
 def changed_files(base: str | None) -> list[str]:
     files = set()
     if base:
-        r = git("diff", "--name-only", base)
+        # --relative: paths from ROOT (not from the git top), and only files below ROOT
+        r = git("diff", "--name-only", "--relative", base)
         files.update(f for f in r.stdout.splitlines() if f)
     r = git("ls-files", "--others", "--exclude-standard")
     files.update(f for f in r.stdout.splitlines() if f)
@@ -274,7 +294,7 @@ def changed_files(base: str | None) -> list[str]:
 
 
 def git_show(ref: str, path: str) -> str | None:
-    r = git("show", f"{ref}:{path}")
+    r = git("show", f"{ref}:./{path}")  # "./": the path is from ROOT, which can be below the git top
     return r.stdout if r.returncode == 0 else None
 
 

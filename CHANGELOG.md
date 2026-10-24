@@ -17,6 +17,15 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - `qe-skills` reviewer personas: 8 agents in `plugins/qe-skills/agents/` (AI Behavior Auditor, Hallucination Checker, Domain Oracle Reviewer, Saboteur, Test Automation Architect, Determinism and Flakiness Engineer, Maintainability Craftsperson, Suite Cost and Speed Reviewer). In this plugin, only the `test-review-panel` skill uses them. No persona has an edit tool: personas find and report, and the caller changes code. The Saboteur returns a fault plan; the panel runs it with the `mutation-probe` method in an isolated copy. All personas share one "Reviewer rules" section: no fixes, file:line evidence, and a findings block in one format. Users can start a persona directly. The panel starts several, in parallel, and merges the findings. The panel saves each run in `qa-reviews/<date>-<scope>/` (`panel-report.md`, `findings.json`, `personas/`). The other skills do not depend on them.
 - `scripts/validate_repo.py` checks every plugin, the reference files of each skill, duplicate skill names and the marketplace sources. For `qe-skills`, it also checks the routing parts of each description, the related skills, the required sections, the shared context and that `SKILL.md` names no tools.
 
+- Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
+
+### Fixed
+
+- The engine finds the nearest `.qestack/` from the current folder, and `qestack init` in a sub-project with its own build file creates `.qestack/` there (monorepos). Before, it always used the top of the git repository.
+- In a project below the git top, `changed_files` and the base version of a file used paths from the git top. Now they use paths from the project root (`git diff --relative`, `git show <ref>:./<path>`).
+- Java stack: `-Dfailsafe.rerunFailingTestsCount=0`. Failsafe has its own property name, so reruns of integration tests were not turned off.
+- Java stack commands are verified with Maven 3.10.0, Surefire and Failsafe 3.6.0, PIT 1.30.1, JUnit 5.14.4 and Java 25.
+
 ### Changed (architecture review)
 
 - Held-out faults: a share of the seeded faults (`loop.holdout_ratio`) never appears in the feedback. The seed gate uses them.

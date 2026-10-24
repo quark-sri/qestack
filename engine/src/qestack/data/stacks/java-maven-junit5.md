@@ -69,7 +69,7 @@ The gate tool runs only the tests of one feature. It passes `-Dqe.groups=feature
 
 ### 3.2 Random order for the flakiness gate
 
-The gate tool passes the JUnit random orderers as system properties. If your Surefire version does not forward them to the test JVM, add this:
+The gate tool passes the JUnit random orderers as system properties. Surefire 3.6.0 forwards them to the test JVM (verified: each seed gives another order). If an older Surefire version does not, add this:
 
 ```xml
 <configuration>
@@ -158,12 +158,12 @@ public class DiscountService {
 
 ## 6. Check the commands once by hand
 
-These command properties are not verified with a real build yet (release 0.1, Task 3 in `docs/HANDOFF.md`). Run each command once in your project. If a property does not work with your plugin versions, override `[commands]` in `.qestack/project.toml`.
+These command properties are verified with Maven 3.10.0, Surefire and Failsafe 3.6.0, PIT 1.30.1, JUnit 5.14.4 and Java 25, in `examples/order-service-maven`. Maven ignores an unknown `-D` property without a warning, so the check used the parameter list of each plugin, not only a green build. Older plugin versions can use other names: run each command once in your project, and override `[commands]` in `.qestack/project.toml` if needed.
 
 | Property | Plugin | Check |
 |---|---|---|
 | `-Dmaven.test.failure.ignore=true` | Surefire, Failsafe | Failsafe tests run when a unit test fails |
-| `-Dsurefire.rerunFailingTestsCount=0` | Surefire | No reruns |
+| `-Dsurefire.rerunFailingTestsCount=0`, `-Dfailsafe.rerunFailingTestsCount=0` | Surefire, Failsafe (each has its own name) | No reruns |
 | `-DfailIfNoTests=false`, `-Dsurefire.failIfNoSpecifiedTests=false` | Surefire | A module without feature tests does not fail |
 | `-Djunit.jupiter.*.order.default`, `-Djunit.jupiter.execution.order.random.seed` | Surefire to JUnit | Test order changes between runs (else use section 3.2) |
 | `-DtargetTests`, `-DexcludedGroups`, `-DfailWhenNoMutations`, `-DoutputFormats`, `-DtimestampedReports` | pitest-maven | `target/pit-reports/mutations.xml` exists and has only the feature tests in `killingTests` |

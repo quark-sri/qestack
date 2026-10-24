@@ -74,22 +74,18 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 
 ### Done and checked
 
-- Engine with 19 commands. 26 end-to-end tests pass: `python3 -m unittest discover -s engine/tests`.
+- Engine with 19 commands. 30 end-to-end tests pass: `python3 -m unittest discover -s engine/tests`.
 - CI is green on ubuntu and macOS, Python 3.11 to 3.13. The CI builds and installs the package, so the package data (`qestack/data/**`) is in the wheel.
 - Plugin `qestack`: 10 skills, 4 agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
 - Plugin `qe-skills`: 35 skills, 8 personas, `test-review-panel` with the findings format.
 - `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks both plugins, the `qe-skills` rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
+- Task 3: `examples/order-service-maven` runs every gate with real Maven. All Java stack command properties are checked against the plugin parameter lists (Surefire and Failsafe 3.6.0, PIT 1.30.1). Random order, the Failsafe feature filter and PIT on Java 25 work.
 - Local tools on the MacBook: Java 25 (Temurin) and Maven 3.10.0 through SDKMAN, Python 3.14. The engine runs from a virtual environment (`pip install -e ./engine`).
 
 ### Not verified yet
 
 | Item | Risk | Task |
 |---|---|---|
-| The Maven commands in `engine/src/qestack/data/stacks/java-maven-junit5.toml` | Property names can be wrong for the current plugin versions. New since the review: `-fae`, `-Dmaven.test.failure.ignore=true`, `-Dsurefire.rerunFailingTestsCount=0`, the random seed, PIT `-DtargetTests={feature_test_classes}`, `-DfailWhenNoMutations=false` | 3 |
-| PIT `-DexcludedGroups=integration,ui` | The PIT Maven property name may differ. | 3 |
-| Surefire forwards `-Djunit.jupiter...order.default` to the test JVM | Random order may not work; the stack guide has a `configurationParameters` fallback. | 3 |
-| Failsafe `<groups>${qe.groups}</groups>` | Not tested with a real build. | 3 |
-| Java 25 | The local JDK is 25. The examples target Java 17. PIT must support Java 25 bytecode tools. If it does not, install Java 21 with SDKMAN. | 3 |
 | The plugins in a real Claude Code session | Skill discovery, agent start, the hook and the review panel are not tested. | 4a, 4b |
 | Stack recipe code in `qe-skills` | The recipe samples (Pact, k6, Gatling, axe and others) were not run. | later |
 
@@ -120,7 +116,7 @@ Use a task list. Commit after each task. End each commit message with the traile
 | 1. Push to GitHub | Done. Public, by owner decision. |
 | 2. Make CI green | Done. |
 | 4a. Test `qe-skills` in a real session | Ready. The owner runs the slash commands. |
-| 3. Runnable Maven example | Next. |
+| 3. Runnable Maven example | Done, except step 3b (the strengthened tests come from `/qe-harden` in task 4b). |
 | 4b. Test the `qestack` plugin in a real session | After task 3. |
 | 5. Integration example with database and Kafka | After 4b. |
 | 6. Multi-module Maven | After 5. |

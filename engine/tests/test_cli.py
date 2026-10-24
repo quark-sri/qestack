@@ -42,10 +42,13 @@ mutation = "true"
 """
 
 
-def run(cwd, *args, stdin=None, env_extra=None):
+def run(cwd, *args, stdin=None, env_extra=None, root=True):
+    """root=False: no QESTACK_ROOT, so the engine must find the project root itself."""
     env = dict(os.environ)
     env["PYTHONPATH"] = str(SRC)
-    env["QESTACK_ROOT"] = str(cwd)
+    env.pop("QESTACK_ROOT", None)
+    if root:
+        env["QESTACK_ROOT"] = str(cwd)
     for k in ("QESTACK_FEATURE", "GITHUB_HEAD_REF", "SPECIFY_FEATURE", "QESTACK_BASE_REF"):
         env.pop(k, None)
     env.update(env_extra or {})
@@ -545,6 +548,13 @@ class InitShowTests(unittest.TestCase):
         finally:
             shutil.rmtree(d)
 
+    def test_java_stack_disables_reruns_in_surefire_and_failsafe(self):
+        import tomllib
+        cmds = tomllib.loads((SRC / "qestack/data/stacks/java-maven-junit5.toml").read_text())["commands"]
+        for name in ("test_feature", "test_feature_random"):
+            self.assertIn("-Dsurefire.rerunFailingTestsCount=0", cmds[name])
+            self.assertIn("-Dfailsafe.rerunFailingTestsCount=0", cmds[name])  # Failsafe has its own name
+
     def test_show(self):
         d = Path(tempfile.mkdtemp())
         try:
@@ -557,6 +567,62 @@ class InitShowTests(unittest.TestCase):
             self.assertEqual(r.returncode, 1)
         finally:
             shutil.rmtree(d)
+
+
+class SubProjectTests(unittest.TestCase):
+    """A project in a subfolder of a git repository (a monorepo), run without QESTACK_ROOT."""
+
+    def setUp(self):
+        self.top = Path(tempfile.mkdtemp(prefix="qestack-mono-"))
+        top, svc = self.top, self.top / "svc"
+        git(top, "init", "-q", "-b", "main")
+        git(top, "config", "user.email", "test@example.com")
+        git(top, "config", "user.name", "test")
+        (svc / ".qestack").mkdir(parents=True)
+        (svc / ".qestack" / "project.toml").write_text(PROJECT_TOML)
+        (svc / f"specs/{FEATURE}").mkdir(parents=True)
+        shutil.copy(FIX / "spec.md", svc / f"specs/{FEATURE}/spec.md")
+        (svc / PROD_FILE).parent.mkdir(parents=True)
+        shutil.copy(FIX / "java" / "Discount.java", svc / PROD_FILE)
+        (svc / TEST_FILE).parent.mkdir(parents=True)
+        shutil.copy(FIX / "java" / "GoodDiscountTest.java", svc / TEST_FILE)
+        shutil.copy(FIX / "fake_runner.py", svc / "fake_runner.py")
+        (top / "other/src/main/java").mkdir(parents=True)
+        (top / "other/src/main/java/Other.java").write_text("class Other {}\n")
+        git(top, "add", "-A")
+        git(top, "commit", "-qm", "init")
+        git(top, "checkout", "-q", "-b", FEATURE)
+        self.svc = svc
+
+    def tearDown(self):
+        shutil.rmtree(self.top, ignore_errors=True)
+
+    def test_finds_the_root_and_reports_paths_from_it(self):
+        p = self.svc / PROD_FILE
+        p.write_text(p.read_text() + "\n// changed\n")
+        (self.top / "other/src/main/java/Other.java").write_text("class Other { int x; }\n")
+        r = run(self.svc / "src" / "main", "context", "--feature", FEATURE, root=False)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(json.loads(r.stdout)["changed_source_files"], [PROD_FILE])
+
+    def test_guard_reads_the_base_version_from_a_subfolder(self):
+        r = run(self.svc, "lock", root=False)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        p = self.svc / TEST_FILE
+        p.write_text(p.read_text().replace('        assertEquals("ORD-400", e.getMessage());\n', ""))
+        r = run(self.svc, "guard", root=False)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        guard = json.loads((self.svc / RUNS / "guard.json").read_text())
+        self.assertIn("ASSERTIONS_REDUCED", {v["type"] for v in guard["violations"]})
+
+    def test_init_in_a_sub_project_creates_its_own_folder(self):
+        sub = self.top / "billing"
+        sub.mkdir()
+        (sub / "pom.xml").write_text("<project/>")
+        r = run(sub, "init", root=False)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertTrue((sub / ".qestack/project.toml").exists())
+        self.assertFalse((self.top / ".qestack").exists())
 
 
 if __name__ == "__main__":

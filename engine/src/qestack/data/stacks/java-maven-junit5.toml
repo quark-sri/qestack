@@ -89,9 +89,10 @@ compile = "mvn -q -B -DskipTests test-compile"
 # (in the red phase every test fails). The engine reads the XML reports, not the exit code.
 # -fae: in a multi-module build, the other modules continue after a failure.
 # -Dsurefire.rerunFailingTestsCount=0: a rerun must not hide a flaky test.
-# UNVERIFIED with a real build: check these properties in Task 3 (see java-maven-junit5.md).
-test_feature = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false"
-test_feature_random = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Djunit.jupiter.testmethod.order.default='org.junit.jupiter.api.MethodOrderer$Random' -Djunit.jupiter.testclass.order.default='org.junit.jupiter.api.ClassOrderer$Random' -Djunit.jupiter.execution.order.random.seed={seed}"
+# -Dfailsafe.rerunFailingTestsCount=0: Failsafe has its own property name.
+# Verified with Maven 3.10.0, Surefire/Failsafe 3.6.0, PIT 1.30.1, JUnit 5.14.4, Java 25 (examples/order-service-maven).
+test_feature = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -Dfailsafe.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false"
+test_feature_random = "mvn -q -B -fae verify -Dqe.groups={feature_tag} -Dmaven.test.failure.ignore=true -Dsurefire.rerunFailingTestsCount=0 -Dfailsafe.rerunFailingTestsCount=0 -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Djunit.jupiter.testmethod.order.default='org.junit.jupiter.api.MethodOrderer$Random' -Djunit.jupiter.testclass.order.default='org.junit.jupiter.api.ClassOrderer$Random' -Djunit.jupiter.execution.order.random.seed={seed}"
 # PIT on the changed classes, with the feature tests only. Excludes the slow container tests (tag "integration").
 mutation = "mvn -q -B -fae test-compile org.pitest:pitest-maven:mutationCoverage -DtargetClasses={target_classes} -DtargetTests={feature_test_classes} -DexcludedGroups=integration,ui -DfailWhenNoMutations=false -DoutputFormats=XML,HTML -DtimestampedReports=false"
 

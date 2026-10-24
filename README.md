@@ -157,6 +157,8 @@ Four agents with separate roles do the work:
 | `qe-test-judge` | Independent review with a rubric and file:line evidence | Change any code |
 | `qe-fault-seeder` | Hidden realistic faults as patches | Change tests; tell the writer about the faults |
 
+See it on a real build: [`examples/order-service-maven`](examples/order-service-maven/) runs every gate with Maven, Surefire, Failsafe and PIT, and shows the real numbers for a weak AI-written test class.
+
 Read more: [why qestack and the metrics](docs/why-qestack.md), [architecture](docs/architecture.md), [configuration](docs/configuration.md).
 
 ## The gates
@@ -181,7 +183,7 @@ All values are in `.qestack/project.toml`. Start lower on an existing codebase.
 - **Hooks help, but they are not security.** A shell trick can bypass them. The CI guard against the base branch is the authority. Use CODEOWNERS for `.qestack/`.
 - **Mutation testing is slow** on tests that start containers. The Java stack excludes the `integration` and `ui` tags from PIT. Hidden faults measure those tests.
 - **The judge is a model.** Calibrate it each sprint with `/qe-calibrate`.
-- **Check the build commands once by hand.** Plugin property names can differ between versions.
+- **Check the build commands once by hand.** The Java commands are verified with Surefire and Failsafe 3.6.0 and PIT 1.30.1. Other plugin versions can use other property names.
 
 ## Contributing
 
