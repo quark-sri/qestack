@@ -154,6 +154,12 @@ for mode in sorted({frontmatter(p)[0].get("mode") for p in persona_files} & MODE
 for a in (QE / "agents").glob("*.md"):
     for m in TOOL_NAMES.finditer(frontmatter(a)[1]):
         err(f"{a.relative_to(ROOT)}: names the tool '{m.group(0)}'")
+for token in ("qa-reviews/", "panel-report.md", "findings.json", "references/findings-format.md"):
+    if persona_files and token not in panel_body:
+        err(f"{(PANEL / 'SKILL.md').relative_to(ROOT)}: does not name '{token}' (review folder and findings format)")
+for a in MODE_AGENTS.values():
+    if (QE / "agents" / f"{a}.md").exists() and "findings-format.md" not in (QE / "agents" / f"{a}.md").read_text(encoding="utf-8"):
+        err(f"plugins/qe-skills/agents/{a}.md: does not return the findings block (findings-format.md)")
 panel_names = sorted(personas | {"test-reviewer", "test-saboteur"})
 persona_rx = re.compile(r"`(" + "|".join(map(re.escape, panel_names)) + r")`")
 for d in skills:

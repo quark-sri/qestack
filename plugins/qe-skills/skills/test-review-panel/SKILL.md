@@ -21,6 +21,7 @@ One reviewer sees one kind of problem. A panel of reviewers with different jobs 
 2. Where are the requirements or the documented behavior?
 3. Did an AI agent write the work? Then the AI Behavior Auditor and the Hallucination Checker are required.
 4. Can the panel run tests? The Saboteur and the Determinism and Flakiness Engineer need a clean working tree and a safe test command.
+5. Where do the reports go? Use the `Review reports` line of the context file, or `qa-reviews/`. On the first run, ask once whether the team commits this folder or ignores it in version control.
 
 ## The panel
 
@@ -53,15 +54,27 @@ The lead starts one agent for each persona, with the persona file in the brief. 
 
 ## Workflow
 
-1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. This is the brief.
+1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. This is the brief. Add the path of [the findings format](references/findings-format.md), so that each reviewer returns a findings block.
 2. **Choose the panel.** Use the "Default" column, or the `--personas` list from the user. Say which personas you chose and why.
 3. **Start one agent for each persona.** Each brief has the same scope and facts, and the path of one persona file. Start the `read-only` personas in parallel with `test-reviewer`. Then start each `changes-code` persona alone with `test-saboteur`, because it changes files and runs tests. If the host cannot start separate reviewers, read each persona file and apply it yourself, one at a time. Say in the report that the review was not independent.
 4. **Verify.** For each blocker and major finding, open the evidence. Reject findings that the evidence does not support, and say why.
 5. **Merge.** Two findings are the same when they have the same root cause at the same place. Keep the strongest evidence, list all personas that found it, and use the highest severity.
 6. **Rank.** Blockers first, then by how a defect could reach users: wrong results, missing protection, false confidence, then cost and readability.
-7. **Check the tree.** Confirm that the working tree is equal to the start.
+7. **Check the tree.** Confirm that the working tree is equal to the start. Do this before you write the reports, so that the check sees only the code.
+8. **Save.** Write the review folder: `panel-report.md`, `findings.json` and `personas/<name>.md`, as [the findings format](references/findings-format.md) says. Never overwrite an earlier run.
+9. **Hand over.** Show the verdict, the top findings and the folder path in the conversation. Offer to publish `panel-report.md` as a shareable page, or to post it as a pull request comment, if the host can do this. Do not publish without a yes.
 
 ## Output
+
+The review folder (default `qa-reviews/<YYYY-MM-DD>-<scope-slug>/`):
+
+```
+panel-report.md        merged, ranked findings and the verdict, for people
+findings.json          the same findings, machine-readable, for pipelines and trends
+personas/<name>.md     the full message of each reviewer, unchanged
+```
+
+`panel-report.md`:
 
 ```
 ## Test review panel: <scope>
@@ -84,6 +97,7 @@ Questions for a person: ...
 - **Pasting eight reports.** The lead must merge and rank. The user wants one list.
 - **Counting votes.** Three personas that agree on a weak finding do not make it strong. Evidence does.
 - **The Saboteur in parallel with test runs.** Its faults change the results of the other personas.
+- **Reviewers that write files.** Reviewers return their reports. Only the lead writes the review folder, after the tree check.
 
 ## Done when
 
@@ -91,6 +105,7 @@ Questions for a person: ...
 - Each blocker and major finding has evidence that the lead checked.
 - The findings are merged, ranked and have a fix.
 - The working tree is equal to the start.
+- The review folder has `panel-report.md`, `findings.json` and one file for each persona, and the user has its path.
 
 ## Related skills
 

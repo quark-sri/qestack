@@ -67,6 +67,7 @@
 - Tags or groups: <...>
 - Test data approach: <factories, fixtures, seeded data, per-test data>
 - Requirement IDs: <format and location>
+- Review reports: <folder for review panel reports, default qa-reviews/; committed or ignored>
 
 ## Open questions
 

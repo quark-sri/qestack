@@ -35,3 +35,5 @@ Persona: <title> | Mode: changes-code | Scope: <scope> | Working tree restored: 
 ```
 
 If the working tree is not equal to the start, say so in the first line, and list the files.
+
+End the report with the findings block: one fenced JSON block in the shape of `references/findings-format.md` of the `test-review-panel` skill. The brief gives its path. You return the report as your final message. You do not write it to a file. The lead saves it.

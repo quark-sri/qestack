@@ -33,3 +33,5 @@ Use the output format of the persona. Start the report with one line:
 ```
 Persona: <title> | Mode: read-only | Scope: <scope> | Working tree changed: no
 ```
+
+End the report with the findings block: one fenced JSON block in the shape of `references/findings-format.md` of the `test-review-panel` skill. The brief gives its path. You return the report as your final message. You do not write it to a file. The lead saves it.

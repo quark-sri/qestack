@@ -74,6 +74,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 2. The `mode` of each persona file chooses the agent. The `test-reviewer` agent runs the `read-only` personas, in parallel. It has no edit tool. The `test-saboteur` agent runs the `changes-code` personas (today only the Saboteur), alone and last. It changes one place in the production code at a time and restores it.
 3. Each reviewer gets the same scope and one persona file. A reviewer does not see the other reports.
 4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
+5. The reviewers only return their reports. The panel saves the run in `qa-reviews/<date>-<scope>/`: `panel-report.md` for people, `findings.json` for pipelines and trends, and `personas/<name>.md` with each full report. It can also offer to publish the report as a page or a pull request comment.
 
 The persona files are in [`plugins/qe-skills/skills/test-review-panel/references/personas/`](plugins/qe-skills/skills/test-review-panel/references/personas/). To add a persona, add a file with the same frontmatter and sections, and link it from the panel table. The validator checks the file, the link and the agent for its mode.
 
