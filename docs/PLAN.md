@@ -9,11 +9,11 @@
 
 ## 1. Vision
 
-AI agents can write many tests very fast. Many of these tests look correct, but they do not find bugs. Coverage and pass rates do not show this problem.
+AI coding agents now write code, tests, reviews and specs. qestack's purpose is to build a growing toolbox of Claude Code skills, agents and gates for **AI Quality Engineering**: making AI-assisted quality work trustworthy, not just fast.
 
-qestack is the quality layer for AI-written tests. It gives AI agents a process to write the right tests. It then proves, with objective evidence, that the tests find bugs.
+Release 0.1 ships the first capability. AI agents can write many tests very fast. Many of these tests look correct, but they do not find bugs. Coverage and pass rates do not show this problem. qestack gives AI agents a process to write the right tests, and it proves, with objective evidence, that the tests find bugs. Later releases (section 7) add more AI Quality Engineering skills beyond test quality: for example spec review, code review for testability, and bug triage.
 
-**One-line description:** qestack: AI test quality. Skills, agents and gates that prove your AI-written tests catch bugs.
+**One-line description:** qestack: skills, plugins and agents for AI Quality Engineering. Release 0.1: gates that prove your AI-written tests catch bugs.
 
 ## 2. The problem
 
