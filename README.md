@@ -168,6 +168,10 @@ All values are in `.qestack/project.toml`. Start lower on an existing codebase.
 
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md). All documentation and prompts use [Simplified Technical English](docs/writing-style.md).
 
+## Acknowledgements
+
+The skill structure, the description routing and the shared context convention (`.agents/qa-project-context.md`) of the `qe-skills` plugin are inspired by [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) (MIT). The text in this repository is our own.
+
 ## License
 
 [Apache License 2.0](LICENSE)
