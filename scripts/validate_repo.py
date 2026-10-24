@@ -114,7 +114,7 @@ for f in agents:
             err(f"{f.relative_to(ROOT)}: '{k}' missing")
     long_sentences(f, body)
 
-# qe-skills personas: one agent per persona, minimal tools, one shared "Reviewer rules" section.
+# qe-skills personas: one agent per persona, no edit tools, one shared "Reviewer rules" section.
 # Only test-review-panel may use them, so that the other skills stay self-contained.
 QE = ROOT / "plugins" / "qe-skills"
 PANEL = QE / "skills" / "test-review-panel"
@@ -126,15 +126,11 @@ rules = {}
 for p in persona_agents:
     fm, body = frontmatter(p)
     rp = p.relative_to(ROOT)
-    edits = bool(EDIT_TOOLS.search(fm.get("tools", "")))
-    sections = ["## Reviewer rules", "## Scope", "## Evidence rule", "## Output", "## Limits"]
-    if edits:
-        sections.append("## Safety rules")
-    for section in sections:
+    if EDIT_TOOLS.search(fm.get("tools", "")):
+        err(f"{rp}: a persona must not have edit tools; personas report, the caller changes code")
+    for section in ("## Reviewer rules", "## Scope", "## Evidence rule", "## Output", "## Limits"):
         if section not in body:
             err(f"{rp}: section '{section}' missing")
-    if edits != ("changes production code" in fm.get("description", "")):
-        err(f"{rp}: the description must say 'changes production code' if and only if the tools can edit")
     m = re.search(r"## Reviewer rules\n(.*?)\n## ", body, re.S)
     if m:
         rules[p.stem] = m.group(1)

@@ -73,6 +73,7 @@ qa-reviews/<YYYY-MM-DD>-<scope-slug>/
 ```
 
 - `verdict`: `ready`, `ready-after-fixes` or `not-ready`.
+- `fault_plan` (when the Saboteur ran): one entry for each fault, `{"id": "SB-1", "result": "killed | survived | invalid | skipped", "prediction_correct": true}`. A survivor becomes a finding with the status `proven`.
 - `lead_check`: `accepted` after the lead opened the evidence. Blockers and major findings must have it.
 - Keep `found_by` and `source_ids` in the same order, so that each merged finding points back to the persona reports.
 

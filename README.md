@@ -41,7 +41,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
-- **Reviewer personas.** Eight agents, each with one job, a checklist, an evidence rule (file and line) and only the tools that its job needs. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin stay self-contained and do not depend on the personas.
+- **Reviewer personas.** Eight agents, each with one job, a checklist, an evidence rule (file and line) and no edit tools. Personas find and report; they never change a file. The caller changes code. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin stay self-contained and do not depend on the personas.
 - **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
 
 | Category | Skills |
@@ -62,7 +62,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, weaker assertions, skips, test-only code, false 'all pass' claims |
 | Hallucination Checker | `hallucination-checker` | APIs, fixtures, properties, flags, paths and versions that do not exist |
 | Domain Oracle Reviewer | `domain-oracle-reviewer` | wrong expected results, misread or invented rules, missing negative and error cases |
-| Saboteur | `saboteur` | faults that the tests do not catch (it breaks the code and restores it) |
+| Saboteur | `saboteur` | faults that the tests would not catch (it designs a fault plan; the caller runs it) |
 | Test Automation Architect | `test-automation-architect` | wrong test level, pyramid shape, page objects, helpers, data and pipeline fit |
 | Determinism and Flakiness Engineer | `determinism-flakiness-engineer` | sleeps, real clock, unseeded random data, shared state, order, retries |
 | Maintainability Craftsperson | `maintainability-craftsperson` | names, duplication, mystery data, hidden assertions, over-mocking, failure messages |
@@ -73,7 +73,8 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 **How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qe-skills:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
 
 1. The panel chooses the personas for the work. AI-written work always gets the AI Behavior Auditor and the Hallucination Checker.
-2. The read-only personas run in parallel. They have no edit tool. The Saboteur runs alone and last. It changes one place in the production code at a time and restores it.
+2. The personas run in parallel. None of them has an edit tool. The Saboteur returns a fault plan: the exact change for each fault, and a prediction.
+   After all reports, the panel runs the fault plan with the `mutation-probe` method. It works in an isolated copy, one fault at a time, and marks each prediction as proven or wrong.
 3. Each persona gets the same brief. A persona does not see the other reports.
 4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
 5. The reviewers only return their reports. The panel saves the run in `qa-reviews/<date>-<scope>/`: `panel-report.md` for people, `findings.json` for pipelines and trends, and `personas/<name>.md` with each full report. It can also offer to publish the report as a page or a pull request comment.
@@ -81,8 +82,8 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 **Write your own persona.** The personas are in [`plugins/qe-skills/agents/`](plugins/qe-skills/agents/). Copy one, and keep three things:
 
 - the "Reviewer rules" section unchanged, so that your persona returns the same findings block
-- the sections Scope, Checklist, Method, Evidence rule, Output and Limits, plus Safety rules if it can edit files
-- the fewest tools that the job needs; give an edit tool only to a persona that must change code
+- the sections Scope, Checklist, Method, Evidence rule, Output and Limits
+- read tools only, plus command access if the job must run read-only commands or tests; never an edit tool
 
 To add it to the panel, add a row to the table in `test-review-panel`. The validator checks the sections, the shared rules, the tools and the table.
 
