@@ -1,0 +1,22 @@
+# Ruleset: Playwright UI testing (Java and .NET). Use with any stack.
+
+[language]
+extra_assertion_regexes = [
+  # Java: PlaywrightAssertions.assertThat(...) is already covered by the Java stack.
+  # .NET: Assertions.Expect(...) is covered by the .NET stack.
+  '\bexpect\s*\(',
+]
+extra_shallow_statement_regexes = [
+  # Only "visible" or "attached" or "URL" is checked: not a business outcome.
+  '^assertThat\(.*\)\.isVisible\(\)$',
+  '^assertThat\(.*\)\.isAttached\(\)$',
+  '^assertThat\(page\)\.hasURL\(.*\)$',
+  '^Expect\(.*\)\.ToBeVisibleAsync\(\)$',
+  '^Expect\(.*\)\.ToBeAttachedAsync\(\)$',
+  '^Expect\(Page\)\.ToHaveURLAsync\(.*\)$',
+]
+
+[smells.patterns]
+fixed_sleep = 'Thread\.sleep\s*\(|Thread\.Sleep\s*\(|Task\.Delay\s*\(|TimeUnit\.\w+\.sleep\s*\(|\.waitForTimeout\s*\(|\.WaitForTimeoutAsync\s*\('
+xpath_or_long_css = '[Ll]ocator\(\s*"(?:/{1,2}|xpath=)|[Ll]ocator\(\s*"[^"]*(?:\s*>\s*[^"]*){3,}"'
+nth_locator = '\.[Nn]th\s*\(\s*\d+\s*\)'

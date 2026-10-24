@@ -1,0 +1,20 @@
+{
+  "name": "qestack",
+  "owner": {
+    "name": "quark-sri"
+  },
+  "metadata": {
+    "description": "qestack AI test quality: skills, agents and gates that prove AI-written tests catch bugs.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "qestack",
+      "source": "./plugins/qestack",
+      "description": "qestack AI test quality: spec-first test design, blind test writing, red-before-green, test locks, hidden faults, mutation score and an independent judge.",
+      "version": "0.1.0",
+      "category": "testing",
+      "keywords": ["testing", "test-quality", "qa", "mutation-testing", "test-automation"]
+    }
+  ]
+}

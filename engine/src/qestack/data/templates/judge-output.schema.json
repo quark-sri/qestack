@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tq judge.json (test-review mode)",
+  "type": "object",
+  "required": ["feature", "mode", "iteration", "tests"],
+  "properties": {
+    "feature": {"type": "string"},
+    "mode": {"const": "test-review"},
+    "iteration": {"type": "integer", "minimum": 1},
+    "judge_model": {"type": "string"},
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "scores", "verdict"],
+        "properties": {
+          "key": {"type": "string", "description": "Exact key from lint.json, e.g. src/test/java/.../OrderApiTest.java::OrderApiTest.createsOrder"},
+          "requirement_ids": {"type": "array", "items": {"type": "string"}},
+          "scores": {
+            "type": "object",
+            "required": ["R1", "R2", "R3", "R4", "R5", "R6", "R7"],
+            "additionalProperties": false,
+            "patternProperties": {
+              "^R[1-7]$": {
+                "type": "object",
+                "required": ["score", "evidence"],
+                "properties": {
+                  "score": {"type": "integer", "minimum": 0, "maximum": 4},
+                  "evidence": {"type": "string", "description": "file:line, file:start-end or spec.md#ID"}
+                }
+              }
+            }
+          },
+          "verdict": {"enum": ["accept", "revise", "reject"]},
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["dimension", "severity", "evidence", "issue", "fix"],
+              "properties": {
+                "dimension": {"type": "string"},
+                "severity": {"enum": ["critical", "major", "minor"]},
+                "evidence": {"type": "string"},
+                "issue": {"type": "string"},
+                "fix": {"type": "string"}
+              }
+            }
+          },
+          "confidence": {"enum": ["high", "medium", "low"]}
+        }
+      }
+    },
+    "requirement_findings": {
+      "type": "array",
+      "items": {"type": "object", "required": ["id", "issue", "fix"],
+                "properties": {"id": {"type": "string"}, "issue": {"type": "string"}, "fix": {"type": "string"}}}
+    },
+    "suspected_product_bugs": {
+      "type": "array",
+      "items": {"type": "object", "required": ["id", "req_id", "summary", "evidence"],
+                "properties": {"id": {"type": "string"}, "req_id": {"type": "string"}, "summary": {"type": "string"},
+                               "evidence": {"type": "string"}, "test": {"type": "string"}}}
+    },
+    "equivalent_mutant_candidates": {
+      "type": "array",
+      "items": {"type": "object", "required": ["file", "line", "mutator", "reason"],
+                "properties": {"file": {"type": "string"}, "line": {"type": "integer"},
+                               "mutator": {"type": "string"}, "reason": {"type": "string"}}}
+    },
+    "summary": {"type": "string"}
+  }
+}

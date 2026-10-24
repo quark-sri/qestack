@@ -1,0 +1,4 @@
+# Add to .github/CODEOWNERS (or your platform's equivalent). Replace the team name.
+/.qestack/                              @your-org/qa-architects
+/.claude/settings.json                  @your-org/qa-architects
+/.claude/commands/speckit.test*.md      @your-org/qa-architects

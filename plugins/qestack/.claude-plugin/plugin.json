@@ -1,0 +1,12 @@
+{
+  "name": "qestack",
+  "version": "0.1.0",
+  "description": "qestack AI test quality: skills, agents and gates that prove AI-written tests catch bugs.",
+  "author": {
+    "name": "quark-sri"
+  },
+  "homepage": "https://github.com/quark-sri/qestack",
+  "repository": "https://github.com/quark-sri/qestack",
+  "license": "Apache-2.0",
+  "keywords": ["testing", "test-quality", "qa", "mutation-testing", "test-automation", "ai-agents"]
+}

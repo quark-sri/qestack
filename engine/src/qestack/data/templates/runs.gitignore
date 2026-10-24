@@ -1,0 +1,18 @@
+# qestack gate results. Most files are regenerated. Keep the decision records in git.
+*
+!.gitignore
+!*/
+!*/scorecard.json
+!*/judge.json
+!*/judge-basis.json
+!*/plan-review.json
+!*/red.json
+!*/seed-feedback.json
+!*/history.jsonl
+!*/human-audit.json
+!*/calibration.json
+!*/suspected-bugs.md
+!*/suspected-test-defects.md
+!calibration-history.jsonl
+# Fault details must stay hidden from later agent sessions.
+*/faults/

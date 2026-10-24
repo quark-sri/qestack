@@ -1,0 +1,56 @@
+# =====================================================================================
+# qestack PROJECT SETTINGS - edit this file for your project.
+#
+# Load order: core defaults -> stack -> rulesets -> this file. Values here win.
+# Use "extra_<key>" to append to a list instead of replacing it.
+# Agents must not edit this file (protected). Change it yourself, with code review.
+# List the bundled stacks and rulesets: qestack show stacks / qestack show rulesets
+# =====================================================================================
+
+[project]
+name = "my-service"
+# Exactly one stack: language, build and test tools.
+stack = "java-maven-junit5"
+# Zero or more rulesets: rules for one area of testing.
+rulesets = ["api-http", "database", "kafka"]
+# Project guidance that every agent reads.
+rules_doc = ".qestack/project-rules.md"
+
+[git]
+base_ref = "origin/main"
+
+[paths]
+# Where the specifications live. One folder per feature, each with a spec.md.
+specs_dir = "specs"
+
+[language]
+# Assertion entry points of YOUR libraries. Without these, the lint gate reports false
+# "NO_ASSERTION" findings. One regex per entry point. Examples (replace with real names):
+extra_custom_assertion_regexes = [
+  # '\.assertStatus\w*\s*\(',
+  # '\.assertBody\w*\s*\(',
+  # '\bApiAssert\.\w+\s*\(',
+  # '\bDbAssert\.\w+\s*\(',
+  # '\bKafkaAssert\.\w+\s*\(',
+]
+# Helpers that check ONLY the HTTP status (not enough alone). The statement text starts
+# at the matched entry point, so "api.assertStatus(201)" is seen as ".assertStatus(201)".
+extra_shallow_statement_regexes = [
+  # '^\.assertStatus\w*\(',
+]
+
+# [commands]
+# Override the stack commands if your build differs. Example for a multi-module build:
+# test_feature = "mvn -q -B -pl order-service -am verify -Dqe.groups={feature_tag} -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false"
+
+[gates]
+# Start lower on an existing codebase and raise the values each sprint.
+# mutation_min = 0.60
+# seed_min = 0.75
+#
+# Brownfield change with no red phase? Remove "red" and write the reason:
+# required = ["hollow", "no_assertion", "skipped", "trace", "flaky", "failing", "mutation", "seed", "guard", "judge"]
+# required_reason = "Legacy module; tests added after the code. A red check is not possible."
+
+[loop]
+# max_iterations = 4

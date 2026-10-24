@@ -1,0 +1,39 @@
+# qestack quality gate for pull requests. Copy to .github/workflows/qestack.yml
+name: qestack
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # the guard and the mutation scope need the base branch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4  # .NET: use actions/setup-dotnet and install dotnet-stryker
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Install qestack
+        run: pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"
+      - name: qestack gates
+        env:
+          QESTACK_FEATURE: ${{ github.head_ref }}
+          QESTACK_BASE_REF: origin/${{ github.base_ref }}
+        run: |
+          qestack gate --allow-protected || true
+          qestack score --ci
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qestack-report
+          path: |
+            specs/*/quality-report.md
+            .qestack/runs/**

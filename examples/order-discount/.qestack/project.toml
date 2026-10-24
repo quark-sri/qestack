@@ -1,0 +1,8 @@
+# Example settings. See docs/configuration.md.
+[project]
+name = "order-discount-example"
+stack = "java-maven-junit5"
+rulesets = ["api-http"]
+
+[git]
+base_ref = "main"

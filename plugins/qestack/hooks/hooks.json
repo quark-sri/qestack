@@ -1,0 +1,17 @@
+{
+  "description": "qestack guard: blocks edits that weaken locked tests or change protected qestack files. It does nothing in repositories without .qestack/project.toml or when the qestack engine is not installed.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v qestack >/dev/null 2>&1; then qestack hook; fi",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

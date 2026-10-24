@@ -1,0 +1,79 @@
+# =====================================================================================
+# Stack: .NET (C#) with xUnit, NUnit or MSTest
+# Mutation testing: Stryker.NET. Test results: JUnit XML logger (JunitXml.TestLogger).
+# See dotnet.md for the setup and the conventions.
+# =====================================================================================
+
+[paths]
+test_globs = ["**/*Tests/**/*.cs", "**/*.Tests/**/*.cs", "**/*Test/**/*.cs", "**/tests/**/*.cs", "**/test/**/*.cs"]
+source_globs = ["**/src/**/*.cs"]
+extra_exclude_globs = ["**/*.Designer.cs", "**/*.g.cs", "**/Migrations/**", "**/TestResults/**", "**/StrykerOutput/**"]
+
+[tags]
+# xUnit [Trait("Category","FR-001")], NUnit [Category("FR-001")], MSTest [TestCategory("FR-001")]
+tag_value_regex = [
+  '\bTrait\(\s*"[^"]*"\s*,\s*"([^"]+)"\s*\)',
+  '\bCategory\(\s*"([^"]+)"\s*\)',
+  '\bTestCategory\(\s*"([^"]+)"\s*\)',
+]
+
+[language]
+name = "csharp"
+string_style = "csharp"
+test_marker_regex = '\[\s*(?:[\w.]+\s*(?:\([^\]]*\))?\s*,\s*)*(?:Fact|Theory|Test|TestCase|TestCaseSource|TestMethod|DataTestMethod)(?:Attribute)?\b'
+skip_regex = '\bSkip\s*=|\[\s*Ignore\b|\bIgnore(?:Attribute)?\s*\('
+display_name_regex = '\bDisplayName\s*=\s*"([^"]*)"'
+class_regex = '\b(?:class|record|struct)\s+(\w+)'
+assertion_regexes = [
+  '\b(?:Assert|ClassicAssert|StringAssert|CollectionAssert|FileAssert|DirectoryAssert)\.\w+\s*[<(]',
+  '\.Should\(\)',
+  '\.ShouldBe\w*\s*\(',
+  '\.Verify\w*\s*\(',
+  '\.Received\w*\s*\(',
+  '\bExpect\s*\(',
+  '\b(?:Assert|Verify|Expect)[A-Z]\w*\s*\(',
+  '\bVerifier\.Verify\w*\s*\(',
+]
+trivial_statement_regexes = [
+  '^Assert\.(?:NotNull|IsNotNull|NotEmpty|IsNotEmpty)\(',
+  '^Assert\.True\(true\)',
+  '^Assert\.IsTrue\(true\)',
+  '^Assert\.That\(.*,Is\.Not\.(?:Null|Empty)\)$',
+  '^\.Should\(\)\.(?:NotBeNull|NotBeEmpty|NotBeNullOrEmpty|NotBeNullOrWhiteSpace)\(\)$',
+  '^\.Should\(\)\.BeOfType<[\w.]+>\(\)$',
+  '^\.ShouldNotBeNull\(\)$',
+  '^Assert\.(?:Equal|AreEqual)\(([^,]+),\1\)$',
+]
+shallow_statement_regexes = [
+  '^Assert\.(?:Equal|AreEqual)\(.*StatusCode',
+  '^\.Should\(\)\.Be\(HttpStatusCode\.',
+  '^\.Should\(\)\.(?:HaveStatusCode|BeSuccessful|HaveHttpStatusCode)',
+  '^Assert\.True\([\w.]+\.IsSuccessStatusCode\)$',
+  '^\.ShouldBe\(HttpStatusCode\.',
+  '^Expect\(.*\)\.ToBeVisibleAsync\(\)$',
+]
+
+[language.tag_examples]
+class = '[Trait("Category", "feature-003")]'
+method = '[Fact] [Trait("Category", "FR-007")] [Trait("Category", "boundary")]'
+
+[smells.patterns]
+conditional_logic = '^\s*(?:if|for|foreach|while|switch)\s*\('
+fixed_sleep = 'Thread\.Sleep\s*\(|Task\.Delay\s*\(|\.WaitForTimeoutAsync\s*\('
+swallowed_exception = 'catch\s*(?:\([^)]*\))?\s*\{\s*\}'
+console_output = 'Console\.Write'
+random_without_seed = 'new\s+Random\s*\(\s*\)'
+current_time = '\bDateTime(?:Offset)?\.(?:Now|UtcNow|Today)\b'
+
+[commands]
+compile = "dotnet build --nologo -v q"
+test_feature = "dotnet test --nologo --no-restore --filter \"Category={feature_tag}\" --logger \"junit;LogFilePath=TestResults/junit/{assembly}.xml\""
+# xUnit v2 has no built-in random order. Run the same command several times.
+test_feature_random = "dotnet test --nologo --no-restore --filter \"Category={feature_tag}\" --logger \"junit;LogFilePath=TestResults/junit/{assembly}.xml\""
+# Run from the solution root. Stryker.NET mutates only code changed since the base ref.
+mutation = "dotnet stryker --since:{base_ref} --reporter json --reporter html --output StrykerOutput/qestack"
+
+[reports]
+junit_globs = ["**/TestResults/junit/*.xml"]
+mutation_format = "stryker-json"
+mutation_path = "**/StrykerOutput/qestack/reports/mutation-report.json"
