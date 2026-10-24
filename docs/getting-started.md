@@ -5,24 +5,19 @@ This guide takes one feature from spec to an ACCEPT report. It takes about one h
 ## 1. Install
 
 ```bash
-pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"
+git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
 ```
 
-In Claude Code:
-
-```
-/plugin marketplace add quark-sri/qestack
-/plugin install qestack@qestack
-```
+The script installs the engine (pipx or uv) and the Claude Code plugins. To do it by hand, see the Install section of the README.
 
 ## 2. Set up the repository
 
 ```bash
 cd your-repo
-qestack init          # add --speckit if you use GitHub Spec Kit
+qestack init --existing   # existing codebase: lower start thresholds. Add --speckit for GitHub Spec Kit.
 ```
 
-In Claude Code, run `/qe-setup`. It checks the stack, the rulesets, your assertion helpers and the build commands. Then:
+`init` ends with a lint preview of your existing tests. In Claude Code, run `/qe-setup`. It checks the stack, the rulesets, your assertion helpers and the build commands. Then:
 
 ```bash
 qestack doctor

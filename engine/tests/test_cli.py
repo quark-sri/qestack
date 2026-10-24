@@ -548,6 +548,27 @@ class InitShowTests(unittest.TestCase):
         finally:
             shutil.rmtree(d)
 
+    def test_init_hook_and_existing_flags(self):
+        d = Path(tempfile.mkdtemp())
+        try:
+            git(d, "init", "-q", "-b", "main")
+            (d / "pom.xml").write_text("<project/>")
+            (d / ".claude").mkdir()
+            (d / ".claude/settings.json").write_text('{"permissions": {"allow": ["Bash(ls:*)"]}}')
+            git(d, "add", "-A")
+            for _ in range(2):  # a second run must not add the hook again
+                r = run(d, "init", "--hook", "--existing")
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            cur = json.loads((d / ".claude/settings.json").read_text())
+            self.assertIn("Bash(ls:*)", cur["permissions"]["allow"])
+            self.assertIn("Bash(qestack:*)", cur["permissions"]["allow"])
+            self.assertEqual(len(cur["hooks"]["PreToolUse"]), 1)
+            t = (d / ".qestack/project.toml").read_text()
+            self.assertIn("\nmutation_min = 0.60", t)
+            self.assertIn("\nseed_min = 0.75", t)
+        finally:
+            shutil.rmtree(d)
+
     def test_java_stack_disables_reruns_in_surefire_and_failsafe(self):
         import tomllib
         cmds = tomllib.loads((SRC / "qestack/data/stacks/java-maven-junit5.toml").read_text())["commands"]

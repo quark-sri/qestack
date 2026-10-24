@@ -2704,6 +2704,10 @@ def cmd_init(args, cfg_unused=None):
     locks.mkdir(exist_ok=True)
     if not (locks / "README.md").exists():
         shutil.copy2(DATA_DIR / "templates" / "locks-README.md", locks / "README.md")
+    if args.hook:
+        install_guard_hook()
+    if args.existing:
+        apply_existing_codebase_thresholds(proj)
     if args.speckit:
         cmd_dir = ROOT / ".claude" / "commands"
         cmd_dir.mkdir(parents=True, exist_ok=True)
@@ -2716,13 +2720,60 @@ def cmd_init(args, cfg_unused=None):
                 print(f"created {rel(dst)}")
         print("speckit: add the principles in 'qestack show adapters/speckit/constitution-addendum' "
               "to .specify/memory/constitution.md")
+    preview_lint()
     print("\nNext steps:")
-    print("  1. Check .qestack/project.toml (stack, rulesets, assertion helpers, commands).")
-    print("  2. Fill in .qestack/project-rules.md.")
-    print("  3. Install the guard hook: install the qestack Claude Code plugin, or add the hook from")
-    print("     'qestack show templates/claude-settings' to .claude/settings.json.")
-    print("  4. Run 'qestack doctor'.")
+    print("  1. Run 'qestack doctor'. Fix each FAIL.")
+    print("  2. In Claude Code, run /qe-setup. It checks the assertion helpers and the build commands.")
+    if not args.hook:
+        print("  3. No qestack plugin? Run 'qestack init --hook' to add the guard hook to .claude/settings.json.")
     return 0
+
+
+def install_guard_hook():
+    """Merge the guard hook and the qestack permission from the bundled template into .claude/settings.json."""
+    tpl = json.loads((DATA_DIR / "templates" / "claude-settings.json").read_text(encoding="utf-8"))
+    dst = ROOT / ".claude" / "settings.json"
+    cur = read_json(dst, {}) if dst.exists() else {}
+    allow = cur.setdefault("permissions", {}).setdefault("allow", [])
+    for rule in tpl["permissions"]["allow"]:
+        if rule not in allow:
+            allow.append(rule)
+    pre = cur.setdefault("hooks", {}).setdefault("PreToolUse", [])
+    if any("qestack hook" in h.get("command", "") for e in pre for h in e.get("hooks", [])):
+        print(f"guard hook already in {rel(dst)}")
+    else:
+        pre.extend(tpl["hooks"]["PreToolUse"])
+        print(f"added the guard hook to {rel(dst)}")
+    dst.parent.mkdir(exist_ok=True)
+    write_json(dst, cur)
+
+
+def apply_existing_codebase_thresholds(proj: Path):
+    """Uncomment the lower start values for an existing codebase in [gates]."""
+    t = proj.read_text(encoding="utf-8")
+    t2 = re.sub(r"^# (mutation_min = 0\.60)$", r"\1", t, count=1, flags=re.M)
+    t2 = re.sub(r"^# (seed_min = 0\.75)$", r"\1", t2, count=1, flags=re.M)
+    if t2 != t:
+        proj.write_text(t2, encoding="utf-8")
+        print("set the start thresholds for an existing codebase: mutation_min = 0.60, seed_min = 0.75. Raise them each sprint.")
+
+
+def preview_lint():
+    """Show what the lint gate sees in the existing tests, so wrong helper detection shows up at once."""
+    try:
+        cfg = load_config()
+        tests = scan_all_tests(cfg, find_files(cfg, "test_globs"))
+    except SystemExit:
+        return
+    if not tests:
+        print("\nNo tests found yet (fine before the first test-write phase).")
+        return
+    s = lint_summary(tests)
+    print(f"\nLint preview: {s['total']} test(s), {s['ok']} OK, {s['hollow']} hollow, {s['no_assertion']} without assertion, "
+          f"{s['trivial']} trivial, {s['shallow']} shallow.")
+    if s["no_assertion"] > max(1, s["total"] // 10):
+        print("  Many tests have no assertion. Your tests may use an assertion helper that qestack does not know.")
+        print("  /qe-setup registers it, or add a regex to extra_custom_assertion_regexes in .qestack/project.toml.")
 
 
 def cmd_show(args, cfg_unused=None):
@@ -2818,6 +2869,8 @@ def main(argv=None):
     p.add_argument("--stack", help="stack name (default: detected)")
     p.add_argument("--rulesets", help="comma list of rulesets (default: detected)")
     p.add_argument("--speckit", action="store_true", help="also add the speckit phase commands")
+    p.add_argument("--hook", action="store_true", help="add the guard hook to .claude/settings.json (not needed with the plugin)")
+    p.add_argument("--existing", action="store_true", help="existing codebase: start with lower mutation and seed thresholds")
     p.add_argument("--force", action="store_true", help="overwrite existing files")
     p = sub.add_parser("show", help="list or print bundled stacks, rulesets, rubrics, templates")
     p.add_argument("what", nargs="?", help="for example: stacks, rubrics/test-judge, guardrails")
