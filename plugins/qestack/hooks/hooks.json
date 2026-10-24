@@ -1,5 +1,5 @@
 {
-  "description": "qestack guard: blocks edits that weaken locked tests or change protected qestack files. It does nothing in repositories without .qestack/project.toml or when the qestack engine is not installed.",
+  "description": "qestack guard: blocks edits that weaken locked tests, change protected qestack files or forge qestack result files. It does nothing in repositories without .qestack/project.toml. It warns when the qestack engine is not installed.",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if command -v qestack >/dev/null 2>&1; then qestack hook; fi",
+            "command": "if command -v qestack >/dev/null 2>&1; then qestack hook; elif [ -f \"${CLAUDE_PROJECT_DIR:-.}/.qestack/project.toml\" ]; then echo '{\"systemMessage\": \"qestack guard is NOT active: the qestack command is not on the PATH of Claude Code.\"}'; fi",
             "timeout": 30
           }
         ]

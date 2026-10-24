@@ -1,7 +1,7 @@
 {
   "name": "qestack",
   "version": "0.1.0",
-  "description": "qestack AI test quality: skills, agents and gates that prove AI-written tests catch bugs.",
+  "description": "qestack: skills, agents and gates for AI Quality Engineering. Release 0.1: prove that AI-written tests catch bugs.",
   "author": {
     "name": "quark-sri"
   },

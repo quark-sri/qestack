@@ -59,7 +59,7 @@ qestack init            # add --speckit if you use GitHub Spec Kit
 qestack doctor
 ```
 
-Then, in Claude Code, run `/qe-setup` to finish the configuration (assertion helpers, build commands, thresholds).
+Then, in Claude Code, run `/qe-setup` to finish the configuration (assertion helpers, build commands, thresholds). Plugin skills also have a full name with the plugin prefix, for example `/qestack:qe-setup`. Use it when another plugin has a skill with the same name.
 
 Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md standard. See [docs/other-agents.md](docs/other-agents.md).
 

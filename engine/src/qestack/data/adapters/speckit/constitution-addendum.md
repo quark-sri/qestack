@@ -9,7 +9,7 @@
 2. **Traceability.** Every functional requirement (`FR-###`), acceptance scenario (`US#-AS#`) and edge case (`EC-##`) has at least one test. Each test carries the feature tag, its requirement IDs and a category tag.
 3. **Red before green.** Each new test fails before the feature is implemented. A test that passes before the implementation does not count.
 4. **Locked tests.** After `/speckit.testwrite`, the feature tests are locked. The implementation phase must not delete, skip or weaken them, or remove their tags. Adding tests and strengthening assertions is allowed.
-5. **Fault detection.** A feature is done only when the quality gates pass: mutation score on changed code ≥ the project threshold, seeded-fault detection ≥ the project threshold, no hollow, assertion-free, skipped or flaky tests, and Test Quality Score ≥ the project minimum.
+5. **Fault detection.** A feature is done only when the quality gates pass. The mutation score on changed code meets the project threshold. The detection of hidden faults meets the project threshold. No test is hollow, assertion-free, trivial, shallow, flaky, or skipped (also at run time). The Test Quality Score meets the project minimum.
 6. **Independent review.** A separate judge agent reviews all feature tests against the rubric. No test may have a "reject" verdict.
 7. **Bugs are findings.** When a correct test fails, the code is fixed. The test is never changed to match wrong behavior.
 8. **Protected quality configuration.** Thresholds, rubrics, rulesets, the gate tool and locks change only through human review.

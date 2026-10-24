@@ -16,7 +16,7 @@ Version 1.0. The `qe-test-judge` agent uses this rubric in plan-review mode, bef
 
 ### P2. Case depth
 
-- **4:** Each requirement has the positive, negative, boundary and error cases that it needs. Each exclusion has a reason.
+- **4:** Each requirement has the positive, negative, boundary and error cases that it needs. The plan uses the right design technique: equivalence classes, boundary values with the step of the data type, a decision table for a rule with two or more conditions, state transitions (also invalid ones) for status fields. Each exclusion has a reason.
 - **2:** Some rules have only positive cases.
 - **0:** Happy path only.
 
