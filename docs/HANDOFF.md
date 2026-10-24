@@ -22,7 +22,7 @@ It has four parts:
 
 1. **Engine:** the `qestack` command (Python 3.11+, standard library only) in `engine/`. It runs the gates: lint, traceability, red-before-green, flakiness, mutation score, hidden (seeded) faults, guard, locks, score, feedback and judge calibration.
 2. **Plugin `qestack`:** `plugins/qestack/`. 10 skills, 4 agents and a guard hook for the gated workflow. It needs the engine.
-3. **Plugin `qe-skills`:** `plugins/qe-skills/`. 35 Quality Engineering skills for any project and any stack, 8 review personas, and the `test-review-panel` skill. It needs no engine.
+3. **Plugin `qe-skills`:** `plugins/qe-skills/`. 39 Quality Engineering skills for any project and any stack, 8 review personas, and the `test-review-panel` skill. It needs no engine.
 4. **Project folder in user repositories:** `.qestack/` (settings, gate results, locks) for the engine, and `.agents/qa-project-context.md` for `qe-skills`.
 
 The owner is a test automation architect. The first target users are Java teams with Maven, JUnit 5, HTTP API tests (an internal library on top of `HttpClient`), database tests and Kafka tests. Playwright UI tests come later.
@@ -58,7 +58,7 @@ Do not change these without the owner's approval. "2026-10-24" marks the decisio
 
 | Topic | Decision |
 |---|---|
-| Skills | A QA discipline library, 35 skills in 10 categories. Each `SKILL.md` gives the method and names no tools. Tool details are in `references/` stack recipes (Java, TypeScript and JavaScript, Python). |
+| Skills | A QA discipline library, 39 skills in 10 categories. Each `SKILL.md` gives the method and names no tools. Tool details are in `references/` stack recipes (Java, TypeScript and JavaScript, Python). |
 | Shared context | `qa-project-context` writes `.agents/qa-project-context.md`. Every other skill reads it first. |
 | Personas | 8 agents in `plugins/qe-skills/agents/`: `ai-behavior-auditor`, `hallucination-checker`, `domain-oracle-reviewer`, `saboteur`, `test-automation-architect`, `determinism-flakiness-engineer`, `maintainability-craftsperson`, `suite-cost-speed-reviewer`. |
 | Personas only report | No persona has an edit tool or changes a file. The caller (a skill or the main agent) makes every change. The Saboteur designs a fault plan; the caller runs it in an isolated copy with the `mutation-probe` method. |
@@ -77,7 +77,7 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 - Engine with 19 commands. 30 end-to-end tests pass: `python3 -m unittest discover -s engine/tests`.
 - CI is green on ubuntu and macOS, Python 3.11 to 3.13. The CI builds and installs the package, so the package data (`qestack/data/**`) is in the wheel.
 - Plugin `qestack`: 10 skills, 4 agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
-- Plugin `qe-skills`: 35 skills, 8 personas, `test-review-panel` with the findings format.
+- Plugin `qe-skills`: 39 skills, 8 personas, `test-review-panel` with the findings format.
 - `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks both plugins, the `qe-skills` rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
 - Task 3: `examples/order-service-maven` runs every gate with real Maven. All Java stack command properties are checked against the plugin parameter lists (Surefire and Failsafe 3.6.0, PIT 1.30.1). Random order, the Failsafe feature filter and PIT on Java 25 work.
 - Local tools on the MacBook: Java 25 (Temurin) and Maven 3.10.0 through SDKMAN, Python 3.14. The engine runs from a virtual environment (`pip install -e ./engine`).
@@ -234,7 +234,7 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 | `plugins/qestack/skills/*/SKILL.md` | The 10 `qestack` skills |
 | `plugins/qestack/agents/*.md` | The 4 `qestack` agents |
 | `plugins/qestack/hooks/hooks.json` | The guard hook |
-| `plugins/qe-skills/skills/*/SKILL.md` | The 35 `qe-skills` skills, with `references/` |
+| `plugins/qe-skills/skills/*/SKILL.md` | The 39 `qe-skills` skills, with `references/` |
 | `plugins/qe-skills/agents/*.md` | The 8 review personas |
 | `plugins/qe-skills/skills/test-review-panel/references/findings-format.md` | The findings block and the review folder format |
 | `.claude-plugin/marketplace.json` | Marketplace entries for both plugins |

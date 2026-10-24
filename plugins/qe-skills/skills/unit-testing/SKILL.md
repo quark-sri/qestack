@@ -29,6 +29,7 @@ Unit tests are the cheapest place to catch a wrong rule. A good unit test runs i
 4. **Doubles only at the boundary.** Replace the clock, randomness, the network, the file system and other services. Do not replace the unit under test or simple value objects.
 5. **Deterministic.** No real time, no unseeded randomness, no shared mutable state, no order between tests.
 6. **Boundaries as data.** Use parameterized tests for boundary sets, with one expected value in each row.
+7. **Properties for general rules.** When a rule must hold for all inputs, add a property test next to the examples. Examples cover the requirement, and properties find the cases that nobody listed.
 
 ## Workflow
 
@@ -41,7 +42,7 @@ Unit tests are the cheapest place to catch a wrong rule. A good unit test runs i
 
 ## Stack recipes
 
-Read only the recipe for the stack of the project: [Java](references/java.md), [TypeScript and JavaScript](references/typescript.md), [Python](references/python.md). For another stack, apply the principles with the project's own framework, and say so.
+Read only the recipe for the stack of the project: [Java](references/java.md), [TypeScript and JavaScript](references/typescript.md), [Python](references/python.md). For rules that must hold for all inputs (round trips, invariants, parsers, calculations), also read [property-based testing](references/property-based.md). For another stack, apply the principles with the project's own framework, and say so.
 
 ## Anti-patterns
 

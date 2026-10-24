@@ -44,6 +44,10 @@ Read `.agents/qa-project-context.md` if it exists. If it does not exist and the 
 | Test speed, load and capacity | `performance-testing` |
 | Test security weaknesses | `security-testing` |
 | Test accessibility | `accessibility-testing` |
+| Test locales, translations and international formats | `localization-testing` |
+| Test failure handling: timeouts, retries, outages | `resilience-testing` |
+| Check a feature or design for testability | `testability-review` |
+| Check quality after release: synthetic checks, canary, alerts | `production-testing` |
 | Review the quality of tests | `testcase-reviewer` |
 | Review tests or a change with a panel of personas | `test-review-panel` |
 | Find what is not tested | `test-coverage-map` |
@@ -64,7 +68,10 @@ Read `.agents/qa-project-context.md` if it exists. If it does not exist and the 
 - Pull request: `change-impact` → `test-runner` → `testcase-reviewer` for the changed tests.
 - AI-written change: `test-runner` → `test-review-panel`.
 - New QA engineer on an old codebase: `qa-project-context` → `test-coverage-map` → `risk-based-testing` → `test-strategy`.
-- Before a release: `risk-based-testing` → `release-readiness`.
+- Before a release: `risk-based-testing` → `release-readiness` → `production-testing` for the checks after the release.
+- New design with no code yet: `testability-review` → `requirement-gaps` → `test-case-designer`.
+- Multi-region release: `localization-testing` → `ui-automation` → `accessibility-testing`.
+- Service with many dependencies: `resilience-testing` → `service-virtualization` → `performance-testing`.
 - After an incident: `bug-report` → `quality-postmortem`.
 
 ## Done when

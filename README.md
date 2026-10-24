@@ -36,7 +36,7 @@ The result of each feature is `specs/<feature>/quality-report.md` with the decis
 
 ## QE skills for any project (no engine needed)
 
-The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine.
+The `qe-skills` plugin is a library of 39 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine.
 
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
@@ -47,19 +47,19 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | Category | Skills |
 |---|---|
 | Foundation | `qa-project-context`, `qa-navigator` |
-| Strategy | `test-strategy`, `test-planning`, `risk-based-testing`, `requirement-gaps`, `exploratory-testing` |
+| Strategy | `test-strategy`, `test-planning`, `risk-based-testing`, `requirement-gaps`, `testability-review`, `exploratory-testing` |
 | Design | `test-case-designer`, `edge-case-hunter` |
 | Automation | `unit-testing`, `api-testing`, `database-testing`, `messaging-testing`, `contract-testing`, `ui-automation`, `service-virtualization`, `test-data-management` |
 | Infrastructure | `test-environments`, `ci-cd-integration` |
-| Non-functional | `performance-testing`, `security-testing`, `accessibility-testing` |
+| Non-functional | `performance-testing`, `security-testing`, `accessibility-testing`, `localization-testing`, `resilience-testing` |
 | Test quality | `testcase-reviewer`, `test-review-panel`, `test-coverage-map`, `mutation-probe`, `flaky-test-detective` |
 | Code and spec | `bug-hunter`, `roast-my-code`, `spec-drift` |
 | Run and triage | `test-runner`, `change-impact`, `bug-report` |
-| Process | `release-readiness`, `quality-postmortem` |
+| Process | `release-readiness`, `production-testing`, `quality-postmortem` |
 
 | Persona | Agent | Finds |
 |---|---|---|
-| AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, weaker assertions, skips, test-only code, false 'all pass' claims |
+| AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, tautologies, sycophancy, weaker assertions, skips, test-only code, false 'all pass' claims |
 | Hallucination Checker | `hallucination-checker` | APIs, fixtures, properties, flags, paths and versions that do not exist |
 | Domain Oracle Reviewer | `domain-oracle-reviewer` | wrong expected results, misread or invented rules, missing negative and error cases |
 | Saboteur | `saboteur` | faults that the tests would not catch (it designs a fault plan; the caller runs it) |
@@ -98,30 +98,32 @@ Use the gated qestack workflow below when you want measured proof for each featu
 
 ## Install
 
-You need Python 3.11 or later, git, and Claude Code.
+You need Python 3.11 or later, git, pipx (or uv), and Claude Code.
 
-**1. The engine** (the `qestack` command):
+**Two commands.** The first installs the engine and both Claude Code plugins. The second sets up your repository.
+
+```bash
+git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
+cd your-repo && qestack init --existing    # drop --existing for a new project; add --speckit for GitHub Spec Kit
+```
+
+`qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
+
+Only the skills, with no engine? `scripts/install.sh --skills-only`.
+
+**Manual install** (the same steps, one by one):
 
 ```bash
 pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"
 ```
 
-**2. The Claude Code plugin** (skills, agents and the guard hook). In Claude Code:
+In Claude Code:
 
 ```
 /plugin marketplace add quark-sri/qestack
 /plugin install qestack@qestack
+/plugin install qe-skills@qestack
 ```
-
-**3. Your repository:**
-
-```bash
-cd your-repo
-qestack init            # add --speckit if you use GitHub Spec Kit
-qestack doctor
-```
-
-Then, in Claude Code, run `/qe-setup` to finish the configuration (assertion helpers, build commands, thresholds). Plugin skills also have a full name with the plugin prefix, for example `/qestack:qe-setup`. Use it when another plugin has a skill with the same name.
 
 Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md standard. See [docs/other-agents.md](docs/other-agents.md).
 

@@ -28,7 +28,7 @@ Start a new session in the repository root after the install.
 
 | ID | Do | Pass when |
 |---|---|---|
-| S1 | Type `/` and look for `qe-skills:` | The 35 skills are listed |
+| S1 | Type `/` and look for `qe-skills:` | The 39 skills are listed |
 | S2 | Ask: "review the tests in examples/order-discount" | `testcase-reviewer` starts, not `test-review-panel` |
 | S3 | Ask: "what edge cases are missing in examples/order-discount/specs/001-order-discount/spec.md" | `edge-case-hunter` or `requirement-gaps` starts |
 | S4 | Ask: "where do I start with testing this repository" | `qa-navigator` starts and proposes at most three skills |

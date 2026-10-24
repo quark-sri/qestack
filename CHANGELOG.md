@@ -13,10 +13,12 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Claude Code plugin: 10 skills, 4 agents, guard hook, marketplace manifest.
 - Speckit adapter: `/speckit.testplan`, `/speckit.testwrite`, `/speckit.testquality`.
 - Documentation, project plan, CI workflow, static example.
-- Plugin `qe-skills`: 35 Quality Engineering skills for any project, with no engine, in 10 categories. Tool-neutral `SKILL.md` files, stack recipes for Java, TypeScript and Python in `references/`, and a shared `.agents/qa-project-context.md`.
+- Plugin `qe-skills`: 39 Quality Engineering skills for any project, with no engine, in 10 categories. Tool-neutral `SKILL.md` files, stack recipes for Java, TypeScript and Python in `references/`, and a shared `.agents/qa-project-context.md`.
 - `qe-skills` reviewer personas: 8 agents in `plugins/qe-skills/agents/` (AI Behavior Auditor, Hallucination Checker, Domain Oracle Reviewer, Saboteur, Test Automation Architect, Determinism and Flakiness Engineer, Maintainability Craftsperson, Suite Cost and Speed Reviewer). In this plugin, only the `test-review-panel` skill uses them. No persona has an edit tool: personas find and report, and the caller changes code. The Saboteur returns a fault plan; the panel runs it with the `mutation-probe` method in an isolated copy. All personas share one "Reviewer rules" section: no fixes, file:line evidence, and a findings block in one format. Users can start a persona directly. The panel starts several, in parallel, and merges the findings. The panel saves each run in `qa-reviews/<date>-<scope>/` (`panel-report.md`, `findings.json`, `personas/`). The other skills do not depend on them.
 - `scripts/validate_repo.py` checks every plugin, the reference files of each skill, duplicate skill names and the marketplace sources. For `qe-skills`, it also checks the routing parts of each description, the related skills, the required sections, the shared context and that `SKILL.md` names no tools.
 
+- `qe-skills` gaps closed after a review of related projects: new skills `testability-review`, `production-testing`, `resilience-testing` and `localization-testing`; a property-based testing recipe in `unit-testing`; tautology checks and eight named sycophancy patterns in the `ai-behavior-auditor` persona; `qa-navigator` routes to the new skills.
+- Faster setup: `scripts/install.sh` (engine and plugins in one step, `--skills-only` for the skills alone). `qestack init` gets `--hook` (merge the guard hook into `.claude/settings.json`), `--existing` (lower start thresholds) and ends with a lint preview and next steps.
 - Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
 
 ### Fixed

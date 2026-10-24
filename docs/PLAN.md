@@ -62,7 +62,7 @@ qestack/                              (this repository)
     src/qestack/data/                 defaults, stacks, rulesets, rubrics, templates, adapters
     tests/                            unit tests (standard library only)
   examples/                           sample projects
-  benchmarks/                         real-bug evaluation (planned)
+  benchmarks/                         real-bug evaluation (not scheduled)
   docs/                               plan, guides, analysis, landscape, writing style
 ```
 
@@ -115,7 +115,7 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 ### 6.1 QE skills for any project (plugin `qe-skills`)
 
-35 skills for QA disciplines across the SDLC, and 8 reviewer personas (agents). They need no engine and no `.qestack/` folder.
+39 skills for QA disciplines across the SDLC, and 8 reviewer personas (agents). They need no engine and no `.qestack/` folder.
 
 | Rule | How |
 |---|---|
@@ -135,14 +135,15 @@ Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-t
 | Release | Target | Scope |
 |---|---|---|
 | 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The `qe-skills` plugin. Owner review. |
-| 0.2 | Week 5–8 | Stacks: .NET (full support), Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
-| 0.3 | Week 9–14 | Defects4J benchmark. LLM equivalent-mutant check. Judge calibration dataset. HTML report. |
+| 0.2 | Week 5–8 | Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
+| 0.3 | Week 9–14 | Code-intelligence step: map changed code to its callers and tests, to aim hidden faults and mutation at risky code. Judge calibration dataset. LLM equivalent-mutant check. HTML report. Benchmark: only after qestack is tested on real projects (see section 8). |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |
+| Future | After 0.2 | Stack coverage: .NET (full support), Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Order and dates depend on real-project feedback. |
 | 1.0 | Month 6 | Stable configuration schema. Stable result file formats. Contributor guide for stacks and rulesets proven by outside contributions. |
 
-## 8. Benchmark plan (release 0.3)
+## 8. Benchmark plan (not scheduled)
 
-The benchmark is the main proof for the project.
+qestack is not yet tested on real projects, so we publish no benchmark and no performance claim now. Run this plan only after real-project trials. The benchmark is the main proof for the project.
 
 1. Take 30 to 50 real bugs from [Defects4J](https://github.com/rjust/defects4j). Each bug has a buggy version, a fixed version and a description.
 2. For each bug, write a short requirement from the bug report and the fixed behavior.

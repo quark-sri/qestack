@@ -1,7 +1,7 @@
 {
   "name": "qe-skills",
   "version": "0.1.0",
-  "description": "qestack QE skills: 35 Quality Engineering skills and 8 reviewer personas for any project and any stack, from requirements and test design to automation, non-functional testing, test review, triage and release. Tool-neutral methods with stack recipes for Java, TypeScript and Python. No engine needed.",
+  "description": "qestack QE skills: 39 Quality Engineering skills and 8 reviewer personas for any project and any stack, from requirements and test design to automation, non-functional testing, test review, triage and release. Tool-neutral methods with stack recipes for Java, TypeScript and Python. No engine needed.",
   "author": {
     "name": "quark-sri"
   },
