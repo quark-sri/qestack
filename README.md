@@ -41,7 +41,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
-- **Reviewer personas.** Eight persona files, each with one job, a checklist and an evidence rule (file and line). They live in the `test-review-panel` skill, which is the only skill that uses them. It starts one `test-reviewer` agent for each persona, in parallel, and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
+- **Reviewer personas.** Eight persona files, each with one job, a checklist and an evidence rule (file and line). They live in the `test-review-panel` skill, which is the only skill that uses them. It starts one reviewer agent for each persona and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
 - **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
 
 | Category | Skills |
@@ -67,6 +67,15 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | Determinism and Flakiness Engineer | `determinism-flakiness-engineer` | sleeps, real clock, unseeded random data, shared state, order, retries |
 | Maintainability Craftsperson | `maintainability-craftsperson` | names, duplication, mystery data, hidden assertions, over-mocking, failure messages |
 | Suite Cost and Speed Reviewer | `suite-cost-speed-reviewer` | slow tests at the wrong level, repeated setup, parallel runs, pipeline cost |
+
+**How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qe-skills:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
+
+1. The panel chooses the personas for the work. AI-written work always gets the AI Behavior Auditor and the Hallucination Checker.
+2. The `mode` of each persona file chooses the agent. The `test-reviewer` agent runs the `read-only` personas, in parallel. It has no edit tool. The `test-saboteur` agent runs the `changes-code` personas (today only the Saboteur), alone and last. It changes one place in the production code at a time and restores it.
+3. Each reviewer gets the same scope and one persona file. A reviewer does not see the other reports.
+4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
+
+The persona files are in [`plugins/qe-skills/skills/test-review-panel/references/personas/`](plugins/qe-skills/skills/test-review-panel/references/personas/). To add a persona, add a file with the same frontmatter and sections, and link it from the panel table. The validator checks the file, the link and the agent for its mode.
 
 ```
 /plugin marketplace add quark-sri/qestack

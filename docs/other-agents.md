@@ -22,7 +22,7 @@ The script makes symbolic links, so `git pull` updates the skills. It links the 
 
 ## Without sub-agents
 
-Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. A new session has no memory of writing the tests, so the review is still independent.
+Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review panel persona, give the new session the text of `plugins/qe-skills/agents/test-reviewer.md` (or `test-saboteur.md` for a persona that changes code) and the persona file. A new session has no memory of writing the tests, so the review is still independent.
 
 ## Without the hook
 

@@ -144,12 +144,17 @@ for p in persona_files:
     if f"references/personas/{p.name}" not in panel_body:
         err(f"{rp}: not linked from the test-review-panel skill")
     long_sentences(p, body)
-if persona_files and not (QE / "agents" / "test-reviewer.md").exists():
-    err("plugins/qe-skills/agents/test-reviewer.md: missing; the personas need it")
+MODE_AGENTS = {"read-only": "test-reviewer", "changes-code": "test-saboteur"}
+for mode in sorted({frontmatter(p)[0].get("mode") for p in persona_files} & MODE_AGENTS.keys()):
+    a = QE / "agents" / f"{MODE_AGENTS[mode]}.md"
+    if not a.exists():
+        err(f"{a.relative_to(ROOT)}: missing; the '{mode}' personas need it")
+    elif mode == "read-only" and re.search(r"\b(Edit|Write|NotebookEdit)\b", frontmatter(a)[0].get("tools", "")):
+        err(f"{a.relative_to(ROOT)}: runs read-only personas and must have no edit tools")
 for a in (QE / "agents").glob("*.md"):
     for m in TOOL_NAMES.finditer(frontmatter(a)[1]):
         err(f"{a.relative_to(ROOT)}: names the tool '{m.group(0)}'")
-panel_names = sorted(personas | {"test-reviewer"})
+panel_names = sorted(personas | {"test-reviewer", "test-saboteur"})
 persona_rx = re.compile(r"`(" + "|".join(map(re.escape, panel_names)) + r")`")
 for d in skills:
     f = d / "SKILL.md"

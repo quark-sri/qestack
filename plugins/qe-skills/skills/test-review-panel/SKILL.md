@@ -37,7 +37,12 @@ One reviewer sees one kind of problem. A panel of reviewers with different jobs 
 
 Each persona file has a mode (read-only or changes code), a scope, a checklist, an evidence rule, an output table and limits. The persona files are part of this skill, so they travel with it. This skill is the only one that uses them. The other skills in this plugin work without them.
 
-**One reviewer, many personas.** The `test-reviewer` agent of this plugin does the reviews. The lead starts it once for each persona, with the persona file in the brief. If the host has no such agent, start any separate reviewer and give it the persona file. If the host cannot start separate reviewers, use the reduced mode in step 3.
+**Two reviewers, many personas.** The `mode` of the persona file chooses the agent of this plugin:
+
+- `read-only`: the `test-reviewer` agent. It has no edit tool.
+- `changes-code`: the `test-saboteur` agent. It can change production code, and it restores it.
+
+The lead starts one agent for each persona, with the persona file in the brief. If the host has no such agents, start any separate reviewer and give it the persona file. If the host cannot start separate reviewers, use the reduced mode in step 3.
 
 ## Principles
 
@@ -50,7 +55,7 @@ Each persona file has a mode (read-only or changes code), a scope, a checklist, 
 
 1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. This is the brief.
 2. **Choose the panel.** Use the "Default" column, or the `--personas` list from the user. Say which personas you chose and why.
-3. **Start one `test-reviewer` for each persona, in parallel.** Each brief has the same scope and facts, and the path of one persona file. Start the Saboteur last, or alone, because it changes files and runs tests. If the host cannot start separate reviewers, read each persona file and apply it yourself, one at a time. Say in the report that the review was not independent.
+3. **Start one agent for each persona.** Each brief has the same scope and facts, and the path of one persona file. Start the `read-only` personas in parallel with `test-reviewer`. Then start each `changes-code` persona alone with `test-saboteur`, because it changes files and runs tests. If the host cannot start separate reviewers, read each persona file and apply it yourself, one at a time. Say in the report that the review was not independent.
 4. **Verify.** For each blocker and major finding, open the evidence. Reject findings that the evidence does not support, and say why.
 5. **Merge.** Two findings are the same when they have the same root cause at the same place. Keep the strongest evidence, list all personas that found it, and use the highest severity.
 6. **Rank.** Blockers first, then by how a defect could reach users: wrong results, missing protection, false confidence, then cost and readability.
