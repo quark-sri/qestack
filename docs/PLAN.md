@@ -134,7 +134,7 @@ Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-t
 
 | Release | Target | Scope |
 |---|---|---|
-| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. Private review. |
+| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The `qe-skills` plugin. Owner review. |
 | 0.2 | Week 5–8 | Stacks: .NET (full support), Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
 | 0.3 | Week 9–14 | Defects4J benchmark. LLM equivalent-mutant check. Judge calibration dataset. HTML report. |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |
@@ -154,13 +154,12 @@ The benchmark is the main proof for the project.
 
 ## 9. Launch plan (release 0.2)
 
-1. Owner review of the private repository.
-2. Make the repository public.
-3. Publish to PyPI.
-4. Short demo: an AI-written suite with 100% coverage misses three planted bugs; qestack finds the gaps and the improved tests catch the bugs.
-5. Blog post: "Coverage is not evidence: measuring AI-written tests".
-6. Submit to awesome-claude-code, the Claude Code plugin marketplaces and the skills registries.
-7. Announce on LinkedIn and in QA communities.
+1. Owner review. The repository is already public (owner decision, 2026-10-24).
+2. Publish to PyPI.
+3. Short demo: an AI-written suite with 100% coverage misses three planted bugs; qestack finds the gaps and the improved tests catch the bugs.
+4. Blog post: "Coverage is not evidence: measuring AI-written tests".
+5. Submit to awesome-claude-code, the Claude Code plugin marketplaces and the skills registries.
+6. Announce on LinkedIn and in QA communities.
 
 ## 10. Governance
 
