@@ -47,7 +47,7 @@ Each persona is an agent of this plugin, with only the tools that its job needs.
 
 ## Workflow
 
-1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. This is the brief.
+1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. Say if the personas may run tests against a shared environment; the default is no. This is the brief.
 2. **Choose the panel.** Use the "Default" column, or the `--personas` list from the user. Say which personas you chose and why.
 3. **Start the persona agents in parallel.** Each one gets the same brief. If the host cannot start these agents, give the text of each agent file to a separate reviewer. If the host cannot start separate reviewers, apply each agent file yourself, one at a time. Say in the report that the review was not independent.
 4. **Run the fault plan.** If the Saboteur returned a fault plan, run it with the method of `mutation-probe`: in an isolated copy, one fault at a time. Mark each predicted survivor as proven or wrong. Do this after all personas have reported, so that no persona sees a fault.
