@@ -18,7 +18,7 @@ git clone https://github.com/quark-sri/qestack ~/qestack
 scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>/.agents/skills
 ```
 
-The script makes symbolic links, so `git pull` updates the skills. It links the skills of both plugins. The `qe-skills` skills need no engine. The reviewer personas are in `plugins/qe-skills/agents/`. Only the `test-review-panel` skill uses them. Copy that folder too if you want the panel. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
+The script makes symbolic links, so `git pull` updates the skills. It links the skills of both plugins. The `qe-skills` skills need no engine. The reviewer personas are files inside the `test-review-panel` skill, so they come with it. Only that skill uses them. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
 
 ## Without sub-agents
 

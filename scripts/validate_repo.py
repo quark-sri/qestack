@@ -114,29 +114,49 @@ for f in agents:
             err(f"{f.relative_to(ROOT)}: '{k}' missing")
     long_sentences(f, body)
 
-# qe-skills personas: tool-neutral body, required sections; only test-review-panel uses them
+# qe-skills personas: persona files in the test-review-panel skill, run by the test-reviewer agent.
+# Only test-review-panel may use them, so that the other skills stay self-contained.
 QE = ROOT / "plugins" / "qe-skills"
-personas = {f.stem for f in agents if f.parent.parent == QE}
-for f in (f for f in agents if f.parent.parent == QE):
-    fm, body = frontmatter(f)
-    rp = f.relative_to(ROOT)
-    for section in ("## Scope", "## Evidence rule", "## Output", "## Limits"):
+PANEL = QE / "skills" / "test-review-panel"
+persona_files = sorted((PANEL / "references" / "personas").glob("*.md"))
+personas = {p.stem for p in persona_files}
+panel_body = (PANEL / "SKILL.md").read_text(encoding="utf-8") if (PANEL / "SKILL.md").exists() else ""
+for p in persona_files:
+    fm, body = frontmatter(p)
+    rp = p.relative_to(ROOT)
+    if fm.get("name") != p.stem:
+        err(f"{rp}: name '{fm.get('name')}' does not match file name")
+    for k in ("title", "description"):
+        if not fm.get(k):
+            err(f"{rp}: '{k}' missing")
+    if fm.get("mode") not in ("read-only", "changes-code"):
+        err(f"{rp}: mode must be 'read-only' or 'changes-code'")
+    if fm.get("runs-commands") not in ("yes", "no"):
+        err(f"{rp}: runs-commands must be 'yes' or 'no'")
+    sections = ["## Scope", "## Evidence rule", "## Output", "## Limits"]
+    if fm.get("mode") == "changes-code":
+        sections.append("## Safety rules")
+    for section in sections:
         if section not in body:
             err(f"{rp}: section '{section}' missing")
-    for m in TOOL_NAMES.finditer(body):
+    for m in TOOL_NAMES.finditer(body + " " + fm.get("description", "")):
         err(f"{rp}: names the tool '{m.group(0)}'")
-persona_rx = re.compile(r"`(" + "|".join(map(re.escape, sorted(personas))) + r")`") if personas else None
+    if f"references/personas/{p.name}" not in panel_body:
+        err(f"{rp}: not linked from the test-review-panel skill")
+    long_sentences(p, body)
+if persona_files and not (QE / "agents" / "test-reviewer.md").exists():
+    err("plugins/qe-skills/agents/test-reviewer.md: missing; the personas need it")
+for a in (QE / "agents").glob("*.md"):
+    for m in TOOL_NAMES.finditer(frontmatter(a)[1]):
+        err(f"{a.relative_to(ROOT)}: names the tool '{m.group(0)}'")
+panel_names = sorted(personas | {"test-reviewer"})
+persona_rx = re.compile(r"`(" + "|".join(map(re.escape, panel_names)) + r")`")
 for d in skills:
     f = d / "SKILL.md"
-    if d.parent.parent != QE or d.name == "test-review-panel" or not f.exists() or not persona_rx:
+    if d.parent.parent != QE or d == PANEL or not f.exists():
         continue
     for m in persona_rx.finditer(f.read_text(encoding="utf-8")):
-        err(f"{f.relative_to(ROOT)}: names the persona '{m.group(1)}'; only test-review-panel may depend on personas")
-panel = QE / "skills" / "test-review-panel" / "SKILL.md"
-panel_body = panel.read_text(encoding="utf-8") if panel.exists() else ""
-for n in sorted(personas):
-    if f"`{n}`" not in panel_body:
-        err(f"plugins/qe-skills/agents/{n}.md: not in the test-review-panel skill")
+        err(f"{f.relative_to(ROOT)}: names '{m.group(1)}'; only test-review-panel may use the personas")
 
 # JSON files
 for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),

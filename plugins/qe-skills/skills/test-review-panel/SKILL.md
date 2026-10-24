@@ -24,20 +24,20 @@ One reviewer sees one kind of problem. A panel of reviewers with different jobs 
 
 ## The panel
 
-| Persona | Agent | Asks | Default |
+| Persona | Persona file | Asks | Default |
 |---|---|---|---|
-| AI Behavior Auditor | `ai-behavior-auditor` | Did the author take a shortcut to make it green? | AI-written work |
-| Hallucination Checker | `hallucination-checker` | Does each name, flag, path and version exist? | AI-written work |
-| Domain Oracle Reviewer | `domain-oracle-reviewer` | Do the tests expect the right results? | always |
-| Saboteur | `saboteur` | Do the tests fail when the code is wrong? | when tests can run |
-| Test Automation Architect | `test-automation-architect` | Is each test at the right level, in a design that lasts? | suite or large change |
-| Determinism and Flakiness Engineer | `determinism-flakiness-engineer` | Does the test give the same result every time? | always |
-| Maintainability Craftsperson | `maintainability-craftsperson` | Can the next person read, change and diagnose it? | always |
-| Suite Cost and Speed Reviewer | `suite-cost-speed-reviewer` | Where do the time and the money go? | suite or pipeline |
+| AI Behavior Auditor | [`ai-behavior-auditor`](references/personas/ai-behavior-auditor.md) | Did the author take a shortcut to make it green? | AI-written work |
+| Hallucination Checker | [`hallucination-checker`](references/personas/hallucination-checker.md) | Does each name, flag, path and version exist? | AI-written work |
+| Domain Oracle Reviewer | [`domain-oracle-reviewer`](references/personas/domain-oracle-reviewer.md) | Do the tests expect the right results? | always |
+| Saboteur | [`saboteur`](references/personas/saboteur.md) | Do the tests fail when the code is wrong? | when tests can run |
+| Test Automation Architect | [`test-automation-architect`](references/personas/test-automation-architect.md) | Is each test at the right level, in a design that lasts? | suite or large change |
+| Determinism and Flakiness Engineer | [`determinism-flakiness-engineer`](references/personas/determinism-flakiness-engineer.md) | Does the test give the same result every time? | always |
+| Maintainability Craftsperson | [`maintainability-craftsperson`](references/personas/maintainability-craftsperson.md) | Can the next person read, change and diagnose it? | always |
+| Suite Cost and Speed Reviewer | [`suite-cost-speed-reviewer`](references/personas/suite-cost-speed-reviewer.md) | Where do the time and the money go? | suite or pipeline |
 
-The persona definitions are in the `agents` folder of this plugin. Each one has a checklist, an evidence rule, an output table and limits. This skill is the only one that depends on them. The other skills in this plugin work without them.
+Each persona file has a mode (read-only or changes code), a scope, a checklist, an evidence rule, an output table and limits. The persona files are part of this skill, so they travel with it. This skill is the only one that uses them. The other skills in this plugin work without them.
 
-**Host requirements.** The best result needs a host that can start separate reviewer agents from the `agents` folder. If the host cannot do this, or the folder is missing, use the reduced mode in step 3.
+**One reviewer, many personas.** The `test-reviewer` agent of this plugin does the reviews. The lead starts it once for each persona, with the persona file in the brief. If the host has no such agent, start any separate reviewer and give it the persona file. If the host cannot start separate reviewers, use the reduced mode in step 3.
 
 ## Principles
 
@@ -50,7 +50,7 @@ The persona definitions are in the `agents` folder of this plugin. Each one has 
 
 1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. This is the brief.
 2. **Choose the panel.** Use the "Default" column, or the `--personas` list from the user. Say which personas you chose and why.
-3. **Start the personas in parallel,** each as a separate reviewer with the same brief. Start the Saboteur last, or alone, because it changes files and runs tests. If the host cannot start separate reviewers, apply each persona checklist yourself, one at a time, and say in the report that the review was not independent.
+3. **Start one `test-reviewer` for each persona, in parallel.** Each brief has the same scope and facts, and the path of one persona file. Start the Saboteur last, or alone, because it changes files and runs tests. If the host cannot start separate reviewers, read each persona file and apply it yourself, one at a time. Say in the report that the review was not independent.
 4. **Verify.** For each blocker and major finding, open the evidence. Reject findings that the evidence does not support, and say why.
 5. **Merge.** Two findings are the same when they have the same root cause at the same place. Keep the strongest evidence, list all personas that found it, and use the highest severity.
 6. **Rank.** Blockers first, then by how a defect could reach users: wrong results, missing protection, false confidence, then cost and readability.

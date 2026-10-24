@@ -41,7 +41,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
-- **Reviewer personas.** Eight read-only reviewer agents, each with one job, a checklist and an evidence rule (file and line). Only `test-review-panel` uses them: it starts them in parallel and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
+- **Reviewer personas.** Eight persona files, each with one job, a checklist and an evidence rule (file and line). They live in the `test-review-panel` skill, which is the only skill that uses them. It starts one `test-reviewer` agent for each persona, in parallel, and merges the findings into one ranked list. The other skills stay self-contained and do not depend on the personas.
 - **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
 
 | Category | Skills |
@@ -57,7 +57,7 @@ The `qe-skills` plugin is a library of 35 Quality Engineering skills and 8 revie
 | Run and triage | `test-runner`, `change-impact`, `bug-report` |
 | Process | `release-readiness`, `quality-postmortem` |
 
-| Persona | Agent | Finds |
+| Persona | Persona file | Finds |
 |---|---|---|
 | AI Behavior Auditor | `ai-behavior-auditor` | shortcuts to green: copied expected values, weaker assertions, skips, test-only code, false 'all pass' claims |
 | Hallucination Checker | `hallucination-checker` | APIs, fixtures, properties, flags, paths and versions that do not exist |
