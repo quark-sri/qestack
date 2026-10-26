@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# One-step install of qestack: the engine (qestack command) and the Claude Code plugins.
+# One-step install of qestack: the engine (qestack command) and the Claude Code plugin.
 # Usage: scripts/install.sh [--skills-only]
-#   --skills-only  install only the qe-skills plugin (no engine, no Python needed)
+#   --skills-only  install only the plugin, without the engine (no Python needed).
+#                  The library skills work. The gated qe-* skills ask for the engine.
 set -euo pipefail
 REPO="quark-sri/qestack"
 SKILLS_ONLY=0
@@ -20,13 +21,11 @@ fi
 
 if command -v claude >/dev/null 2>&1; then
   claude plugin marketplace add "$REPO"
-  claude plugin install qe-skills@qestack
-  [ "$SKILLS_ONLY" = 0 ] && claude plugin install qestack@qestack
+  claude plugin install qestack@qestack
 else
   echo "Claude Code not found. In Claude Code, run:"
   echo "  /plugin marketplace add $REPO"
-  echo "  /plugin install qe-skills@qestack"
-  [ "$SKILLS_ONLY" = 0 ] && echo "  /plugin install qestack@qestack"
+  echo "  /plugin install qestack@qestack"
 fi
 
 [ "$SKILLS_ONLY" = 0 ] && echo "Done. In your repository run: qestack init   (use --existing for an existing codebase), then /qe-setup in Claude Code."

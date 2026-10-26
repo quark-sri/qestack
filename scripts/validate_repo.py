@@ -68,14 +68,20 @@ for d in skills:
             err(f"{ref.relative_to(ROOT)}: not linked from SKILL.md")
         long_sentences(ref, ref.read_text(encoding="utf-8"))
 
-# qe-skills rules: tool-neutral SKILL.md, routing parts in the description, shared context, existing related skills
+# Two skill groups in one plugin, by name: the gated workflow (`qestack`, `qe-*`) needs the engine.
+# All other skills are the library: tool-neutral SKILL.md, routing parts in the description, shared context,
+# existing related skills.
+def gated(name):
+    return name == "qestack" or name.startswith("qe-")
+
+
 TOOL_NAMES = re.compile(
     r"\b(maven|mvn|gradle|junit|testng|pytest|jest|vitest|mocha|cypress|playwright|selenium|selenide|pitest|stryker|"
     r"mutmut|docker|testcontainers|wiremock|mockito|assertj|rest assured|supertest|msw|k6|gatling|jmeter|locust|pact|"
     r"axe|lighthouse|bash|grep|glob tool|agent tool|webfetch)\b", re.I)
 all_skill_names = set(names)
 for d in skills:
-    if d.parent.parent.name != "qe-skills":
+    if gated(d.name):
         continue
     f = d / "SKILL.md"
     if not f.exists():
@@ -104,7 +110,7 @@ for d in skills:
         err(f"{rp}: names the tool '{m.group(0)}'; put tool details in references/")
 
 # Agents
-agents =sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
+agents = sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
 for f in agents:
     fm, body = frontmatter(f)
     if fm.get("name") != f.stem:
@@ -114,11 +120,11 @@ for f in agents:
             err(f"{f.relative_to(ROOT)}: '{k}' missing")
     long_sentences(f, body)
 
-# qe-skills personas: one agent per persona, no edit tools, one shared "Reviewer rules" section.
-# Only test-review-panel may use them, so that the other skills stay self-contained.
-QE = ROOT / "plugins" / "qe-skills"
-PANEL = QE / "skills" / "test-review-panel"
-persona_agents = sorted((QE / "agents").glob("*.md"))
+# Two agent classes, by name: workflow agents (`qe-*`) change files through the engine. All other agents are
+# review personas: one agent per persona, no edit tools, one shared "Reviewer rules" section.
+# Only test-review-panel may use the personas, so that the other skills stay self-contained.
+PANEL = PLUGIN / "skills" / "test-review-panel"
+persona_agents = [f for f in agents if not f.stem.startswith("qe-")]
 personas = {p.stem for p in persona_agents}
 panel_body = (PANEL / "SKILL.md").read_text(encoding="utf-8") if (PANEL / "SKILL.md").exists() else ""
 EDIT_TOOLS = re.compile(r"\b(Edit|Write|MultiEdit|NotebookEdit)\b")
@@ -142,17 +148,24 @@ if len(set(rules.values())) > 1:
     first = sorted(rules)[0]
     for n in sorted(rules):
         if rules[n] != rules[first]:
-            err(f"plugins/qe-skills/agents/{n}.md: 'Reviewer rules' differs from {first}.md; keep it the same in all personas")
+            err(f"plugins/qestack/agents/{n}.md: 'Reviewer rules' differs from {first}.md; keep it the same in all personas")
 for token in ("qa-reviews/", "panel-report.md", "findings.json", "references/findings-format.md"):
     if persona_agents and token not in panel_body:
         err(f"{(PANEL / 'SKILL.md').relative_to(ROOT)}: does not name '{token}' (review folder and findings format)")
 persona_rx = re.compile(r"`(" + "|".join(map(re.escape, sorted(personas))) + r")`") if personas else None
 for d in skills:
     f = d / "SKILL.md"
-    if d.parent.parent != QE or d == PANEL or not f.exists() or not persona_rx:
+    if d == PANEL or not f.exists() or not persona_rx:
         continue
     for m in persona_rx.finditer(f.read_text(encoding="utf-8")):
         err(f"{f.relative_to(ROOT)}: names the persona '{m.group(1)}'; only test-review-panel may use the personas")
+
+# llms.txt lists each skill and each agent, for AI agents and skill registries
+llms = ROOT / "llms.txt"
+llms_text = llms.read_text(encoding="utf-8") if llms.exists() else ""
+for n in [d.name for d in skills] + [f.stem for f in agents]:
+    if f"[{n}](" not in llms_text:
+        err(f"llms.txt: '{n}' missing; run python3 scripts/build_llms_txt.py")
 
 # JSON files
 for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),

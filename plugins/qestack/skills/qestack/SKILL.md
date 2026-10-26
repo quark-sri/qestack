@@ -7,6 +7,8 @@ description: Entry point for qestack AI test quality. Use when the user names qe
 
 qestack proves that AI-written tests catch bugs. It does not trust "all green" or coverage. It uses evidence: traceability to requirements, red-before-green, test locks, mutation score, hidden faults and an independent judge.
 
+This skill and the `qe-*` skills are the gated workflow. They need the qestack engine. The other skills of the plugin are the QA library. They need no engine. For QA work outside the gated workflow, use `qa-navigator`.
+
 ## Preflight (every qestack skill)
 
 1. Run `qestack --version`. If the command is not found, tell the user to install the engine and stop:

@@ -13,7 +13,7 @@ AI coding agents now write code, tests, reviews and specs. qestack's purpose is 
 
 Release 0.1 ships the first capability. AI agents can write many tests very fast. Many of these tests look correct, but they do not find bugs. Coverage and pass rates do not show this problem. qestack gives AI agents a process to write the right tests, and it proves, with objective evidence, that the tests find bugs. Later releases (section 7) add more AI Quality Engineering skills beyond test quality: for example spec review, code review for testability, and bug triage.
 
-**One-line description:** qestack: skills, plugins and agents for AI Quality Engineering. Release 0.1: gates that prove your AI-written tests catch bugs.
+**One-line description:** qestack: QA and test automation skills, agents and quality gates for AI coding agents. Release 0.1: gates that prove your AI-written tests catch bugs.
 
 ## 2. The problem
 
@@ -54,8 +54,10 @@ qestack/                              (this repository)
   .claude-plugin/marketplace.json     Claude Code marketplace entry
   plugins/qestack/
     .claude-plugin/plugin.json        plugin manifest
-    skills/                           SKILL.md files (also usable by Codex, Cursor, Copilot)
-    agents/                           designer, writer, judge, fault seeder
+    skills/                           SKILL.md files (also usable by Codex, Cursor, Copilot):
+                                      the gated workflow (qestack, qe-*) and the QA library
+    agents/                           workflow agents (designer, writer, judge, fault seeder)
+                                      and the 8 review personas
     hooks/hooks.json                  test-lock guard
   engine/                             Python package "qestack" (command-line tool)
     src/qestack/cli.py                all gates
@@ -113,9 +115,9 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 
 **Speckit adapter:** `qestack init --speckit` adds `/speckit.testplan`, `/speckit.testwrite` and `/speckit.testquality`, which call the same skills.
 
-### 6.1 QE skills for any project (plugin `qe-skills`)
+### 6.1 QA library for any project (in the `qestack` plugin)
 
-39 skills for QA disciplines across the SDLC, and 8 reviewer personas (agents). They need no engine and no `.qestack/` folder.
+39 skills for QA disciplines across the SDLC, and 8 reviewer personas (agents). They are in the same plugin as the gated workflow, but they need no engine and no `.qestack/` folder. The validator finds the two groups by name: `qestack` and `qe-*` are the gated workflow; all other skills are the library. Agents with the `qe-` prefix are workflow agents; all other agents are personas.
 
 | Rule | How |
 |---|---|
@@ -134,7 +136,7 @@ Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-t
 
 | Release | Target | Scope |
 |---|---|---|
-| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The `qe-skills` plugin. Owner review. |
+| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The QA library in the same plugin. Owner review. |
 | 0.2 | Week 5–8 | Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
 | 0.3 | Week 9–14 | Code-intelligence step: map changed code to its callers and tests, to aim hidden faults and mutation at risky code. Judge calibration dataset. LLM equivalent-mutant check. HTML report. Benchmark: only after qestack is tested on real projects (see section 8). |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |

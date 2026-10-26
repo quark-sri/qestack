@@ -1,6 +1,6 @@
 ---
 name: qa-navigator
-description: "Route a QA request to the right qe-skills skill and give the next steps, when the request does not clearly match one skill. Use when: 'which QA skill should I use', 'where do I start with testing', 'help me test this', 'what QA should we do'. Not for: a request that clearly matches another skill (use that skill directly). Related: qa-project-context, test-strategy, risk-based-testing."
+description: "Route a QA request to the right qestack skill and give the next steps, when the request does not clearly match one skill. Use when: 'which QA skill should I use', 'where do I start with testing', 'help me test this', 'what QA should we do'. Not for: a request that clearly matches another skill (use that skill directly). Related: qa-project-context, test-strategy, risk-based-testing."
 ---
 
 # qa-navigator
@@ -61,12 +61,14 @@ Read `.agents/qa-project-context.md` if it exists. If it does not exist and the 
 | Write a reproducible bug report | `bug-report` |
 | Decide go or no-go for a release | `release-readiness` |
 | Learn from an escaped defect | `quality-postmortem` |
+| Prove with gates that AI-written tests catch bugs, from spec to accepted feature (needs the qestack engine) | `qestack` (gated workflow, `qe-*` skills) |
 
 ## Common sequences
 
 - New feature: `requirement-gaps` → `edge-case-hunter` → `test-case-designer` → the automation skill for the layer → `testcase-reviewer` → `mutation-probe`.
 - Pull request: `change-impact` → `test-runner` → `testcase-reviewer` for the changed tests.
 - AI-written change: `test-runner` → `test-review-panel`.
+- AI writes the tests of a new feature, and the team wants proof: `qestack` → `qe-setup` once, then the gated flow that `qestack` describes.
 - New QA engineer on an old codebase: `qa-project-context` → `test-coverage-map` → `risk-based-testing` → `test-strategy`.
 - Before a release: `risk-based-testing` → `release-readiness` → `production-testing` for the checks after the release.
 - New design with no code yet: `testability-review` → `requirement-gaps` → `test-case-designer`.

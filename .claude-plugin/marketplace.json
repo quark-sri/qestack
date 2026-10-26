@@ -4,37 +4,27 @@
     "name": "quark-sri"
   },
   "metadata": {
-    "description": "qestack: skills, plugins and agents for AI Quality Engineering.",
+    "description": "qestack: QA and test automation skills, agents and quality gates for AI coding agents.",
     "version": "0.1.0"
   },
   "plugins": [
     {
       "name": "qestack",
       "source": "./plugins/qestack",
-      "description": "qestack AI test quality: spec-first test design, blind test writing, red-before-green, test locks, hidden faults, mutation score and an independent judge.",
+      "description": "qestack: QA and test automation skills, agents and quality gates for AI coding agents. 39 Quality Engineering skills and 8 reviewer personas for any project and any stack (no engine needed), and a gated workflow that proves AI-written tests catch bugs: spec-first test design, red-before-green, test locks, hidden faults, mutation score and an independent judge (needs the qestack engine).",
       "version": "0.1.0",
       "category": "testing",
       "keywords": [
-        "testing",
-        "test-quality",
         "qa",
-        "mutation-testing",
-        "test-automation"
-      ]
-    },
-    {
-      "name": "qe-skills",
-      "source": "./plugins/qe-skills",
-      "description": "qestack QE skills: 39 Quality Engineering skills and 8 reviewer personas for any project and any stack, from requirements and test design to automation, non-functional testing, test review, triage and release. Tool-neutral methods with stack recipes for Java, TypeScript and Python. No engine needed.",
-      "version": "0.1.0",
-      "category": "testing",
-      "keywords": [
-        "quality-engineering",
+        "qa-skills",
         "testing",
-        "qa",
         "test-automation",
+        "quality-engineering",
+        "test-quality",
+        "mutation-testing",
         "test-design",
-        "bug-hunting"
+        "bug-hunting",
+        "ai-agents"
       ]
     }
   ]

@@ -14,6 +14,8 @@ Without shared context, each QA skill asks again where the tests are, how to run
 
 If `.agents/qa-project-context.md` exists, read it first. Check each section against the repository. Mark the facts that are no longer true.
 
+If `.qestack/project.toml` exists, the repository uses the qestack gated workflow. Read the stack, the test commands and the thresholds from it, with that file as the source. Do not copy its settings. Point to it.
+
 ## Discovery questions
 
 Find the answers in the repository first (see the workflow). Ask the user only about gaps that change the work. Ask one section at a time.

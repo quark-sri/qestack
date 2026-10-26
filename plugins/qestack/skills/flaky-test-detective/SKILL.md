@@ -14,6 +14,7 @@ A retry hides a flaky test; it does not fix it. A flaky test also hides real bug
 
 1. Read `.agents/qa-project-context.md` if it exists. Use its test commands, environments and flaky test policy.
 2. If it does not exist, find the test command in the repository. Suggest `qa-project-context` once. Do not stop the work for it.
+3. If `.qestack/project.toml` exists and the `qestack` command works, `qestack flaky --feature <feature> --runs <n>` runs the tests of a tagged feature many times. Use it to reproduce. Then continue with this workflow to find the cause.
 
 ## Discovery questions
 

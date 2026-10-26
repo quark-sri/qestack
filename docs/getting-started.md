@@ -8,7 +8,7 @@ This guide takes one feature from spec to an ACCEPT report. It takes about one h
 git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
 ```
 
-The script installs the engine (pipx or uv) and the Claude Code plugins. To do it by hand, see the Install section of the README.
+The script installs the engine (pipx or uv) and the Claude Code plugin. To do it by hand, see the Install section of the README.
 
 ## 2. Set up the repository
 

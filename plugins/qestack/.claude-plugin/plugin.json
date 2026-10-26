@@ -1,12 +1,12 @@
 {
   "name": "qestack",
   "version": "0.1.0",
-  "description": "qestack: skills, agents and gates for AI Quality Engineering. Release 0.1: prove that AI-written tests catch bugs.",
+  "description": "qestack: QA and test automation skills, agents and quality gates for AI coding agents. 39 Quality Engineering skills and 8 reviewer personas for any project and any stack (no engine needed), and a gated workflow that proves AI-written tests catch bugs: spec-first test design, red-before-green, test locks, hidden faults, mutation score and an independent judge (needs the qestack engine).",
   "author": {
     "name": "quark-sri"
   },
   "homepage": "https://github.com/quark-sri/qestack",
   "repository": "https://github.com/quark-sri/qestack",
   "license": "Apache-2.0",
-  "keywords": ["testing", "test-quality", "qa", "mutation-testing", "test-automation", "ai-agents"]
+  "keywords": ["qa", "qa-skills", "testing", "test-automation", "quality-engineering", "test-quality", "mutation-testing", "test-design", "bug-hunting", "code-review", "ai-agents", "claude-skills"]
 }
