@@ -19,3 +19,4 @@ argument-hint: "[feature, for example 003-order-discount]"
 
 - The judge must not be the agent that wrote the tests in this session. If you wrote the tests yourself in this conversation, say so and still use the separate judge agent.
 - Do not change tests in this skill.
+- For a review from many angles outside the gated workflow (no feature tag, no engine), use the `test-review-panel` skill. It gives findings, not a gate verdict.

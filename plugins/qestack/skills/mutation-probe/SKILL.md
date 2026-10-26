@@ -14,6 +14,7 @@ Coverage shows that code ran. A mutant shows if a test notices when the code is 
 
 1. Read `.agents/qa-project-context.md` if it exists. Use its test commands and any mutation tool.
 2. If it does not exist, find the test command and the mutation tool in the build files. Suggest `qa-project-context` once. Do not stop the work for it.
+3. If `.qestack/project.toml` exists and the `qestack` command works, the engine already measures the mutation score of a tagged feature: `qestack mutation --feature <feature>`. Use it for a feature with a feature tag. Use this skill for other targets and for fault plans.
 
 ## Discovery questions
 
