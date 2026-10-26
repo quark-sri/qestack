@@ -5,3 +5,4 @@ build/
 dist/
 .venv/
 examples/**/.qestack/runs/
+plugins/qestack/evals/results/

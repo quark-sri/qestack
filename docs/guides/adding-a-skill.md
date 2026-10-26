@@ -12,7 +12,7 @@ Sources: [Claude Code skills](https://code.claude.com/docs/en/skills), [Claude C
 
 ## Skill description
 
-Claude Code keeps the descriptions of all skills in one listing. The listing gets about 1% of the context window. When it is full, Claude Code drops descriptions, and Claude can no longer match the skill to a request. So keep each description short.
+Claude Code keeps the descriptions of all skills in one listing. The listing gets about 1% of the context window: about 10,000 tokens for a 1M context and 2,000 tokens for a 200k context. When it is full, Claude Code drops the descriptions of the skills that are used least, and Claude can no longer match those skills to a request. The 15,000-character limit (about 3,750 tokens) fits a 1M context. A 200k context is too small for all descriptions of this plugin. So keep each description short, and use `skillOverrides` with `"name-only"` in the settings for the skills that a team does not use.
 
 | Rule | Checked |
 |---|---|
@@ -57,4 +57,4 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 
 1. Run `python3 scripts/build_llms_txt.py` to update `llms.txt`.
 2. Run `python3 scripts/validate_repo.py`.
-3. Try the skill in a Claude Code session with two or three real requests. Check that the skill starts for them, and that it does not start for the request of a neighbor skill.
+3. Add a routing eval case in `plugins/qestack/evals/routing/`: a realistic request, a `skill-fired` grader and, if there is a close neighbor, a `<neighbor>-not-fired` grader. Copy an existing case. Run it with `claude plugin eval . --case <case> --ablation none --no-publish` from `plugins/qestack` (see `docs/library-session-test.md`).

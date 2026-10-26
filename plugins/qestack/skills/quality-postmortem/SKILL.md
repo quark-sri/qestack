@@ -1,6 +1,6 @@
 ---
 name: quality-postmortem
-description: "Runs a blameless postmortem for an escaped defect: timeline, impact, five whys, why the tests and monitoring missed it, and actions with owners. Use when the user says 'postmortem', 'escaped bug' or asks 'why did our tests miss this'. Not for the defect report itself (use bug-report)."
+description: "Runs a blameless postmortem for an escaped defect: timeline, impact, five whys, why the tests and monitoring missed it, and actions with owners. Use when the user says 'postmortem', 'incident review', 'escaped bug' or asks 'why did our tests miss this'. Not for the defect report itself (use bug-report)."
 argument-hint: "[incident, defect or release]"
 ---
 

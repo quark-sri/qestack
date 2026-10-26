@@ -1,6 +1,6 @@
 ---
 name: test-case-designer
-description: "Designs traceable test cases from requirements with equivalence classes, boundary values, decision tables, state transitions and pairwise, each with an exact expected result and test level. Use when the user says 'design test cases' or 'test scenarios for this story'. Not for requirement gaps (use requirement-gaps)."
+description: "Designs traceable test cases from requirements with equivalence classes, boundary values, decision tables, state transitions and pairwise, each with an exact expected result and test level. Use when the user says 'design test cases', 'test scenarios for this story' or 'generate tests from this spec'. Not for requirement gaps (use requirement-gaps)."
 argument-hint: "[feature, story or spec]"
 ---
 

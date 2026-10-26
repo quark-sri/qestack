@@ -63,7 +63,10 @@ TOOLS = {"Read", "Grep", "Glob", "Bash", "Edit", "Write", "MultiEdit", "Notebook
          "Agent", "Skill"}
 NAME_RX = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SKILL_DESC_MAX = 350          # each skill; the documented hard limit is 1024
-SKILL_DESC_TOTAL_MAX = 15000  # all skills of the plugin, so that the listing fits a 200k context (1% budget)
+# All skills of the plugin, about 3,750 tokens. The listing budget is 1% of the context window: this fits a 1M
+# context with room for other skills. A 200k context (2,000 tokens) is smaller; there Claude Code drops the
+# descriptions of the skills that are used least.
+SKILL_DESC_TOTAL_MAX = 15000
 AGENT_DESC_MAX = 400
 BODY_MAX_LINES = 500
 
@@ -106,7 +109,7 @@ for d in skills:
         err(f"{rp}: unknown frontmatter key '{k}'; Claude Code ignores it")
     desc = check_description(rp, fm.get("description", ""), SKILL_DESC_MAX)
     desc_total += len(desc)
-    if desc and not re.match(r"[A-Z][a-z]+s\b", desc):
+    if desc and not re.match(r"[A-Z][a-z]+(?<!s)s\b", desc):  # "Writes", not "Write" or "Process"
         err(f"{rp}: description must start with a verb in the third person, for example 'Writes' or 'Finds'")
     if desc and "Use " not in desc:
         err(f"{rp}: description does not say when to use the skill ('Use when ...')")
@@ -180,7 +183,7 @@ for f in agents:
     for k in sorted(set(fm) - AGENT_KEYS - AGENT_KEYS_IGNORED_IN_PLUGINS):
         err(f"{rp}: unknown frontmatter key '{k}'; Claude Code ignores it")
     for t in [t.strip() for t in fm.get("tools", "").split(",") if t.strip()]:
-        if t not in TOOLS:
+        if not t.startswith("mcp__") and t.split("(", 1)[0] not in TOOLS:  # also "Bash(git *)" and MCP tools
             err(f"{rp}: unknown tool '{t}'")
     check_description(rp, fm.get("description", ""), AGENT_DESC_MAX)
     long_sentences(f, body)
