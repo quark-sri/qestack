@@ -81,7 +81,7 @@ In a user repository, qestack keeps its files in one folder:
 | Level | Name | Example | Rule |
 |---|---|---|---|
 | 1 | Core defaults | `data/defaults.toml` | Ships with the engine |
-| 2 | Stack | `java-maven-junit5` (`dotnet` is experimental) | Exactly one |
+| 2 | Stack | `java-maven-junit5`, `java-gradle-junit5` (`dotnet` is experimental) | Exactly one |
 | 3 | Rulesets | `api-http`, `database`, `kafka`, `ui-playwright` | Zero or more |
 | 4 | Project settings | `.qestack/project.toml` | One per repository |
 
@@ -138,7 +138,7 @@ Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-t
 | 0.2 | Week 5–8 | Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
 | 0.3 | Week 9–14 | Code-intelligence step: map changed code to its callers and tests, to aim hidden faults and mutation at risky code. Judge calibration dataset. LLM equivalent-mutant check. HTML report. Benchmark: only after qestack is tested on real projects (see section 8). |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |
-| Future | After 0.2 | Stack coverage: .NET (full support), Java/Gradle, TypeScript (Vitest/Jest), Python (pytest). Order and dates depend on real-project feedback. |
+| Future | After 0.2 | Stack coverage: .NET (full support), TypeScript (Vitest/Jest), Python (pytest). Order and dates depend on real-project feedback. |
 | 1.0 | Month 6 | Stable configuration schema. Stable result file formats. Contributor guide for stacks and rulesets proven by outside contributions. |
 
 ## 8. Benchmark plan (not scheduled)

@@ -7,7 +7,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ### Added
 
 - Engine `qestack` (Python 3.11+, no dependencies): `init`, `doctor`, `context`, `show`, `lint`, `trace`, `snapshot`, `red`, `lock`, `flaky`, `mutation`, `fault`, `seed`, `guard`, `gate`, `score`, `feedback`, `calibrate`, `hook`.
-- Stacks: `java-maven-junit5` (PIT), `dotnet` (Stryker.NET).
+- Stacks: `java-maven-junit5` (PIT), `java-gradle-junit5` (PIT), `dotnet` (Stryker.NET).
 - Rulesets: `api-http`, `database`, `kafka`, `ui-playwright`.
 - Rubrics: test review (R1–R7), plan review (P1–P7), fault catalog.
 - Claude Code plugin: 10 skills, 4 agents, guard hook, marketplace manifest.
@@ -20,6 +20,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - `qe-skills` gaps closed after a review of related projects: new skills `testability-review`, `production-testing`, `resilience-testing` and `localization-testing`; a property-based testing recipe in `unit-testing`; tautology checks and eight named sycophancy patterns in the `ai-behavior-auditor` persona; `qa-navigator` routes to the new skills.
 - Faster setup: `scripts/install.sh` (engine and plugins in one step, `--skills-only` for the skills alone). `qestack init` gets `--hook` (merge the guard hook into `.claude/settings.json`), `--existing` (lower start thresholds) and ends with a lint preview and next steps.
 - Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
+
+- Stack `java-gradle-junit5` and the runnable example `examples/order-service-gradle` (Gradle 9.8.2, PIT plugin 1.19.0). Same Java reading rules as the Maven stack. The commands run the `test` and `integrationTest` suites, filter by tag with `-Pqe.groups`, forward the JUnit random-order settings with `-Pjunit.*` and run PIT through the Gradle plugin. The example gives the same mutation result as the Maven example (47%, 7 of 15). `qestack init` picks this stack when it finds `build.gradle` or `build.gradle.kts`.
 
 ### Fixed
 

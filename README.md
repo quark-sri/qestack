@@ -132,11 +132,11 @@ Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md stand
 | Stacks (exactly one) | Rulesets (zero or more) |
 |---|---|
 | `java-maven-junit5`: Java, Maven, JUnit 5, PIT | `api-http`: any HTTP client, including internal libraries |
-| `dotnet` (experimental, not supported in 0.1) | `database`: persisted state, constraints, transactions |
-| | `kafka`: producers, consumers, keys, headers, idempotency, DLQ |
+| `java-gradle-junit5`: Java, Gradle, JUnit 5, PIT | `database`: persisted state, constraints, transactions |
+| `dotnet` (experimental, not supported in 0.1) | `kafka`: producers, consumers, keys, headers, idempotency, DLQ |
 | | `ui-playwright`: Playwright for Java and .NET |
 
-Planned: .NET (full support), Java with Gradle, TypeScript (Vitest, Jest), Python (pytest). See the [roadmap](docs/PLAN.md#7-roadmap).
+Planned: .NET (full support), TypeScript (Vitest, Jest), Python (pytest). See the [roadmap](docs/PLAN.md#7-roadmap).
 
 ## How it works
 

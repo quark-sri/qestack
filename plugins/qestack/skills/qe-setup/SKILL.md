@@ -11,7 +11,7 @@ The settings files (`.qestack/project.toml`, `.qestack/project-rules.md`) are pr
 
 1. **Engine.** Run `qestack --version`. If it is missing, give the install command (`pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"`) and stop. The version must be 0.1.x, the same as this plugin.
 2. **Create the folder.** If `.qestack/project.toml` does not exist, run `qestack init`. Add `--speckit` if `.specify/` exists, and `--existing` if the codebase already has code and tests (lower start thresholds). Read the lint preview at the end of the output: it shows early if an assertion helper is unknown. The command detects the stack and the rulesets. It creates the files once. After that, only the user changes them.
-3. **Check the detection.** Read the build files. Compare them with `[project] stack` and `rulesets`. Run `qestack show stacks` and `qestack show rulesets` to see the options. Gradle: keep the Java stack, and override `[commands]` and `[reports]` with Gradle commands.
+3. **Check the detection.** Read the build files. Compare them with `[project] stack` and `rulesets`. Run `qestack show stacks` and `qestack show rulesets` to see the options. Gradle: use the `java-gradle-junit5` stack, and add the settings from its guide to `build.gradle.kts`.
 4. **Assertion helpers.**
    1. Run `qestack lint --all --max 100`.
    2. Open some NO_ASSERTION findings. If a test calls a library method that asserts, that method needs a regex in `extra_custom_assertion_regexes`, in `[language]` of `.qestack/project.toml`. Example: `'\bApiAssert\.\w+\s*\('`.
