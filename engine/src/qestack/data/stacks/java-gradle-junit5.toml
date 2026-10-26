@@ -1,0 +1,100 @@
+# =====================================================================================
+# Stack: Java + Gradle + JUnit 5 (Jupiter)
+# Mutation testing: PIT (gradle-pitest-plugin + pitest-junit5-plugin)
+# See java-gradle-junit5.md for the build.gradle.kts setup and the conventions.
+# =====================================================================================
+
+[paths]
+test_globs = ["**/src/test/java/**/*.java", "**/src/integrationTest/java/**/*.java", "**/src/it/java/**/*.java"]
+source_globs = ["**/src/main/java/**/*.java"]
+
+[tags]
+# @Tag("FR-001")  and  @Tags({@Tag("a"), @Tag("b")})
+tag_value_regex = ['@Tag\(\s*"([^"]+)"\s*\)']
+
+[language]
+name = "java"
+string_style = "java"
+test_marker_regex = '@(?:Test|ParameterizedTest|RepeatedTest|TestFactory|TestTemplate)\b'
+skip_regex = '@(?:Disabled|Ignore)\b'
+display_name_regex = '@DisplayName\(\s*"([^"]*)"\s*\)'
+assertion_regexes = [
+  # JUnit 5, AssertJ, Hamcrest, Truth, your own assert*/verify*/expect* helpers
+  '\b(?:assert[A-Z]\w*|assertThat\w*|fail)\s*\(',
+  '\b(?:verify|expect)[A-Z]\w*\s*\(',
+  # Mockito interaction checks
+  '\bverify\s*\(',
+  # BDD style (AssertJ BDDAssertions.then, Mockito then(..).should())
+  '\bthen\s*\(',
+  # Java assert keyword (Surefire enables -ea by default)
+  '\bassert\s+[^;]',
+  # Awaitility, Spring MockMvc / WebTestClient, JSONAssert, Reactor StepVerifier
+  '\.untilAsserted\s*\(',
+  '\.andExpect\s*\(',
+  '\.expect(?:Status|Body|Header)\w*\s*\(',
+  '\bJSONAssert\.\w+\s*\(',
+  '\.expect(?:Next|Error|Complete)\w*\s*\(',
+  '\.verifyComplete\s*\(',
+]
+trivial_statement_regexes = [
+  '^assertNotNull\(',
+  '^Assertions\.assertNotNull\(',
+  '^assertTrue\(true\)',
+  '^assertFalse\(false\)',
+  '^assertDoesNotThrow\(',
+  '^assertThat\((?:true|false)\)\.is(?:True|False)\(\)$',
+  '^assertThat\(.*\)\.isNotNull\(\)$',
+  '^assertThat\(.*\)\.isNotEmpty\(\)$',
+  '^assertThat\(.*\)\.isNotBlank\(\)$',
+  '^assertThat\(.*\)\.isInstanceOf\([\w.]+\.class\)$',
+  '^assertTrue\([\w.()]+\s*!=\s*null\)$',
+  '^assertEquals\(([^,]+),\1\)$',
+  '^assertThat\((.+)\)\.isEqualTo\(\1\)$',
+]
+shallow_statement_regexes = [
+  # API: only the HTTP status is checked (not a domain field such as order.status())
+  '^assert(?:Equals|That)\(.*\b(?:statusCode|getStatusCode|httpStatus|getStatusCodeValue)\b',
+  '^assertThat\(.*\.status\(\)\)\.isEqualTo\([1-5]\d\d\)$',
+  '^assertEquals\((?:20\d|30\d|40\d|50\d),[\w.()]+\)$',
+  # Exceptions: only the type is checked, not the error code or message
+  '^assertThrows\(',
+  '^assertThatThrownBy\(.*\)\.isInstanceOf\([\w.]+\.class\)$',
+  '^assertThatExceptionOfType\(.*\)\.isThrownBy\(.*\)$',
+  # Interactions: only "was called", with any arguments
+  '^verify\(.*\)\.\w+\((?:any\w*\(\)\s*,?\s*)*\)$',
+  # Collections: only the size is checked
+  '^assertThat\(.*\)\.hasSize\(\d+\)$',
+  # UI: only visibility is checked
+  '^assertThat\(.*\)\.isVisible\(\)$',
+]
+
+[language.tag_examples]
+class = '@Tag("feature-003")'
+method = '@Test @Tag("FR-007") @Tag("US1-AS2") @Tag("boundary") @DisplayName("TC-014: ...")'
+
+[smells.patterns]
+conditional_logic = '^\s*(?:if|for|while|switch)\s*\('
+fixed_sleep = 'Thread\.sleep\s*\(|TimeUnit\.\w+\.sleep\s*\(|\.waitForTimeout\s*\('
+swallowed_exception = 'catch\s*\([^)]*\)\s*\{\s*\}'
+console_output = 'System\.(?:out|err)\.print'
+random_without_seed = 'new\s+Random\s*\(\s*\)|Math\.random\s*\('
+current_time = '\b(?:LocalDate|LocalDateTime|LocalTime|Instant|ZonedDateTime|OffsetDateTime)\.now\s*\(|System\.currentTimeMillis\s*\(|Clock\.system\w*\s*\('
+order_dependence = '@TestMethodOrder\s*\(|@Order\s*\('
+conditional_execution = '\bassum(?:e|ing)\w*\s*\(|@(?:Enabled|Disabled)(?:If|On)\w*\b|disabledWithoutDocker\s*=\s*true'
+
+[commands]
+# build.gradle.kts must read -Pqe.groups and forward -Pjunit.* (see java-gradle-junit5.md).
+# The test tasks must not stop the build on a red test (ignoreFailures = true): in the red phase every
+# test fails, and the engine reads the XML reports, not the exit code.
+# --continue: in a multi-module build, the other modules continue after a failure.
+# The wrapper is used so that the Gradle version is the one the project pins.
+compile = "./gradlew -q --console=plain testClasses integrationTestClasses"
+test_feature = "./gradlew -q --console=plain --continue test integrationTest -Pqe.groups={feature_tag}"
+test_feature_random = "./gradlew -q --console=plain --continue test integrationTest -Pqe.groups={feature_tag} -Pjunit.jupiter.testmethod.order.default=org.junit.jupiter.api.MethodOrderer\\$Random -Pjunit.jupiter.testclass.order.default=org.junit.jupiter.api.ClassOrderer\\$Random -Pjunit.jupiter.execution.order.random.seed={seed}"
+# PIT on the changed classes, with the feature tests only. The build excludes the groups "integration" and "ui".
+mutation = "./gradlew -q --console=plain --continue pitest --rerun -Pqe.targetClasses={target_classes} -Pqe.targetTests={feature_test_classes}"
+
+[reports]
+junit_globs = ["**/build/test-results/test/TEST-*.xml", "**/build/test-results/integrationTest/TEST-*.xml"]
+mutation_format = "pit-xml"
+mutation_path = "**/build/reports/pitest/mutations.xml"
