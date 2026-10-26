@@ -47,3 +47,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - TQS: requirement depth uses the depth ratio only. Judge: R3 < 3 gives revise; evidence needs a file and line or a spec anchor.
 - Skills and agents: `qestack:` agent handoffs with fixed inputs, writer phases, judge audit-sample mode, neutral stubs.
 - Rulesets: more database, Kafka and API rules and required cases.
+
+### Changed (one plugin)
+
+- One plugin: the `qe-skills` plugin is now part of the `qestack` plugin. The 39 library skills and the 8 review personas are in `plugins/qestack/`. The library still needs no engine; only the gated skills (`qestack`, `qe-*`) need it. Skill commands change from `/qe-skills:<skill>` to `/qestack:<skill>`. If you installed the old plugin, run `/plugin uninstall qe-skills@qestack`, then `/plugin install qestack@qestack`.
+- The validator finds the skill groups and agent classes by name. `qa-navigator` routes to the gated workflow. `qe-setup` and `qa-project-context` share the project facts. `mutation-probe` and `flaky-test-detective` use the engine commands when the repository has qestack.
+- `docs/qe-skills-session-test.md` is now `docs/library-session-test.md`, with a new routing check (S7).

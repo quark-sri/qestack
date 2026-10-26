@@ -4,7 +4,7 @@
 |---|---|
 | For | Claude (desktop app / Claude Code) on the owner's MacBook |
 | Owner | quark-sri (GitHub). A personal repository of the owner. |
-| Updated | 2026-10-24 |
+| Updated | 2026-10-26 |
 | State | Release 0.1 in progress. All work is on `main` and pushed. CI is green. |
 | Repository | `github.com/quark-sri/qestack`, **public** (owner decision) |
 | Scope of release 0.1 | AI test quality for **Java with Maven and JUnit 5**. .NET is experimental. |
@@ -18,12 +18,13 @@ Read this whole file before you start. Then read `docs/PLAN.md`, `docs/architect
 
 qestack is an open-source toolbox of **skills, plugins and agents for AI Quality Engineering**. Its first capability, and the scope of release 0.1, is **AI test quality**: proof that AI-written tests catch bugs.
 
-It has four parts:
+It has three parts:
 
 1. **Engine:** the `qestack` command (Python 3.11+, standard library only) in `engine/`. It runs the gates: lint, traceability, red-before-green, flakiness, mutation score, hidden (seeded) faults, guard, locks, score, feedback and judge calibration.
-2. **Plugin `qestack`:** `plugins/qestack/`. 10 skills, 4 agents and a guard hook for the gated workflow. It needs the engine.
-3. **Plugin `qe-skills`:** `plugins/qe-skills/`. 39 Quality Engineering skills for any project and any stack, 8 review personas, and the `test-review-panel` skill. It needs no engine.
-4. **Project folder in user repositories:** `.qestack/` (settings, gate results, locks) for the engine, and `.agents/qa-project-context.md` for `qe-skills`.
+2. **Plugin `qestack`:** `plugins/qestack/`. One plugin with two groups (2026-10-26):
+   - **Gated workflow:** the skills `qestack` and `qe-*` (10), the 4 `qe-*` workflow agents and the guard hook. They need the engine.
+   - **QA library:** 39 Quality Engineering skills for any project and any stack, 8 review personas, and the `test-review-panel` skill. They need no engine.
+3. **Project folder in user repositories:** `.qestack/` (settings, gate results, locks) for the engine, and `.agents/qa-project-context.md` (project facts) for the library.
 
 The owner is a test automation architect. The first target users are Java teams with Maven, JUnit 5, HTTP API tests (an internal library on top of `HttpClient`), database tests and Kafka tests. Playwright UI tests come later.
 
@@ -35,12 +36,13 @@ Do not change these without the owner's approval. "2026-10-24" marks the decisio
 
 | Topic | Decision |
 |---|---|
-| Name and position | `qestack`: "skills, plugins and agents for AI Quality Engineering". Release 0.1 is "AI test quality", the first capability. (2026-10-24) |
+| Name and position | `qestack`: "QA and test automation skills, agents and quality gates for AI coding agents" (2026-10-26; before: "skills, plugins and agents for AI Quality Engineering"). Release 0.1 is "AI test quality", the first capability. The name stays `qestack` for discovery; "QA skills" goes in descriptions and keywords. (2026-10-24, 2026-10-26) |
 | Repository | Public. It is the owner's personal repository, and the owner decided to make it public. (2026-10-24) |
 | Publishing | Do not publish to PyPI. Do not create tags or releases without the owner. |
 | License | Apache-2.0 |
 | Problem tracking | No GitHub issues. Track problems as tasks in `TASKS.local.md` (git-ignored through `.git/info/exclude`, never pushed). (2026-10-24) |
-| Acknowledgement | The README credits `petrkindlmann/qa-skills` (MIT) as the inspiration for the `qe-skills` structure. Keep it. (2026-10-24) |
+| Acknowledgement | The README credits `petrkindlmann/qa-skills` (MIT) as the inspiration for the QA library structure. Keep it. (2026-10-24) |
+| One plugin | `qe-skills` is merged into the `qestack` plugin. The name `qe-skills` is dropped. The engine stays optional: library skills work without it, gated skills stop in the preflight. Final merge decisions D1 to D11 are in the pull request of branch `merge-qe-skills-into-qestack`. (2026-10-26) |
 
 ### Engine and the `qestack` plugin
 
@@ -54,16 +56,17 @@ Do not change these without the owner's approval. "2026-10-24" marks the decisio
 | Scope of 0.1 | Java + Maven + JUnit 5. `.NET` files stay in the repository, marked "experimental". Do not spend time on .NET. |
 | Examples | No Spring Boot. Plain Java, so that the examples build fast. (2026-10-24) |
 
-### The `qe-skills` plugin (2026-10-24)
+### The QA library in the `qestack` plugin (2026-10-24, merged 2026-10-26)
 
 | Topic | Decision |
 |---|---|
+| Groups by name | `qestack` and `qe-*` skills are the gated workflow. All other skills are the library. `qe-*` agents are workflow agents. All other agents are personas. The validator uses these names. (2026-10-26) |
 | Skills | A QA discipline library, 39 skills in 10 categories. Each `SKILL.md` gives the method and names no tools. Tool details are in `references/` stack recipes (Java, TypeScript and JavaScript, Python). |
 | Shared context | `qa-project-context` writes `.agents/qa-project-context.md`. Every other skill reads it first. |
-| Personas | 8 agents in `plugins/qe-skills/agents/`: `ai-behavior-auditor`, `hallucination-checker`, `domain-oracle-reviewer`, `saboteur`, `test-automation-architect`, `determinism-flakiness-engineer`, `maintainability-craftsperson`, `suite-cost-speed-reviewer`. |
+| Personas | 8 agents in `plugins/qestack/agents/`: `ai-behavior-auditor`, `hallucination-checker`, `domain-oracle-reviewer`, `saboteur`, `test-automation-architect`, `determinism-flakiness-engineer`, `maintainability-craftsperson`, `suite-cost-speed-reviewer`. |
 | Personas only report | No persona has an edit tool or changes a file. The caller (a skill or the main agent) makes every change. The Saboteur designs a fault plan; the caller runs it in an isolated copy with the `mutation-probe` method. |
 | Persona commands | Personas may run only read-only commands and the test command of the brief. One shared "Reviewer rules" section, the same in all 8 personas. |
-| Who uses personas | Only `test-review-panel`. The other skills of the plugin do not depend on them. Users can start a persona directly, or from their own skills. |
+| Who uses personas | Only `test-review-panel`, also after the merge. No gated skill uses them until the session tests pass, so that persona output cannot leak held-out faults. Users can start a persona directly, or from their own skills. (2026-10-24, kept 2026-10-26) |
 | Review results | The panel lead writes `qa-reviews/<date>-<scope>/` (`panel-report.md`, `findings.json`, `personas/`). Reviewers write no files. |
 
 ### Style
@@ -77,8 +80,8 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 - Engine with 19 commands. 30 end-to-end tests pass: `python3 -m unittest discover -s engine/tests`.
 - CI is green on ubuntu and macOS, Python 3.11 to 3.13. The CI builds and installs the package, so the package data (`qestack/data/**`) is in the wheel.
 - Plugin `qestack`: 10 skills, 4 agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
-- Plugin `qe-skills`: 39 skills, 8 personas, `test-review-panel` with the findings format.
-- `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks both plugins, the `qe-skills` rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
+- QA library in the `qestack` plugin: 39 skills, 8 personas, `test-review-panel` with the findings format. Merged from the old `qe-skills` plugin (2026-10-26).
+- `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks the plugin, the library rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
 - Task 3: `examples/order-service-maven` runs every gate with real Maven. All Java stack command properties are checked against the plugin parameter lists (Surefire and Failsafe 3.6.0, PIT 1.30.1). Random order, the Failsafe feature filter and PIT on Java 25 work.
 - Local tools on the MacBook: Java 25 (Temurin) and Maven 3.10.0 through SDKMAN, Python 3.14. The engine runs from a virtual environment (`pip install -e ./engine`).
 
@@ -87,7 +90,7 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 | Item | Risk | Task |
 |---|---|---|
 | The plugins in a real Claude Code session | Skill discovery, agent start, the hook and the review panel are not tested. | 4a, 4b |
-| Stack recipe code in `qe-skills` | The recipe samples (Pact, k6, Gatling, axe and others) were not run. | later |
+| Stack recipe code in the library | The recipe samples (Pact, k6, Gatling, axe and others) were not run. | later |
 
 ## 4. Local setup on the MacBook
 
@@ -115,22 +118,22 @@ Use a task list. Commit after each task. End each commit message with the traile
 |---|---|
 | 1. Push to GitHub | Done. Public, by owner decision. |
 | 2. Make CI green | Done. |
-| 4a. Test `qe-skills` in a real session | Ready. The owner runs the slash commands. |
+| 4a. Test the QA library in a real session | Ready. The owner runs the slash commands. |
 | 3. Runnable Maven example | Done, except step 3b (the strengthened tests come from `/qe-harden` in task 4b). |
 | 4b. Test the `qestack` plugin in a real session | After task 3. |
 | 5. Integration example with database and Kafka | After 4b. |
 | 6. Multi-module Maven | After 5. |
 | 7. Release preparation | Last. Do not publish. |
 
-### Task 4a: Test `qe-skills` in a real Claude Code session
+### Task 4a: Test the QA library in a real Claude Code session
 
-Follow `docs/qe-skills-session-test.md`. It has 21 checks (skills, personas, review panel) and an answer key of 14 expected findings for `examples/order-discount`.
+Follow `docs/library-session-test.md`. It has 22 checks (skills, personas, review panel) and an answer key of 14 expected findings for `examples/order-discount`.
 
 1. The owner installs the plugin and runs the slash commands. Claude cannot type `/plugin` or `/agents`.
 2. Record each result and problem in `TASKS.local.md`.
 3. Fix the skills and personas. Then decide if the personas need a hook that blocks file writes (checks P4 and R8).
 
-**Done when:** all 21 checks pass, and the panel finds at least 11 of the 14 expected findings.
+**Done when:** all 22 checks pass, and the panel finds at least 11 of the 14 expected findings.
 
 ### Task 3: Runnable Maven example (most important)
 
@@ -211,12 +214,12 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 2. Keep the engine free of dependencies.
 3. Each engine change needs a test in `engine/tests/test_cli.py`.
 4. Run the tests and the validator before each commit.
-5. Keep the versions equal in `engine/src/qestack/__init__.py`, `plugins/qestack/.claude-plugin/plugin.json`, `plugins/qe-skills/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (the validator checks this).
+5. Keep the versions equal in `engine/src/qestack/__init__.py`, `plugins/qestack/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (the validator checks this).
 6. Do not change .NET files, except to keep the tests green.
 7. Do not add the owner's employer code, names or data to the repository.
 8. Do not publish packages. Do not create tags or releases without the owner. The repository is public: treat each commit as public.
 9. Do not commit `qestack-0.1.0.bundle`, `qestack-0.1.0.zip` or `TASKS.local.md`.
-10. `qe-skills`: no tool names in `SKILL.md`; personas never change files; only `test-review-panel` uses the personas.
+10. QA library: no tool names in `SKILL.md`; personas never change files; only `test-review-panel` uses the personas.
 11. Ask the owner before you change a decision in section 2.
 
 ## 7. File map
@@ -231,17 +234,17 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 | `engine/src/qestack/data/templates/` | Files that `qestack init` and `qestack show` use |
 | `engine/src/qestack/data/adapters/speckit/` | Speckit commands and constitution text |
 | `engine/tests/test_cli.py` | End-to-end tests (fake test runner, no Maven) |
-| `plugins/qestack/skills/*/SKILL.md` | The 10 `qestack` skills |
-| `plugins/qestack/agents/*.md` | The 4 `qestack` agents |
+| `plugins/qestack/skills/{qestack,qe-*}/SKILL.md` | The 10 gated workflow skills |
+| `plugins/qestack/agents/qe-*.md` | The 4 workflow agents |
 | `plugins/qestack/hooks/hooks.json` | The guard hook |
-| `plugins/qe-skills/skills/*/SKILL.md` | The 39 `qe-skills` skills, with `references/` |
-| `plugins/qe-skills/agents/*.md` | The 8 review personas |
-| `plugins/qe-skills/skills/test-review-panel/references/findings-format.md` | The findings block and the review folder format |
-| `.claude-plugin/marketplace.json` | Marketplace entries for both plugins |
+| `plugins/qestack/skills/*/SKILL.md` (other names) | The 39 library skills, with `references/` |
+| `plugins/qestack/agents/*.md` (other names) | The 8 review personas |
+| `plugins/qestack/skills/test-review-panel/references/findings-format.md` | The findings block and the review folder format |
+| `.claude-plugin/marketplace.json` | Marketplace entry for the plugin |
 | `scripts/validate_repo.py` | Repository checks |
-| `scripts/install-skills.sh` | Links the skills of both plugins for other agents |
+| `scripts/install-skills.sh` | Links all skills of the plugin for other agents |
 | `docs/PLAN.md` | Vision, roadmap, governance, risks |
-| `docs/qe-skills-session-test.md` | The checks for task 4a |
+| `docs/library-session-test.md` | The checks for task 4a |
 | `TASKS.local.md` | Local problem and task list (not in git) |
 
 ## 8. Known issues
@@ -254,7 +257,7 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 | `qestack red` after the implementation | Not possible. Tests added in the harden loop are measured by mutation and seeded faults instead. |
 | Speckit FR numbers restart in each feature | Handled by the feature tag (`feature-NNN`). |
 | Personas can run commands | A shell command can write files. The shared rules forbid it, and the panel checks the working tree. A blocking hook is a task 4a decision. |
-| The `qe-fault-seeder` agent changes production code | By design of the gated workflow, through the engine (`fault begin`, `fault save`). The "personas only report" rule is for `qe-skills` only. |
+| The `qe-fault-seeder` agent changes production code | By design of the gated workflow, through the engine (`fault begin`, `fault save`). The "personas only report" rule is for the review personas only. |
 
 ## 9. Open questions for the owner
 

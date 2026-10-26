@@ -1,6 +1,6 @@
-# qe-skills: test in a real Claude Code session
+# QA library: test in a real Claude Code session
 
-This is the `qe-skills` part of HANDOFF Task 4. The validator and CI check the files only. This test checks that the skills, the personas and the review panel work in a real session. It needs no Maven and no engine.
+This is the QA library part of HANDOFF Task 4 (task 4a). The validator and CI check the files only. This test checks that the library skills, the personas and the review panel of the qestack plugin work in a real session. It needs no Maven and no engine. Task 4b tests the gated workflow.
 
 Record the results and each problem, with the check ID, in your local task list, not in this file.
 
@@ -10,7 +10,7 @@ In Claude Code, from any folder:
 
 ```
 /plugin marketplace add /Users/srinivas/Documents/repos/qestack
-/plugin install qe-skills@qestack
+/plugin install qestack@qestack
 ```
 
 Start a new session in the repository root after the install.
@@ -28,18 +28,19 @@ Start a new session in the repository root after the install.
 
 | ID | Do | Pass when |
 |---|---|---|
-| S1 | Type `/` and look for `qe-skills:` | The 39 skills are listed |
+| S1 | Type `/` and look for `qestack:` | The 49 skills are listed: 39 library skills, and `qestack` with the 9 `qe-*` skills |
 | S2 | Ask: "review the tests in examples/order-discount" | `testcase-reviewer` starts, not `test-review-panel` |
 | S3 | Ask: "what edge cases are missing in examples/order-discount/specs/001-order-discount/spec.md" | `edge-case-hunter` or `requirement-gaps` starts |
 | S4 | Ask: "where do I start with testing this repository" | `qa-navigator` starts and proposes at most three skills |
 | S5 | In S2 to S4 | Each skill reads `.agents/qa-project-context.md` or suggests `qa-project-context` once, and does not stop |
 | S6 | In S2 to S4 | No skill names a tool that the project does not use |
+| S7 | In S2 to S4 | The library skill starts, not a gated skill (`qestack`, `qe-*`), although `examples/order-discount` has a `.qestack/` folder. The user did not ask for the gated workflow |
 
 ### P: personas
 
 | ID | Do | Pass when |
 |---|---|---|
-| P1 | Run `/agents` | The 8 personas are listed |
+| P1 | Run `/agents` | The 8 personas and the 4 `qe-*` workflow agents are listed |
 | P2 | Ask: "use the domain-oracle-reviewer agent on examples/order-discount" | The report starts with the `Persona:` header line and ends with the findings block (valid JSON) |
 | P3 | In P2 | Each finding has a file and line. Findings without evidence are under "Questions" |
 | P4 | In P2 | The persona changed no file (`git status` is clean) |
@@ -56,7 +57,7 @@ Start a new session in the repository root after the install.
 | R4 | In R1 | One merged, ranked list. Duplicates name all personas that found them |
 | R5 | In R1 | It writes `qa-reviews/<date>-<scope>/` with `panel-report.md`, `findings.json` (valid JSON) and `personas/<name>.md` |
 | R6 | In R1 | It asks once whether to commit `qa-reviews/` or to ignore it |
-| R7 | `/qe-skills:test-review-panel engine/tests --personas saboteur,hallucination-checker` | The fault plan runs in an isolated copy. `findings.json` has a `fault_plan` result for each fault |
+| R7 | `/qestack:test-review-panel engine/tests --personas saboteur,hallucination-checker` | The fault plan runs in an isolated copy. `findings.json` has a `fault_plan` result for each fault |
 | R8 | After R7 | `git status` shows only `qa-reviews/` (or nothing, if it is ignored). The source files did not change |
 | R9 | In R1 and R7 | It offers to publish the report, and does not publish without a yes |
 

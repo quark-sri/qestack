@@ -1,6 +1,8 @@
 # qestack
 
-**qestack: skills, plugins and agents for AI Quality Engineering.**
+**qestack: QA and test automation skills, agents and quality gates for AI coding agents.**
+
+One Claude Code plugin with two parts: a QA library of 39 Quality Engineering skills and 8 reviewer personas for any stack, and a gated workflow with an engine that proves AI-written tests catch bugs.
 
 AI coding agents now write code, tests, reviews and specs. qestack's goal is to build a growing toolbox — Claude Code skills, agents and measurable gates — that makes AI-assisted quality engineering trustworthy, not just fast.
 
@@ -34,9 +36,9 @@ Typical problems with AI-written tests:
 
 The result of each feature is `specs/<feature>/quality-report.md` with the decision **ACCEPT** or **ESCALATE**. A human reads the report and a small audit sample, not every line of test code.
 
-## QE skills for any project (no engine needed)
+## QA library for any project (no engine needed)
 
-The `qe-skills` plugin is a library of 39 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine.
+The qestack plugin also has a library of 39 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine. Only the gated workflow (`qestack` and the `qe-*` skills) needs the engine. Without the engine, these skills tell you how to install it and stop.
 
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
@@ -70,7 +72,7 @@ The `qe-skills` plugin is a library of 39 Quality Engineering skills and 8 revie
 
 **Use one persona.** Ask for it by name, for example "use the domain-oracle-reviewer agent on src/test/orders". In Claude Code, `/agents` lists them.
 
-**How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qe-skills:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
+**How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qestack:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
 
 1. The panel chooses the personas for the work. AI-written work always gets the AI Behavior Auditor and the Hallucination Checker.
 2. The personas run in parallel. None of them has an edit tool. The Saboteur returns a fault plan: the exact change for each fault, and a prediction.
@@ -89,7 +91,7 @@ To add it to the panel, add a row to the table in `test-review-panel`. The valid
 
 ```
 /plugin marketplace add quark-sri/qestack
-/plugin install qe-skills@qestack
+/plugin install qestack@qestack
 ```
 
 Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>` links them (see [other agents](docs/other-agents.md)).
@@ -100,7 +102,7 @@ Use the gated qestack workflow below when you want measured proof for each featu
 
 You need Python 3.11 or later, git, pipx (or uv), and Claude Code.
 
-**Two commands.** The first installs the engine and both Claude Code plugins. The second sets up your repository.
+**Two commands.** The first installs the engine and the Claude Code plugin. The second sets up your repository.
 
 ```bash
 git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
@@ -109,7 +111,7 @@ cd your-repo && qestack init --existing    # drop --existing for a new project; 
 
 `qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
 
-Only the skills, with no engine? `scripts/install.sh --skills-only`.
+Only the library, with no engine? `scripts/install.sh --skills-only`.
 
 **Manual install** (the same steps, one by one):
 
@@ -122,7 +124,6 @@ In Claude Code:
 ```
 /plugin marketplace add quark-sri/qestack
 /plugin install qestack@qestack
-/plugin install qe-skills@qestack
 ```
 
 Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md standard. See [docs/other-agents.md](docs/other-agents.md).
@@ -193,7 +194,7 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md). All document
 
 ## Acknowledgements
 
-The skill structure, the description routing and the shared context convention (`.agents/qa-project-context.md`) of the `qe-skills` plugin are inspired by [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) (MIT). The text in this repository is our own.
+The skill structure, the description routing and the shared context convention (`.agents/qa-project-context.md`) of the qestack QA library are inspired by [petrkindlmann/qa-skills](https://github.com/petrkindlmann/qa-skills) (MIT). The text in this repository is our own.
 
 ## License
 
