@@ -1,6 +1,6 @@
 ---
 name: flaky-test-detective
-description: "Finds the root cause of a flaky test: reproduces it with repeated, random-order, parallel and slowed runs, classifies the cause and fixes the test or reports a product race. Use when the user says 'flaky test', 'intermittent failure', 'fails only in CI' or 'quarantine tests'. Not for a test that always fails (use test-runner)."
+description: "Finds the root cause of a flaky test: reproduces it with repeated, random-order and parallel runs, classifies the cause and fixes the test or reports a product race. Use when the user says 'flaky test', 'intermittent failure', 'passes on my machine', 'fails only in CI' or 'quarantine tests'. Not for a test that always fails (use test-runner)."
 argument-hint: "[test name or file]"
 ---
 

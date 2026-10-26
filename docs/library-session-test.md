@@ -4,6 +4,34 @@ This is the QA library part of HANDOFF Task 4 (task 4a). The validator and CI ch
 
 Record the results and each problem, with the check ID, in your local task list, not in this file.
 
+## Automated routing checks
+
+The checks S2, S3, S4 and S7 also run as plugin evals, with more cases for neighbor skills. Each case sends a realistic request to a fresh Claude Code session with the plugin loaded. It checks which skill Claude starts, and that the neighbor skill does not start. The cases are in `plugins/qestack/evals/routing/`.
+
+```bash
+cd plugins/qestack
+claude plugin eval . --tag routing --ablation none --scaffold --no-publish --max-cost-usd 6
+```
+
+- `--scaffold` runs the fixture script of the case `library-in-qestack-repo` (our own script: it writes `.qestack/project.toml` and one test class).
+- `--no-publish` keeps the report on your machine. Without it, the report is published to claude.ai.
+- Each run uses your Claude usage. One run costs about $0.17. The suite has 8 cases with 3 runs each, about $4.
+
+Results of 2026-10-26 (Claude Code default model, 3 runs per case):
+
+| Case | Check | Result |
+|---|---|---|
+| `review-tests` | S2 | 3 of 3: `testcase-reviewer`, never `test-review-panel` |
+| `edge-cases` | S3 | 3 of 3 |
+| `where-to-start` | S4 | 3 of 3: `qa-navigator` |
+| `library-in-qestack-repo` | S7 | 3 of 3: `testcase-reviewer`, no gated skill |
+| `flaky-test` | neighbor | 2 of 3. After 'passes on my machine' went back into the description: 4 of 5. In the other runs, Claude answered the one-snippet question without a skill |
+| `bug-report` | neighbor | 3 of 3: `bug-report`, never `bug-hunter` |
+| `load-test` | neighbor | 3 of 3 |
+| `gated-setup` | gated | 3 of 3 |
+
+The evals do not replace the persona and panel checks (P and R). Those need real files and agents. Run them by hand as below.
+
 ## Setup
 
 In Claude Code, from any folder:

@@ -128,7 +128,7 @@ Use a task list. Commit after each task. End each commit message with the traile
 
 ### Task 4a: Test the QA library in a real Claude Code session
 
-Follow `docs/library-session-test.md`. It has 22 checks (skills, personas, review panel) and an answer key of 14 expected findings for `examples/order-discount`.
+Follow `docs/library-session-test.md`. The routing checks S2, S3, S4 and S7 now run as plugin evals (`plugins/qestack/evals/routing/`, results of 2026-10-26 in that document: 23 of 24 runs, then 4 of 5 for the flaky case). The other checks stay manual. It has 22 checks (skills, personas, review panel) and an answer key of 14 expected findings for `examples/order-discount`.
 
 1. The owner installs the plugin and runs the slash commands. Claude cannot type `/plugin` or `/agents`.
 2. Record each result and problem in `TASKS.local.md`.

@@ -57,4 +57,4 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 
 1. Run `python3 scripts/build_llms_txt.py` to update `llms.txt`.
 2. Run `python3 scripts/validate_repo.py`.
-3. Try the skill in a Claude Code session with two or three real requests. Check that the skill starts for them, and that it does not start for the request of a neighbor skill.
+3. Add a routing eval case in `plugins/qestack/evals/routing/`: a realistic request, a `skill-fired` grader and, if there is a close neighbor, a `<neighbor>-not-fired` grader. Copy an existing case. Run it with `claude plugin eval . --case <case> --ablation none --no-publish` from `plugins/qestack` (see `docs/library-session-test.md`).
