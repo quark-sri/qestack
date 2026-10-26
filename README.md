@@ -94,7 +94,7 @@ To add it to the panel, add a row to the table in `test-review-panel`. The valid
 /plugin install qestack@qestack
 ```
 
-Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>` links them (see [other agents](docs/other-agents.md)).
+Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>` links them (see [other agents](docs/other-agents.md)). [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
 
 Use the gated qestack workflow below when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
 

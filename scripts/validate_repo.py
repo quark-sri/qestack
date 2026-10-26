@@ -160,6 +160,13 @@ for d in skills:
     for m in persona_rx.finditer(f.read_text(encoding="utf-8")):
         err(f"{f.relative_to(ROOT)}: names the persona '{m.group(1)}'; only test-review-panel may use the personas")
 
+# llms.txt lists each skill and each agent, for AI agents and skill registries
+llms = ROOT / "llms.txt"
+llms_text = llms.read_text(encoding="utf-8") if llms.exists() else ""
+for n in [d.name for d in skills] + [f.stem for f in agents]:
+    if f"[{n}](" not in llms_text:
+        err(f"llms.txt: '{n}' missing; run python3 scripts/build_llms_txt.py")
+
 # JSON files
 for f in [ROOT / ".claude-plugin" / "marketplace.json", *(pl / ".claude-plugin" / "plugin.json" for pl in PLUGINS),
           PLUGIN / "hooks" / "hooks.json", *DATA.rglob("*.json")]:
