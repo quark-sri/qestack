@@ -487,6 +487,10 @@ class ReviewFixTests(unittest.TestCase):
         (self.d / "src/main/java/com/acme/order/New.java").write_text("class New {}\n")
         ctx = json.loads(run(self.d, "context").stdout)
         self.assertEqual(set(ctx["changed_source_files"]), {PROD_FILE, "src/main/java/com/acme/order/New.java"})
+        # A changed file without mutants is listed, because the score ignores it (for example a module that PIT skips).
+        r = run(self.d, "mutation", "--skip-run")
+        self.assertEqual(self.repo.read_json("mutation.json")["changed_without_mutants"], ["src/main/java/com/acme/order/New.java"])
+        self.assertIn("NOTE no mutants for 1 changed file(s): src/main/java/com/acme/order/New.java", r.stdout)
         own = self.d / ".qestack/rubrics/test-judge.md"
         own.parent.mkdir()
         own.write_text("# project rubric\n")

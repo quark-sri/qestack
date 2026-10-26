@@ -1362,12 +1362,18 @@ def cmd_mutation(args, cfg):
                           "no_coverage": sum(m["status"] == "no_coverage" for m in surv), "total": total,
                           "equivalent_excluded": excluded},
               "by_file": by_file,
+              "changed_without_mutants": [f for f in changed_src if f not in by_file],
               "survivors": sorted(surv, key=lambda m: (m["file"], m["line"]))}
     write_json(feature.runs / "mutation.json", result)
     print(f"mutation: score={'n/a' if score is None else f'{score:.0%}'} killed={killed}/{total} "
           f"survived={result['summary']['survived']} no_coverage={result['summary']['no_coverage']} (equivalent excluded: {excluded})")
     for m in result["survivors"][: args.max]:
         print(f"  SURVIVED {m['file']}:{m['line']} {m['mutator']} - {m['description']}")
+    if total and result["changed_without_mutants"]:
+        print(f"  NOTE no mutants for {len(result['changed_without_mutants'])} changed file(s): "
+              + ", ".join(result["changed_without_mutants"][:5])
+              + ". Interfaces and records can have none. If a file has logic, PIT may not mutate its module"
+                " (multi-module build: set crossModule, see the stack guide).")
     thr = cfg.get_path("gates.mutation_min", 0.75)
     return 0 if score is None or score >= thr else 1
 

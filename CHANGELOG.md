@@ -21,6 +21,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Faster setup: `scripts/install.sh` (engine and plugins in one step, `--skills-only` for the skills alone). `qestack init` gets `--hook` (merge the guard hook into `.claude/settings.json`), `--existing` (lower start thresholds) and ends with a lint preview and next steps.
 - Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
 
+- Runnable example `examples/order-service-multimodule` (two Maven modules) and a multi-module section in the Java Maven stack guide: `crossModule` for PIT, `skip` for modules without tests.
+- `qestack mutation` lists the changed source files that have no mutants (`changed_without_mutants` in `mutation.json`, and a NOTE line). A module that PIT does not mutate no longer hides behind a good score.
+
 ### Fixed
 
 - The engine finds the nearest `.qestack/` from the current folder, and `qestack init` in a sub-project with its own build file creates `.qestack/` there (monorepos). Before, it always used the top of the git repository.
