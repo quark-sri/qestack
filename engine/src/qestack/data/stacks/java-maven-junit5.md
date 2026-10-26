@@ -126,8 +126,18 @@ Notes:
 - The gate tool passes `-DtargetClasses=` with only the classes that the feature changed, and `-DtargetTests=` with the test classes of the feature (`{feature_test_classes}`). Without `targetTests`, PIT uses the `targetClasses` pattern as the test filter and misses tests in other packages.
 - It passes `-DexcludedGroups=integration,ui`. If your PIT version uses another property name, override `commands.mutation` in `.qestack/project.toml`.
 - It passes `-DfailWhenNoMutations=false`. In a multi-module build, a module with no changed classes then does not fail the build.
-- Multi-module build: the gate tool reads every `mutations.xml` that the run wrote (one for each module). You can also run PIT only in the module that holds the changed classes (`-pl <module> -am`).
+- Multi-module build: see section 3.4.
 - First run the command by hand once. Check that `target/pit-reports/mutations.xml` exists.
+
+### 3.4 Multi-module build
+
+The commands run from the root of the build, with no change. Verified in `examples/order-service-multimodule` (a domain module without tests, and a service module that holds the tests of both).
+
+- **Reports:** the gate tool reads the reports of every module. Surefire and Failsafe write one report folder for each module, and the glob `**/target/surefire-reports/TEST-*.xml` finds them all.
+- **Mutation in the module with the tests:** PIT mutates only the classes of the module where it runs. Set `<crossModule>true</crossModule>` in that module, so that PIT also mutates the classes of the modules it depends on. Without it, the classes of the other modules get no mutants, and the score looks better than it is (in the example: 71% instead of 47%).
+- **Where to set it:** set `crossModule` in the pom of the module that holds the tests, not on the command line. With `-DcrossModule=true` for all modules, the module without tests also wrote a report (8 mutants, none covered) with the same classes. Set `<skip>true</skip>` for `pitest-maven` in a module without tests, as a second safeguard.
+- **Check:** after `qestack mutation`, read the `NOTE no mutants for ... changed file(s)` line, or `changed_without_mutants` in `mutation.json`. Interfaces and records can have no mutants. A class with logic in this list means that PIT did not mutate its module.
+- **One module only:** to run the tests of one module, override `commands.test_feature` in `.qestack/project.toml` with `-pl <module> -am`.
 
 ## 4. Java-specific test rules
 

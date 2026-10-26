@@ -21,6 +21,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Faster setup: `scripts/install.sh` (engine and plugins in one step, `--skills-only` for the skills alone). `qestack init` gets `--hook` (merge the guard hook into `.claude/settings.json`), `--existing` (lower start thresholds) and ends with a lint preview and next steps.
 - Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
 
+- Runnable example `examples/order-service-multimodule` (two Maven modules) and a multi-module section in the Java Maven stack guide: `crossModule` for PIT, `skip` for modules without tests.
+- `qestack mutation` lists the changed source files that have no mutants (`changed_without_mutants` in `mutation.json`, and a NOTE line). A module that PIT does not mutate no longer hides behind a good score.
 - Stack `java-gradle-junit5` and the runnable example `examples/order-service-gradle` (Gradle 9.8.2, PIT plugin 1.19.0). Same Java reading rules as the Maven stack. The commands run the `test` and `integrationTest` suites, filter by tag with `-Pqe.groups`, forward the JUnit random-order settings with `-Pjunit.*` and run PIT through the Gradle plugin. The example gives the same mutation result as the Maven example (47%, 7 of 15). `qestack init` picks this stack when it finds `build.gradle` or `build.gradle.kts`.
 
 ### Fixed
