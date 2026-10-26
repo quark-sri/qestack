@@ -79,7 +79,7 @@ The `qe-skills` plugin is a library of 39 Quality Engineering skills and 8 revie
 4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
 5. The reviewers only return their reports. The panel saves the run in `qa-reviews/<date>-<scope>/`: `panel-report.md` for people, `findings.json` for pipelines and trends, and `personas/<name>.md` with each full report. It can also offer to publish the report as a page or a pull request comment.
 
-**Write your own persona.** The personas are in [`plugins/qe-skills/agents/`](plugins/qe-skills/agents/). Copy one, and keep three things:
+**Write your own persona.** The personas are in [`plugins/qestack/agents/`](plugins/qestack/agents/). Copy one, and keep three things:
 
 - the "Reviewer rules" section unchanged, so that your persona returns the same findings block
 - the sections Scope, Checklist, Method, Evidence rule, Output and Limits
