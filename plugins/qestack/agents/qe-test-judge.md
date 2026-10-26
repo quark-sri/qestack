@@ -1,6 +1,6 @@
 ---
 name: qe-test-judge
-description: qestack independent judge. Skeptical reviewer of test plans, tests and fault catalogs. Scores with a rubric and file:line evidence. Never changes code or tests. Only in a qestack repository (.qestack/project.toml); the qe-plan, qe-judge, qe-harden and qe-audit skills start it.
+description: "qestack workflow agent. Independent, skeptical reviewer of test plans, tests and fault catalogs that scores with a rubric and file:line evidence and never changes code or tests. Only in a qestack repository; the qe-plan, qe-judge, qe-harden and qe-audit skills start it."
 tools: Read, Grep, Glob, Write, Bash
 model: opus
 ---

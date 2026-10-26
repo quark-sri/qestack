@@ -13,73 +13,73 @@ Install in Claude Code: `/plugin marketplace add quark-sri/qestack`, then `/plug
 
 ## QA library skills (no engine needed)
 
-- [accessibility-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/accessibility-testing/SKILL.md): Test web and app accessibility against the accessibility guidelines (WCAG level AA)
-- [api-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/api-testing/SKILL.md): Write or improve tests for HTTP APIs (REST, GraphQL, RPC over HTTP)
-- [bug-hunter](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/bug-hunter/SKILL.md): Hunt for real bugs in code, a change, a module or a feature
-- [bug-report](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/bug-report/SKILL.md): Write a clear, reproducible defect report from a failing test, a log, a stack trace, a user complaint or a review finding
-- [change-impact](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/change-impact/SKILL.md): Analyze the testing impact of a code change (a diff, branch, commit range or pull request)
-- [ci-cd-integration](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/ci-cd-integration/SKILL.md): Design or fix how tests run in the delivery pipeline
-- [contract-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/contract-testing/SKILL.md): Set up and write contract tests between consumers and providers of APIs and events
-- [database-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/database-testing/SKILL.md): Test persistence and data integrity against a real database engine
-- [edge-case-hunter](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/edge-case-hunter/SKILL.md): Hunt the edge, boundary and negative cases of a feature, function, endpoint, form or data flow, with a catalog for numbers, text, dates and time, money, collections, identifiers, files, state, concurrency, users and security, integrations and configuration
-- [exploratory-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/exploratory-testing/SKILL.md): Plan, run and report session-based exploratory testing
-- [flaky-test-detective](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/flaky-test-detective/SKILL.md): Find the root cause of a flaky test, a test that passes and fails with no code change
-- [localization-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/localization-testing/SKILL.md): Test internationalization (i18n) and localization (l10n)
-- [messaging-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/messaging-testing/SKILL.md): Test event-driven and asynchronous systems with a real broker
-- [mutation-probe](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/mutation-probe/SKILL.md): Measure test strength with mutation testing
-- [performance-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/performance-testing/SKILL.md): Plan, write, run and analyze performance tests
-- [production-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/production-testing/SKILL.md): Test and verify quality in production, after release
-- [qa-navigator](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qa-navigator/SKILL.md): Route a QA request to the right qestack skill and give the next steps, when the request does not clearly match one skill
-- [qa-project-context](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qa-project-context/SKILL.md): Create or update .agents/qa-project-context.md, the one file that records the product, tech stack, test stack, test commands, CI, environments, quality goals, risk areas and conventions of a project
-- [quality-postmortem](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/quality-postmortem/SKILL.md): Run a blameless quality postmortem for an escaped defect or incident
-- [release-readiness](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/release-readiness/SKILL.md): Decide go or no-go for a release with evidence
-- [requirement-gaps](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/requirement-gaps/SKILL.md): Find gaps in requirements before tests or code exist
-- [resilience-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/resilience-testing/SKILL.md): Test how a system behaves when a dependency fails
-- [risk-based-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/risk-based-testing/SKILL.md): Build a risk matrix for a product, release, feature or change
-- [roast-my-code](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/roast-my-code/SKILL.md): A direct, honest code review with a quality engineering focus
-- [security-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/security-testing/SKILL.md): Plan and write security tests for an application or API
-- [service-virtualization](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/service-virtualization/SKILL.md): Simulate external and third-party services in tests with stubs, fakes and simulated servers
-- [spec-drift](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/spec-drift/SKILL.md): Detect drift between what is specified, documented, built and tested
-- [test-case-designer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-case-designer/SKILL.md): Design test cases from requirements with formal techniques
-- [test-coverage-map](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-coverage-map/SKILL.md): Map what is tested and what is not, by requirement, feature, user journey, code area and test level, not only by line coverage
-- [test-data-management](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-data-management/SKILL.md): Design and build test data
-- [test-environments](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-environments/SKILL.md): Set up reliable, reproducible test environments
-- [test-planning](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-planning/SKILL.md): Write a test plan for one sprint, release, epic or feature
-- [test-review-panel](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-review-panel/SKILL.md): Review tests or a change with a panel of independent reviewer personas, then merge their findings into one ranked list with no duplicates
-- [test-runner](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-runner/SKILL.md): Find out how a project runs its tests, run the right subset (all, a module, a file, one test, a tag, or the tests related to a change), collect the results, and triage every failure as product bug, test defect, environment problem or flaky test, with evidence
-- [test-strategy](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-strategy/SKILL.md): Write a test strategy for a product, a system or a team
-- [testability-review](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/testability-review/SKILL.md): Score and improve how testable a feature, module or design is before tests are written
-- [testcase-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/testcase-reviewer/SKILL.md): Review automated tests or manual test cases like a senior test architect
-- [ui-automation](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/ui-automation/SKILL.md): Write, fix or structure browser and UI end-to-end tests for the few critical user journeys
-- [unit-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/unit-testing/SKILL.md): Write, fix or improve unit tests for business rules, calculations, validation, mapping and state logic
+- [accessibility-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/accessibility-testing/SKILL.md): Tests web and app accessibility against WCAG level AA
+- [api-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/api-testing/SKILL.md): Writes or improves tests for HTTP APIs (REST, GraphQL)
+- [bug-hunter](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/bug-hunter/SKILL.md): Hunts real bugs in code, a change or a feature with a defect taxonomy, traces real values and proves each suspect with a failing test or exact repro steps
+- [bug-report](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/bug-report/SKILL.md): Writes a clear, reproducible defect report from a failing test, log, stack trace or complaint
+- [change-impact](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/change-impact/SKILL.md): Analyzes what a diff, branch or pull request can break, which existing tests to run in which order, which tests are missing and which changed tests now check less
+- [ci-cd-integration](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/ci-cd-integration/SKILL.md): Designs or fixes how tests run in the delivery pipeline
+- [contract-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/contract-testing/SKILL.md): Sets up consumer-driven contract tests for APIs and events
+- [database-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/database-testing/SKILL.md): Tests persistence against a real database engine
+- [edge-case-hunter](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/edge-case-hunter/SKILL.md): Finds edge, boundary and negative cases for a feature, function, endpoint or form from a catalog (numbers, text, time, money, state, concurrency, security), each with an input and an expected result
+- [exploratory-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/exploratory-testing/SKILL.md): Plans, runs and reports session-based exploratory testing
+- [flaky-test-detective](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/flaky-test-detective/SKILL.md): Finds the root cause of a flaky test
+- [localization-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/localization-testing/SKILL.md): Tests internationalization and localization
+- [messaging-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/messaging-testing/SKILL.md): Tests event-driven systems with a real broker
+- [mutation-probe](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/mutation-probe/SKILL.md): Measures test strength with mutation testing
+- [performance-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/performance-testing/SKILL.md): Plans, writes, runs and analyzes load, stress, spike, soak and capacity tests
+- [production-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/production-testing/SKILL.md): Verifies quality in production after release
+- [qa-navigator](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qa-navigator/SKILL.md): Routes a QA request to the right qestack skill or to the gated workflow, and gives the next steps when the request matches no skill clearly
+- [qa-project-context](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qa-project-context/SKILL.md): Creates or updates .agents/qa-project-context.md, the file of project facts (stack, test commands, CI, environments, risks) that every QA skill reads first
+- [quality-postmortem](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/quality-postmortem/SKILL.md): Runs a blameless postmortem for an escaped defect
+- [release-readiness](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/release-readiness/SKILL.md): Decides go or no-go for a release with evidence
+- [requirement-gaps](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/requirement-gaps/SKILL.md): Finds gaps in requirements before tests or code exist
+- [resilience-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/resilience-testing/SKILL.md): Tests behavior when a dependency fails
+- [risk-based-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/risk-based-testing/SKILL.md): Builds a risk matrix (impact times likelihood, with evidence) for a product, release or change, sets the test depth for each risk zone and analyzes the top failure modes
+- [roast-my-code](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/roast-my-code/SKILL.md): Gives a direct code review with a quality engineering focus
+- [security-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/security-testing/SKILL.md): Plans and writes security tests for an application or API
+- [service-virtualization](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/service-virtualization/SKILL.md): Simulates external and third-party services in tests with stubs, fakes and simulated servers
+- [spec-drift](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/spec-drift/SKILL.md): Detects drift between what is specified, documented, built and tested, and reports each mismatch with the likely truth and the side to change
+- [test-case-designer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-case-designer/SKILL.md): Designs traceable test cases from requirements with equivalence classes, boundary values, decision tables, state transitions and pairwise, each with an exact expected result and test level
+- [test-coverage-map](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-coverage-map/SKILL.md): Maps what is tested and what is not by requirement, journey, code area and test level, not only line coverage, and shows the pyramid shape
+- [test-data-management](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-data-management/SKILL.md): Designs test data
+- [test-environments](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-environments/SKILL.md): Sets up reproducible test environments
+- [test-planning](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-planning/SKILL.md): Writes a test plan for a sprint, release, epic or feature
+- [test-review-panel](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-review-panel/SKILL.md): Reviews tests or a change with up to 8 independent read-only reviewer personas, then merges their findings into one ranked list
+- [test-runner](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-runner/SKILL.md): Finds how a project runs its tests, runs the right subset, and triages each failure as product bug, test defect, environment problem or flaky test, with evidence
+- [test-strategy](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/test-strategy/SKILL.md): Writes a test strategy for a product, system or team
+- [testability-review](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/testability-review/SKILL.md): Scores how testable a feature, module or design is before tests exist (seams for clock, randomness and network, hidden state, observability) and gives the smallest production change per blocker
+- [testcase-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/testcase-reviewer/SKILL.md): Reviews automated tests or manual test cases like a senior test architect
+- [ui-automation](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/ui-automation/SKILL.md): Writes, fixes or structures browser end-to-end tests for critical journeys
+- [unit-testing](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/unit-testing/SKILL.md): Writes, fixes or improves unit tests for rules, calculations, validation and state logic
 
 ## Gated workflow skills (need the qestack engine)
 
-- [qe-audit](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-audit/SKILL.md): qestack read-only quality report for an existing test suite or module, also without feature tags
-- [qe-calibrate](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-calibrate/SKILL.md): Measures how far the qestack judge agrees with human reviewers (agreement and Cohen's kappa) on a human audit sample, and proposes rubric improvements for the disagreements
-- [qe-grill-spec](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-grill-spec/SKILL.md): Finds requirements without IDs, vague rules, missing examples, missing error behavior and untestable statements, and asks the user one question at a time
-- [qe-harden](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-harden/SKILL.md): Seeds hidden faults, runs the gates, gets an independent judge review, scores the result and improves the tests
-- [qe-judge](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-judge/SKILL.md): qestack independent review of one feature's tagged tests with the qe-test-judge agent and the qestack rubric
-- [qe-plan](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-plan/SKILL.md): Writes a spec-first test plan (test-plan.md) for one feature with the qe-test-designer agent, then gets an independent plan review from the qe-test-judge agent
-- [qe-prove](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-prove/SKILL.md): Proves that the new feature tests fail before the implementation exists, then locks them so that later work cannot weaken them
-- [qe-setup](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-setup/SKILL.md): Set up qestack AI test quality in a repository
-- [qe-write](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-write/SKILL.md): Writes the feature tests from test-plan.md with the qe-test-writer agent, without the implementation, then passes the lint and trace gates
-- [qestack](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qestack/SKILL.md): Entry point for qestack AI test quality
+- [qe-audit](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-audit/SKILL.md): Reports the quality of an existing test suite or module with qestack, read-only and also without feature tags
+- [qe-calibrate](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-calibrate/SKILL.md): Measures how far the qestack judge agrees with human reviewers (agreement and Cohen's kappa) and proposes rubric fixes for the disagreements
+- [qe-grill-spec](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-grill-spec/SKILL.md): Checks a spec before qestack test design
+- [qe-harden](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-harden/SKILL.md): Runs the qestack quality loop after implementation
+- [qe-judge](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-judge/SKILL.md): Gives an independent qestack verdict on the tagged tests of one feature with the qe-test-judge agent and the rubric, and changes no code
+- [qe-plan](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-plan/SKILL.md): Writes a spec-first qestack test plan (test-plan.md) for one feature with the qe-test-designer agent, then gets an independent plan review
+- [qe-prove](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-prove/SKILL.md): Proves qestack red-before-green
+- [qe-setup](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-setup/SKILL.md): Sets up qestack in a repository
+- [qe-write](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qe-write/SKILL.md): Writes the feature tests blind from test-plan.md with the qe-test-writer agent, without the implementation, and passes the qestack lint and trace gates
+- [qestack](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/skills/qestack/SKILL.md): Explains the qestack gated workflow that proves AI-written tests catch bugs, and routes to the right qe-* skill
 
 ## Review personas (read-only agents)
 
 - [ai-behavior-auditor](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/ai-behavior-auditor.md): Finds the shortcuts that AI coding agents take to make work look done
 - [determinism-flakiness-engineer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/determinism-flakiness-engineer.md): Finds the causes of non-deterministic tests
-- [domain-oracle-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/domain-oracle-reviewer.md): Checks each expected result in the tests against the requirements, the acceptance criteria and the domain rules
-- [hallucination-checker](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/hallucination-checker.md): Checks that each API, method, class, fixture, helper, configuration property, command-line flag, file path, endpoint and library version that the code or the tests use really exists in this project, its dependencies or its documentation
+- [domain-oracle-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/domain-oracle-reviewer.md): Checks each expected result in the tests against the requirements and domain rules
+- [hallucination-checker](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/hallucination-checker.md): Checks that each API, method, fixture, helper, property, flag, path, endpoint and library version in the code or the tests really exists
 - [maintainability-craftsperson](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/maintainability-craftsperson.md): Reviews single tests for clarity and ease of change
-- [saboteur](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/saboteur.md): Designs small, realistic faults in the production code, predicts which faults the tests would not catch, and returns a fault plan with the exact change for each fault
-- [suite-cost-speed-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/suite-cost-speed-reviewer.md): Reviews how long the test suite takes and what it costs
+- [saboteur](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/saboteur.md): Designs small, realistic faults in the production code, predicts which ones the tests miss and returns a fault plan
+- [suite-cost-speed-reviewer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/suite-cost-speed-reviewer.md): Reviews the time and cost of a test suite
 - [test-automation-architect](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/test-automation-architect.md): Reviews the structure of a test suite
 
 ## Workflow agents (gated workflow)
 
-- [qe-fault-seeder](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-fault-seeder.md): Creates realistic, requirement-level faults as patches (never left in the code) to measure whether the feature tests detect real defects
-- [qe-test-designer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-designer.md): Writes a spec-first test plan (test-plan.md) for one feature
-- [qe-test-judge](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-judge.md): Skeptical reviewer of test plans, tests and fault catalogs
-- [qe-test-writer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-writer.md): Writes or improves automated tests from test-plan.md for one feature, without reading the feature implementation ("blind")
+- [qe-fault-seeder](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-fault-seeder.md): Creates realistic, requirement-level faults as patches (never left in the code) to measure if the feature tests detect real defects
+- [qe-test-designer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-designer.md): Writes a spec-first test plan (test-plan.md) for one feature from the specification, plan, contracts and data model, never the implementation
+- [qe-test-judge](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-judge.md): Independent, skeptical reviewer of test plans, tests and fault catalogs that scores with a rubric and file:line evidence and never changes code or tests
+- [qe-test-writer](https://github.com/quark-sri/qestack/blob/main/plugins/qestack/agents/qe-test-writer.md): Writes or improves automated tests from test-plan.md for one feature without reading the feature implementation (blind)

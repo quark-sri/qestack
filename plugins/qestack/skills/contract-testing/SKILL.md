@@ -1,6 +1,6 @@
 ---
 name: contract-testing
-description: "Set up and write contract tests between consumers and providers of APIs and events: consumer-driven contracts, provider verification with provider states, a contract broker or shared repository, can-I-deploy checks in the pipeline, and schema compatibility rules for event formats. Use when: 'contract test', 'consumer-driven contract', 'verify the provider', 'will this API change break clients', 'schema compatibility'. Not for: testing one API's behavior in depth (use api-testing) or finding drift between spec and code (use spec-drift). Related: api-testing, messaging-testing, ci-cd-integration, spec-drift."
+description: "Sets up consumer-driven contract tests for APIs and events: provider verification, provider states, a broker, can-I-deploy checks and schema compatibility. Use when the user says 'contract test' or asks 'will this API change break clients'. Not for deep tests of one API (use api-testing)."
 argument-hint: "[consumer, provider or interface]"
 ---
 

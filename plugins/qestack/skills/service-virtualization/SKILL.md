@@ -1,6 +1,6 @@
 ---
 name: service-virtualization
-description: "Simulate external and third-party services in tests with stubs, fakes and simulated servers: realistic responses from the contract, error and timeout cases, slow responses, request verification, stateful scenarios, and drift checks against the real service. Use when: 'mock this external API', 'stub the payment provider', 'simulate a downstream service', 'test without the real dependency', 'test timeouts and errors from a dependency'. Not for: replacing the system's own database or logic (use database-testing or api-testing with real components) or agreements between owned services (use contract-testing). Related: api-testing, contract-testing, test-environments, unit-testing."
+description: "Simulates external and third-party services in tests with stubs, fakes and simulated servers: contract-based responses, errors, timeouts, request checks and drift checks. Use when the user says 'mock this external API' or 'stub the payment provider'. Not for owned service agreements (use contract-testing)."
 argument-hint: "[external service or dependency]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: qe-judge
-description: qestack independent review of one feature's tagged tests with the qe-test-judge agent and the qestack rubric. Use in a qestack repository when the user asks if the tests of a feature are correct, deep enough or trustworthy. For a whole suite without feature tags, use qe-audit. Changes no code.
+description: "Gives an independent qestack verdict on the tagged tests of one feature with the qe-test-judge agent and the rubric, and changes no code. Use in a qestack repository when the user asks if the tests of a feature are correct or trustworthy. Not for a whole untagged suite (use qe-audit)."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

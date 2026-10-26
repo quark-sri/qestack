@@ -1,6 +1,6 @@
 ---
 name: messaging-testing
-description: "Test event-driven and asynchronous systems with a real broker: producers (one event per action, topic or queue, key, value, headers, schema, publish only after commit, nothing on failure), consumers (state change, idempotency, ordering, retries, dead-letter handling, schema evolution) and end-to-end event flows, without fixed sleeps. Use when: 'Kafka test', 'queue test', 'event test', 'test this consumer', 'test the outbox', 'async test', 'message broker test'. Not for: HTTP endpoints (use api-testing) or schema agreements between teams (use contract-testing). Related: database-testing, contract-testing, test-environments, flaky-test-detective."
+description: "Tests event-driven systems with a real broker: producers, consumers, keys, headers, schemas, idempotency, ordering, retries, dead letters and outbox flows, without fixed sleeps. Use when the user says 'Kafka test', 'queue test' or 'test this consumer'. Not for HTTP endpoints (use api-testing)."
 argument-hint: "[producer, consumer, topic, queue or event flow]"
 ---
 

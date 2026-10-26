@@ -1,6 +1,6 @@
 ---
 name: qe-test-writer
-description: qestack test writer. Writes or improves automated tests from test-plan.md for one feature, without reading the feature implementation ("blind"). Only in a qestack repository (.qestack/project.toml); the qe-write, qe-prove and qe-harden skills start it.
+description: "qestack workflow agent. Writes or improves automated tests from test-plan.md for one feature without reading the feature implementation (blind). Only in a qestack repository; the qe-write, qe-prove and qe-harden skills start it."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 ---

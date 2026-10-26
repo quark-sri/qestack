@@ -44,7 +44,7 @@ The qestack plugin also has a library of 39 Quality Engineering skills and 8 rev
 - **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
 - **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
 - **Reviewer personas.** Eight agents, each with one job, a checklist, an evidence rule (file and line) and no edit tools. Personas find and report; they never change a file. The caller changes code. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin stay self-contained and do not depend on the personas.
-- **Clear routing.** Each description says "Use when", "Not for" and "Related". `qa-navigator` routes a request that fits no skill clearly.
+- **Clear routing.** Each description is short, in the third person, and says what the skill does, "Use when" and "Not for". `qa-navigator` routes a request that fits no skill clearly. The skills follow the Claude standards for skills and agents ([guide](docs/guides/adding-a-skill.md)).
 
 | Category | Skills |
 |---|---|

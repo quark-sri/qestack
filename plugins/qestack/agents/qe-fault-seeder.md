@@ -1,6 +1,6 @@
 ---
 name: qe-fault-seeder
-description: qestack fault seeder. Creates realistic, requirement-level faults as patches (never left in the code) to measure whether the feature tests detect real defects. Only in a qestack repository (.qestack/project.toml); the qe-harden skill starts it. Its fault details must never reach the test writer.
+description: "qestack workflow agent. Creates realistic, requirement-level faults as patches (never left in the code) to measure if the feature tests detect real defects. Only in a qestack repository; the qe-harden skill starts it. Its fault details must never reach the test writer."
 tools: Read, Grep, Glob, Edit, Bash
 model: inherit
 ---

@@ -1,6 +1,6 @@
 ---
 name: qa-navigator
-description: "Route a QA request to the right qestack skill and give the next steps, when the request does not clearly match one skill. Use when: 'which QA skill should I use', 'where do I start with testing', 'help me test this', 'what QA should we do'. Not for: a request that clearly matches another skill (use that skill directly). Related: qa-project-context, test-strategy, risk-based-testing."
+description: "Routes a QA request to the right qestack skill or to the gated workflow, and gives the next steps when the request matches no skill clearly. Use when the user asks 'which QA skill should I use' or 'where do I start with testing'. Not for a request that clearly matches one skill (use that skill)."
 ---
 
 # qa-navigator

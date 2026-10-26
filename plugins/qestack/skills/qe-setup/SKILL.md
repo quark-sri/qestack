@@ -1,6 +1,6 @@
 ---
 name: qe-setup
-description: Set up qestack AI test quality in a repository. Creates .qestack/, detects the stack and rulesets, registers assertion helpers, checks the build commands and the guard hook. Use when the user installs qestack or changes the stack, or when lint reports false "no assertion" findings.
+description: "Sets up qestack in a repository: creates .qestack/, detects the stack and rulesets, registers assertion helpers and checks the build commands and the guard hook. Use when the user installs qestack or changes the stack, or when lint reports false 'no assertion' findings."
 ---
 
 # qe-setup

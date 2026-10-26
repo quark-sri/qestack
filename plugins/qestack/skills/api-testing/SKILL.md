@@ -1,6 +1,6 @@
 ---
 name: api-testing
-description: "Write or improve tests for HTTP APIs (REST, GraphQL, RPC over HTTP): status, body values, response schema, headers, error payloads, authentication and authorization, idempotency, pagination, persisted state and side effects, with a real test environment or an in-process server. Works with any HTTP client, including an internal shared library. Use when: 'API test', 'endpoint test', 'REST test', 'GraphQL test', 'test this controller', 'validate the response schema'. Not for: consumer and provider agreements across teams (use contract-testing) or browser flows (use ui-automation). Related: contract-testing, database-testing, service-virtualization, test-data-management, security-testing."
+description: "Writes or improves tests for HTTP APIs (REST, GraphQL): status, body, schema, headers, errors, auth, idempotency, pagination and side effects, with any HTTP client. Use when the user says 'API test', 'endpoint test' or 'validate the response schema'. Not for cross-team contracts (use contract-testing)."
 argument-hint: "[endpoint, controller, contract file or API area]"
 ---
 

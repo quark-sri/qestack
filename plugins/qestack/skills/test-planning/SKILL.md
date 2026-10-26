@@ -1,6 +1,6 @@
 ---
 name: test-planning
-description: "Write a test plan for one sprint, release, epic or feature: scope, risks, test approach by level, test cases to add or update, regression scope, environments, data, schedule, owners and exit criteria. Use when: 'test plan', 'what do we test this sprint', 'release test plan', 'plan testing for this epic'. Not for: long-term QA direction (use test-strategy), detailed test cases (use test-case-designer), or a go or no-go decision (use release-readiness). Related: risk-based-testing, test-case-designer, change-impact, release-readiness."
+description: "Writes a test plan for a sprint, release, epic or feature: scope, risks, approach by level, regression scope, environments, owners and exit criteria. Use when the user says 'test plan' or asks 'what do we test this sprint'. Not for the long-term QA direction (use test-strategy)."
 argument-hint: "[sprint, release, epic or feature]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: spec-drift
-description: "Detect drift between what is specified, documented, built and tested: extract the claims from requirements, contracts, documentation, code and tests, match them, and report each mismatch (missing in code, extra in code, different behavior, stale docs, tests that assert old behavior, untested claims) with the likely truth and the side to change. Use when: 'does the code still match the spec', 'are the docs up to date', 'API drift', 'check the implementation against the requirements', 'before release consistency check'. Not for: gaps inside the requirements themselves (use requirement-gaps) or contract tests between services (use contract-testing). Related: requirement-gaps, contract-testing, test-coverage-map, api-testing."
+description: "Detects drift between what is specified, documented, built and tested, and reports each mismatch with the likely truth and the side to change. Use when the user asks 'does the code still match the spec' or 'are the docs up to date'. Not for gaps inside the requirements (use requirement-gaps)."
 argument-hint: "[spec or contract] [code area]"
 ---
 

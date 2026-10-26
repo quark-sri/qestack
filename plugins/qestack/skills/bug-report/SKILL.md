@@ -1,6 +1,6 @@
 ---
 name: bug-report
-description: "Write a clear, reproducible defect report from a failing test, a log, a stack trace, a user complaint or a review finding: confirm the expected behavior, find minimal reproduction steps or a failing test, narrow down where it does and does not happen, collect evidence without secrets, rate severity and priority, and add the impact and a regression test idea. Use when: 'write a bug report', 'file this bug', 'improve this ticket', 'turn this failure into a bug report', 'minimal repro'. Not for: hunting new bugs in code (use bug-hunter) or classifying many pipeline failures (use test-runner). Related: bug-hunter, test-runner, quality-postmortem, exploratory-testing."
+description: "Writes a clear, reproducible defect report from a failing test, log, stack trace or complaint: minimal repro, evidence without secrets, severity, impact and a regression test idea. Use when the user says 'write a bug report', 'file this bug' or 'minimal repro'. Not for hunting new bugs (use bug-hunter)."
 argument-hint: "[failing test, log, issue text or finding]"
 ---
 

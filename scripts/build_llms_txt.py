@@ -17,9 +17,9 @@ def describe(path):
     m = re.match(r"^---\n(.*?)\n---\n", path.read_text(encoding="utf-8"), re.S)
     fm = dict(line.split(":", 1) for line in m.group(1).splitlines() if ":" in line)
     desc = fm["description"].strip().strip('"')
-    # Drop a short leading label ("qestack test design.", "qestack review persona."). Then keep the first clause:
-    # the text before the first ": ", " - " or the end of the first sentence.
-    desc = re.sub(r"^qestack [^.]{0,40}\.\s+", "", desc)
+    # Drop a short leading label ("qestack workflow agent.", "Read-only qestack review persona.").
+    # Then keep the first clause: the text before the first ": ", " - " or the end of the first sentence.
+    desc = re.sub(r"^(Read-only )?qestack [^.]{0,40}\.\s+", "", desc)
     return re.split(r": | - |\.\s", desc)[0].strip().rstrip(".")
 
 

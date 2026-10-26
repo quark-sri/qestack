@@ -1,6 +1,6 @@
 ---
 name: test-case-designer
-description: "Design test cases from requirements with formal techniques: equivalence classes, boundary values, decision tables, state transitions, pairwise and error guessing. Gives traceable cases with exact expected results, the defect each case catches, and the cheapest test level. Use when: 'design test cases', 'write test scenarios for this story', 'what should we test for this feature', 'generate tests from this spec'. Not for: finding requirement gaps (use requirement-gaps) or writing test code for one layer (use unit-testing, api-testing, ui-automation and so on). Related: requirement-gaps, edge-case-hunter, risk-based-testing, testcase-reviewer."
+description: "Designs traceable test cases from requirements with equivalence classes, boundary values, decision tables, state transitions and pairwise, each with an exact expected result and test level. Use when the user says 'design test cases' or 'test scenarios for this story'. Not for requirement gaps (use requirement-gaps)."
 argument-hint: "[feature, story or spec]"
 ---
 

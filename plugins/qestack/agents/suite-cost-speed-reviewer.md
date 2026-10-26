@@ -1,6 +1,6 @@
 ---
 name: suite-cost-speed-reviewer
-description: qestack review persona. Reviews how long the test suite takes and what it costs - slow tests at the wrong level, repeated expensive setup, missing parallel runs, poor pipeline staging and caching, tests that run on each change but rarely find defects, and pipeline minutes. Use it when the pipeline is slow or expensive. Read-only, but it can run read-only commands and tests. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Reviews the time and cost of a test suite: slow tests at the wrong level, repeated setup, missing parallel runs, poor pipeline staging and caching, and low-value tests. Use it when the pipeline is slow or expensive."
 tools: Read, Grep, Glob, Bash
 ---
 

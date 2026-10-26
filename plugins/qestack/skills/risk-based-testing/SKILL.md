@@ -1,6 +1,6 @@
 ---
 name: risk-based-testing
-description: "Build a risk matrix for a product, release, feature or change: impact times likelihood for each area, with evidence from business impact, code complexity, change frequency, defect history and test gaps, then the test depth for each risk zone and a failure mode analysis of the top risks. Use when: 'risk matrix', 'risk assessment', 'where should we focus testing', 'what could break', 'we have little time before the release'. Not for: the long-term QA direction (use test-strategy) or a sprint test plan (use test-planning). Related: test-strategy, test-planning, release-readiness, test-coverage-map."
+description: "Builds a risk matrix (impact times likelihood, with evidence) for a product, release or change, sets the test depth for each risk zone and analyzes the top failure modes. Use when the user says 'risk assessment' or asks 'where should we focus testing'. Not for the long-term QA direction (use test-strategy)."
 argument-hint: "[product area, release, feature or change]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: quality-postmortem
-description: "Run a blameless quality postmortem for an escaped defect or incident: timeline, impact, root cause with five whys, why the tests, reviews and monitoring did not catch it, the test level that should have caught it, and concrete actions (regression test, test design change, pipeline gate, monitor) with owners. Use when: 'postmortem', 'escaped bug', 'why did our tests miss this', 'incident review', 'QA retro', 'learn from this production bug'. Not for: writing the defect report itself (use bug-report) or the long-term strategy (use test-strategy). Related: bug-report, test-strategy, risk-based-testing, test-coverage-map."
+description: "Runs a blameless postmortem for an escaped defect: timeline, impact, five whys, why the tests and monitoring missed it, and actions with owners. Use when the user says 'postmortem', 'escaped bug' or asks 'why did our tests miss this'. Not for the defect report itself (use bug-report)."
 argument-hint: "[incident, defect or release]"
 ---
 

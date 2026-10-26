@@ -1,6 +1,6 @@
 ---
 name: mutation-probe
-description: "Measure test strength with mutation testing: run the project's mutation tool, or apply small realistic faults one at a time in an isolated copy of the code (by hand or from a fault plan), run the related tests, never leave a fault in the working code, and report the score, the surviving mutants and the missing test for each survivor. Use when: 'would our tests catch a bug here', 'mutation testing', 'mutation score', 'check if these AI-written tests are strong', 'are our tests checking anything'. Not for: reviewing test style (use testcase-reviewer) or finding untested code (use test-coverage-map). Related: testcase-reviewer, unit-testing, test-coverage-map, test-runner."
+description: "Measures test strength with mutation testing: runs the mutation tool, or applies small faults one at a time in an isolated copy, and names the missing test for each survivor. Use when the user says 'mutation score' or asks 'would our tests catch a bug here'. Not for untested code (use test-coverage-map)."
 argument-hint: "[file, function, class or change]"
 ---
 

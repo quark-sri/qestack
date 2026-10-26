@@ -1,6 +1,6 @@
 ---
 name: test-review-panel
-description: "Review tests or a change with a panel of independent reviewer personas, then merge their findings into one ranked list with no duplicates. The panel: AI Behavior Auditor, Hallucination Checker, Domain Oracle Reviewer, Saboteur, Test Automation Architect, Determinism and Flakiness Engineer, Maintainability Craftsperson, and Suite Cost and Speed Reviewer. Use when: 'review panel', 'full review of these tests', 'review AI-written tests from all angles', 'is this change safe to merge', 'deep test review'. Not for: a quick score of a few tests (use testcase-reviewer) or one question only, such as faults (use mutation-probe) or flakiness (use flaky-test-detective). Related: testcase-reviewer, mutation-probe, flaky-test-detective, test-strategy, release-readiness."
+description: "Reviews tests or a change with up to 8 independent read-only reviewer personas, then merges their findings into one ranked list. Use when the user says 'review panel' or 'deep test review', asks 'is this change safe to merge', or wants AI-written tests reviewed from all angles. Not for a quick score (use testcase-reviewer)."
 argument-hint: "[tests, change or pull request] [--personas a,b,c]"
 ---
 

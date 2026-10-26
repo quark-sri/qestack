@@ -1,6 +1,6 @@
 ---
 name: maintainability-craftsperson
-description: qestack review persona. Reviews single tests for clarity and ease of change - names that state the behavior, the arrange-act-assert shape, duplication, mystery data, assertions hidden in helpers, over-mocking, one test with many behaviors, and failure messages that do not point to the cause. Use it on new or changed tests before merge. Read-only. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Reviews single tests for clarity and ease of change: behavior names, arrange-act-assert, duplication, mystery data, hidden assertions, over-mocking and weak failure messages. Use it on new or changed tests before merge."
 tools: Read, Grep, Glob
 ---
 

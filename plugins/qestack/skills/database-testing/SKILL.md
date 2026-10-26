@@ -1,6 +1,6 @@
 ---
 name: database-testing
-description: "Test persistence and data integrity against a real database engine: stored values and mappings, constraints, transactions and rollback, commit-time behavior, concurrency and lost updates, queries and ordering, precision and time zones, and schema migrations with existing data. Use when: 'database test', 'repository test', 'test this migration', 'data integrity', 'test the SQL', 'persistence test'. Not for: API contracts (use api-testing) or creating test data sets (use test-data-management). Related: api-testing, test-environments, test-data-management, messaging-testing."
+description: "Tests persistence against a real database engine: mappings, constraints, transactions, concurrency, queries, precision, time zones and migrations with existing data. Use when the user says 'database test', 'repository test' or 'test this migration'. Not for creating test data sets (use test-data-management)."
 argument-hint: "[repository, query, migration or data flow]"
 ---
 

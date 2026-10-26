@@ -1,6 +1,6 @@
 ---
 name: flaky-test-detective
-description: "Find the root cause of a flaky test, a test that passes and fails with no code change: reproduce it with repeated, random-order, parallel and slowed runs and other time zones or locales, classify the cause (timing, order dependence, shared state, data collisions, time, randomness, concurrency, environment, external services, framework misuse), and fix the test or report a real race in the product. Use when: 'flaky test', 'intermittent failure', 'fails only in CI', 'passes on my machine', 'random test failures', 'quarantine tests'. Not for: a test that always fails (use test-runner) or a whole pipeline design (use ci-cd-integration). Related: test-runner, test-data-management, test-environments, ci-cd-integration."
+description: "Finds the root cause of a flaky test: reproduces it with repeated, random-order, parallel and slowed runs, classifies the cause and fixes the test or reports a product race. Use when the user says 'flaky test', 'intermittent failure' or 'fails only in CI'. Not for a test that always fails (use test-runner)."
 argument-hint: "[test name or file]"
 ---
 

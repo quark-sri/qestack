@@ -1,6 +1,6 @@
 ---
 name: qe-grill-spec
-description: qestack spec check before test design. Finds requirements without IDs, vague rules, missing examples, missing error behavior and untestable statements, and asks the user one question at a time. Use before qe-plan in a qestack repository, or when a spec has [NEEDS CLARIFICATION] items.
+description: "Checks a spec before qestack test design: finds requirements without IDs, vague rules, missing examples and missing error behavior, and asks one question at a time. Use before qe-plan in a qestack repository, or when a spec has [NEEDS CLARIFICATION] items."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

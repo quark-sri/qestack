@@ -1,6 +1,6 @@
 ---
 name: change-impact
-description: "Analyze the testing impact of a code change (a diff, branch, commit range or pull request): what it can break (callers, data and migrations, contracts and their consumers, configuration, shared code), which existing tests to run in which order, which tests are missing, which changed tests now check less, and which manual checks to do before the merge. Use when: 'what should I test for this change', 'what can this PR break', 'regression scope', 'which tests to run', 'review this PR for testing'. Not for: running the tests (use test-runner) or a whole release plan (use test-planning). Related: test-runner, risk-based-testing, test-planning, testcase-reviewer."
+description: "Analyzes what a diff, branch or pull request can break, which existing tests to run in which order, which tests are missing and which changed tests now check less. Use when the user asks 'what should I test for this change' or 'what can this PR break'. Not for running the tests (use test-runner)."
 argument-hint: "[branch, commit range or pull request]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: test-runner
-description: "Find out how a project runs its tests, run the right subset (all, a module, a file, one test, a tag, or the tests related to a change), collect the results, and triage every failure as product bug, test defect, environment problem or flaky test, with evidence. Works for any language and build system. Use when: 'run the tests', 'why do the tests fail', 'which tests are failing', 'summarize the test results', 'triage the CI failures'. Not for: designing the pipeline (use ci-cd-integration) or a flaky test root cause (use flaky-test-detective). Related: flaky-test-detective, bug-report, change-impact, ci-cd-integration."
+description: "Finds how a project runs its tests, runs the right subset, and triages each failure as product bug, test defect, environment problem or flaky test, with evidence. Use when the user says 'run the tests' or asks 'why do the tests fail'. Not for pipeline design (use ci-cd-integration)."
 argument-hint: "[all | path | test name | tag | changed]"
 ---
 

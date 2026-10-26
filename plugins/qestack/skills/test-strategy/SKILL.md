@@ -1,6 +1,6 @@
 ---
 name: test-strategy
-description: "Write a test strategy for a product, a system or a team: quality goals, test levels and their share, what each level owns, environments, test data, automation and manual scope, non-functional testing, entry and exit criteria, metrics and a roadmap. Use when: 'test strategy', 'QA strategy', 'how should we test this system', 'QA roadmap', 'test pyramid for our services'. Not for: one sprint or release plan (use test-planning) or the risk scores (use risk-based-testing first). Related: risk-based-testing, test-planning, qa-project-context, test-coverage-map."
+description: "Writes a test strategy for a product, system or team: quality goals, test levels and their share, environments, data, automation scope, non-functional testing, metrics and a roadmap. Use when the user says 'test strategy' or 'QA strategy'. Not for one sprint or release plan (use test-planning)."
 argument-hint: "[product, system or team]"
 ---
 

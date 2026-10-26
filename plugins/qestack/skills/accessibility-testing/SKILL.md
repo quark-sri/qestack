@@ -1,6 +1,6 @@
 ---
 name: accessibility-testing
-description: "Test web and app accessibility against the accessibility guidelines (WCAG level AA): automated rule checks in UI tests, keyboard-only navigation and focus order, accessible names and roles, color contrast, forms and error messages, dynamic content and announcements, zoom and reflow, and manual screen reader checks for critical journeys. Use when: 'accessibility test', 'a11y', 'WCAG', 'screen reader', 'keyboard navigation', 'is this page accessible'. Not for: general UI journeys (use ui-automation) or visual design review. Related: ui-automation, exploratory-testing, ci-cd-integration, test-strategy."
+description: "Tests web and app accessibility against WCAG level AA: automated rule checks, keyboard and focus order, names and roles, contrast, forms and manual screen reader checks. Use when the user says 'accessibility test', 'a11y', 'WCAG' or 'screen reader'. Not for general UI journeys (use ui-automation)."
 argument-hint: "[page, component or user journey]"
 ---
 

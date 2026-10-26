@@ -1,6 +1,6 @@
 ---
 name: domain-oracle-reviewer
-description: qestack review persona. Checks each expected result in the tests against the requirements, the acceptance criteria and the domain rules - wrong expected values, misread rules, rules that the tests invent where the spec is silent, and missing negative, boundary and error cases. Use it when the question is 'do the tests check the right behavior'. Read-only. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Checks each expected result in the tests against the requirements and domain rules: wrong values, misread or invented rules, and missing negative, boundary and error cases. Use it when the question is 'do the tests check the right behavior'."
 tools: Read, Grep, Glob
 ---
 

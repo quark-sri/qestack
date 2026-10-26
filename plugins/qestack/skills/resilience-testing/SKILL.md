@@ -1,6 +1,6 @@
 ---
 name: resilience-testing
-description: "Test how a system behaves when a dependency fails: timeouts, retries and backoff, circuit breakers, bulkheads, fallbacks, idempotency of retried calls, slow and partial failures, dependency outages, queue and database failures, restart and recovery, and graceful shutdown, using fault injection in a safe environment and then in a controlled experiment. Use when: 'resilience test', 'chaos test', 'what happens if the database is down', 'test our retries and timeouts', 'failure injection', 'does the circuit breaker work'. Not for: load and capacity (use performance-testing), simulated services in functional tests (use service-virtualization) or attacks (use security-testing). Related: service-virtualization, performance-testing, messaging-testing, production-testing."
+description: "Tests behavior when a dependency fails: timeouts, retries, circuit breakers, fallbacks, partial failures, outages, recovery and graceful shutdown, with safe fault injection. Use when the user says 'chaos test' or asks 'what happens if the database is down'. Not for load (use performance-testing)."
 argument-hint: "[service, dependency or failure scenario]"
 ---
 

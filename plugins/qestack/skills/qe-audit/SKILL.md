@@ -1,6 +1,6 @@
 ---
 name: qe-audit
-description: qestack read-only quality report for an existing test suite or module, also without feature tags. Reports weak and skipped tests, smells, traceability, mutation score and an independent judge sample. Use when the user asks how good a whole test suite is, or wants a baseline before adopting qestack.
+description: "Reports the quality of an existing test suite or module with qestack, read-only and also without feature tags: weak and skipped tests, traceability, mutation score and a judge sample. Use when the user asks how good a whole suite is, or wants a baseline before adopting qestack."
 ---
 
 # qe-audit

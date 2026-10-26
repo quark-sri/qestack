@@ -1,6 +1,6 @@
 ---
 name: requirement-gaps
-description: "Find gaps in requirements before tests or code exist: missing acceptance criteria and examples, vague words, undefined limits, units and rounding, missing error behavior and side effects, undefined states, roles and concurrency, conflicts between requirements. Gives focused questions with proposed answers. Use when: 'is this story testable', 'review these acceptance criteria', 'what is missing in this spec', 'refine this ticket'. Not for: designing test cases (use test-case-designer) or comparing the spec with the code (use spec-drift). Related: edge-case-hunter, test-case-designer, spec-drift."
+description: "Finds gaps in requirements before tests or code exist: missing acceptance criteria, vague words, undefined limits, error behavior, states and conflicts, with proposed answers. Use when the user asks 'is this story testable' or 'what is missing in this spec'. Not for comparing spec and code (use spec-drift)."
 argument-hint: "[spec, story, ticket or contract]"
 ---
 

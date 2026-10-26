@@ -1,6 +1,6 @@
 ---
 name: qa-project-context
-description: "Create or update .agents/qa-project-context.md, the one file that records the product, tech stack, test stack, test commands, CI, environments, quality goals, risk areas and conventions of a project. Every other QA skill reads it first. Use when: 'set up QA context', 'onboard QA to this repo', 'configure testing', or before the first QA skill in a new repository. Not for: a test strategy (use test-strategy) or a risk matrix (use risk-based-testing). Related: qa-navigator, test-strategy, risk-based-testing, test-runner."
+description: "Creates or updates .agents/qa-project-context.md, the file of project facts (stack, test commands, CI, environments, risks) that every QA skill reads first. Use when the user says 'set up QA context' or 'onboard QA to this repo'. Not for a test strategy (use test-strategy)."
 argument-hint: "[create | update | check]"
 ---
 

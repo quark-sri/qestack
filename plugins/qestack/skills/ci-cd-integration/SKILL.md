@@ -1,6 +1,6 @@
 ---
 name: ci-cd-integration
-description: "Design or fix how tests run in the delivery pipeline: stages by test level and speed, quality gates that block a merge or a deploy, parallel and sharded runs, caching, machine-readable reports and artifacts, flaky test handling, nightly suites, and smoke checks after deploy. Use when: 'run tests in CI', 'pipeline is too slow', 'add a quality gate', 'shard the tests', 'publish test reports', 'tests in the pipeline'. Not for: one flaky test (use flaky-test-detective) or the test environment itself (use test-environments). Related: test-environments, test-runner, contract-testing, release-readiness."
+description: "Designs or fixes how tests run in the delivery pipeline: stages, quality gates, sharding, caching, reports, flaky test handling and post-deploy smoke checks. Use when the user says 'run tests in CI', 'pipeline is too slow' or 'add a quality gate'. Not for one flaky test (use flaky-test-detective)."
 argument-hint: "[pipeline file, stage or test suite]"
 ---
 
