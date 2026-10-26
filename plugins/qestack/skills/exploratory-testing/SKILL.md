@@ -1,6 +1,6 @@
 ---
 name: exploratory-testing
-description: "Plan, run and report session-based exploratory testing: charters from risks and heuristics, time-boxed sessions, notes on what was tested, bugs, questions and new test ideas, and a debrief. Use when: 'exploratory testing', 'explore this feature', 'manual testing session', 'test charter', 'find bugs by hand before release'. Not for: scripted regression cases (use test-case-designer) or bug hunting in source code (use bug-hunter). Related: risk-based-testing, edge-case-hunter, bug-report, test-case-designer."
+description: "Plans, runs and reports session-based exploratory testing: charters from risks, time-boxed sessions, notes, bugs, questions and a debrief. Use when the user says 'exploratory testing', 'explore this feature' or 'test charter'. Not for scripted regression cases (use test-case-designer)."
 argument-hint: "[feature, area or release]"
 ---
 

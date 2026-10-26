@@ -1,6 +1,6 @@
 ---
 name: release-readiness
-description: "Decide go or no-go for a release with evidence: scope and changes, exit criteria from the test plan, test results by level and risk, open defects by severity, non-functional results, known risks and their owners, deployment, rollback and monitoring readiness, and post-release smoke checks. Use when: 'are we ready to release', 'go no-go', 'release checklist', 'release sign-off', 'what is the quality status of this release'. Not for: planning the testing (use test-planning) or the pipeline design (use ci-cd-integration). Related: test-planning, risk-based-testing, test-runner, quality-postmortem."
+description: "Decides go or no-go for a release with evidence: exit criteria, test results by risk, open defects, non-functional results, rollback and monitoring readiness. Use when the user says 'go no-go' or asks 'are we ready to release'. Not for planning the testing (use test-planning)."
 argument-hint: "[release, version or date]"
 ---
 

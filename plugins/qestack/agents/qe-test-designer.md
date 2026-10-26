@@ -1,6 +1,6 @@
 ---
 name: qe-test-designer
-description: qestack test designer. Writes a spec-first test plan (test-plan.md) for one feature. Only in a qestack repository (.qestack/project.toml); the qe-plan skill starts it. It reads only the specification, plan, contracts and data model, never the implementation.
+description: "qestack workflow agent. Writes a spec-first test plan (test-plan.md) for one feature from the specification, plan, contracts and data model, never the implementation. Only in a qestack repository; the qe-plan skill starts it."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: inherit
 ---

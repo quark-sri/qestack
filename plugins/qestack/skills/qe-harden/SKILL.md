@@ -1,6 +1,6 @@
 ---
 name: qe-harden
-description: qestack post-implementation quality loop. Seeds hidden faults, runs the gates, gets an independent judge review, scores the result and improves the tests. It stops when the quality bar is met or a human must decide. Use in a qestack repository after the feature is implemented.
+description: "Runs the qestack quality loop after implementation: seeds hidden faults, runs the gates, gets an independent judge review, and scores and improves the tests until the bar is met. Use in a qestack repository after the feature is implemented."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

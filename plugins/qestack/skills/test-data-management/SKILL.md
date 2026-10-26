@@ -1,6 +1,6 @@
 ---
 name: test-data-management
-description: "Design and build test data: builders and factories with valid defaults, unique keys for each test, data created through the API or the database, seeded reference data, synthetic data instead of production copies, masking of personal data, cleanup, and data for edge cases and volume. Use when: 'test data', 'fixtures', 'factories', 'seed data', 'our tests share data', 'we need realistic data', 'mask production data'. Not for: test environments and containers (use test-environments) or the edge cases themselves (use edge-case-hunter). Related: test-environments, database-testing, api-testing, flaky-test-detective."
+description: "Designs test data: builders with valid defaults, unique keys for each test, seeded reference data, synthetic data, masking of personal data and cleanup. Use when the user says 'test data', 'fixtures', 'factories' or 'our tests share data'. Not for environments and containers (use test-environments)."
 argument-hint: "[domain objects, test suite or environment]"
 ---
 

@@ -39,7 +39,7 @@ To use your local plugin in Claude Code:
 |---|---|
 | A new stack (language, build and test tools) | [docs/guides/adding-a-stack.md](docs/guides/adding-a-stack.md) |
 | A new ruleset (rules for one area of testing) | [docs/guides/adding-a-ruleset.md](docs/guides/adding-a-ruleset.md) |
-| A new or changed skill or agent | Follow the structure of the existing files. Keep each skill to one job. Then run `python3 scripts/build_llms_txt.py` to update `llms.txt`. |
+| A new or changed skill or agent | [docs/guides/adding-a-skill.md](docs/guides/adding-a-skill.md) |
 | An engine change | Add a test in `engine/tests/`. Keep the engine free of dependencies. |
 | Documentation | Use STE. Check the links. |
 

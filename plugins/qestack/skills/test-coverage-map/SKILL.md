@@ -1,6 +1,6 @@
 ---
 name: test-coverage-map
-description: "Map what is tested and what is not, by requirement, feature, user journey, code area and test level, not only by line coverage: untested requirements, risky code without tests, areas covered only by weak or end-to-end tests, coverage reports read in context, and the shape of the test pyramid. Use when: 'what is not tested', 'coverage gaps', 'test coverage report', 'which requirements have no tests', 'audit our test suite'. Not for: the quality of each test (use testcase-reviewer) or whether tests catch faults (use mutation-probe). Related: risk-based-testing, testcase-reviewer, mutation-probe, test-strategy."
+description: "Maps what is tested and what is not by requirement, journey, code area and test level, not only line coverage, and shows the pyramid shape. Use when the user asks 'what is not tested' or 'which requirements have no tests'. Not for the quality of each test (use testcase-reviewer)."
 argument-hint: "[repository, module, feature or requirement set]"
 ---
 

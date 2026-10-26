@@ -1,6 +1,6 @@
 ---
 name: unit-testing
-description: "Write, fix or improve unit tests for business rules, calculations, validation, mapping and state logic: arrange-act-assert, exact oracles, parameterized boundary sets, test doubles only at boundaries, a controlled clock and randomness, fast and isolated tests. Use when: 'write unit tests', 'add tests for this class or function', 'improve these unit tests', 'TDD this', 'mock this dependency'. Not for: HTTP endpoints (use api-testing), real databases (use database-testing) or reviewing a whole suite (use testcase-reviewer). Related: test-case-designer, edge-case-hunter, mutation-probe, testcase-reviewer."
+description: "Writes, fixes or improves unit tests for rules, calculations, validation and state logic: arrange-act-assert, exact oracles, boundary sets, doubles only at boundaries, controlled clock and randomness. Use when the user says 'write unit tests', 'TDD this' or 'mock this dependency'. Not for HTTP endpoints (use api-testing)."
 argument-hint: "[class, function or file]"
 ---
 

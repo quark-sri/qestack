@@ -1,6 +1,6 @@
 ---
 name: localization-testing
-description: "Test internationalization (i18n) and localization (l10n): text that is not hard-coded, pseudo-localization, translation completeness and placeholders, plurals and gender, dates, times, time zones, numbers, currency, sorting and search, Unicode and encoding, right-to-left layout, text expansion, locale tags and fallback, address, name and phone formats, and regional legal text and regulatory rules. Use when: 'localization test', 'i18n test', 'translation testing', 'right-to-left', 'does it work in German or Japanese', 'locale bugs', 'multi-region release'. Not for: general UI journeys (use ui-automation), accessibility (use accessibility-testing) or database precision and time zones in storage (use database-testing). Related: ui-automation, edge-case-hunter, accessibility-testing, test-data-management."
+description: "Tests internationalization and localization: hard-coded text, pseudo-localization, translations, plurals, dates, numbers, currency, Unicode, right-to-left layout and locale fallback. Use when the user says 'i18n test', 'localization test' or 'right-to-left'. Not for accessibility (use accessibility-testing)."
 argument-hint: "[feature, screen, locale list or release region]"
 ---
 

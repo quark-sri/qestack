@@ -1,6 +1,6 @@
 ---
 name: qe-write
-description: qestack blind test writing. Writes the feature tests from test-plan.md with the qe-test-writer agent, without the implementation, then passes the lint and trace gates. Use in a qestack repository after qe-plan and before the implementation. Next step is qe-prove.
+description: "Writes the feature tests blind from test-plan.md with the qe-test-writer agent, without the implementation, and passes the qestack lint and trace gates. Use in a qestack repository after qe-plan and before the implementation."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

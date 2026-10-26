@@ -1,6 +1,6 @@
 ---
 name: bug-hunter
-description: "Hunt for real bugs in code, a change, a module or a feature: read the code against its intent with a defect taxonomy (logic, boundaries, null and empty, numbers and data, errors, state, concurrency, time, security, integration, configuration), trace real values, rank suspects by evidence, and prove each one with a failing test or exact reproduction steps. Use when: 'find bugs', 'what is wrong with this code', 'review this risky change for defects', 'investigate this defect', 'bug hunt'. Not for: style and design feedback (use roast-my-code) or a defect report from a known failure (use bug-report). Related: bug-report, roast-my-code, edge-case-hunter, security-testing."
+description: "Hunts real bugs in code, a change or a feature with a defect taxonomy, traces real values and proves each suspect with a failing test or exact repro steps. Use when the user says 'find bugs', 'bug hunt' or asks 'what is wrong with this code'. Not for style review (use roast-my-code)."
 argument-hint: "[file, folder, change or feature]"
 ---
 

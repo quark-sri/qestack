@@ -1,6 +1,6 @@
 ---
 name: testability-review
-description: "Score and improve how testable a feature, module or design is before tests are written: seams for the clock, randomness, network and files, hidden global state, observable outputs, controllable inputs, small interfaces, logging and error visibility, and the cost of a test for each rule. Gives a score with evidence and the smallest production change for each blocker. Use when: 'is this testable', 'testability review', 'why is this hard to test', 'design for testability', 'review this design before we build it'. Not for: writing the tests (use unit-testing) or a general code review (use roast-my-code). Related: unit-testing, requirement-gaps, roast-my-code, test-strategy."
+description: "Scores how testable a feature, module or design is before tests exist (seams for clock, randomness and network, hidden state, observability) and gives the smallest production change per blocker. Use when the user asks 'is this testable' or 'why is this hard to test'. Not for writing the tests (use unit-testing)."
 argument-hint: "[feature, module, design or pull request]"
 ---
 

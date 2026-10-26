@@ -1,6 +1,6 @@
 ---
 name: qestack
-description: Entry point for qestack AI test quality. Use when the user names qestack or a qe-* skill, or asks which qestack step comes next, in a repository with .qestack/. Explains the workflow and routes to the right qe-* skill.
+description: "Explains the qestack gated workflow that proves AI-written tests catch bugs, and routes to the right qe-* skill. Use when the user names qestack or a qe-* skill, or asks which qestack step comes next in a repository with .qestack/."
 ---
 
 # qestack

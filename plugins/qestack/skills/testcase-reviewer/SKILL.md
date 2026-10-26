@@ -1,6 +1,6 @@
 ---
 name: testcase-reviewer
-description: "Review automated tests or manual test cases like a senior test architect: score each test on requirement fidelity, oracle correctness, assertion depth, negative and edge coverage, independence from the implementation, determinism and clarity, with evidence and a concrete fix, and find tests that pass while the product is wrong. Use when: 'review my tests', 'are these tests any good', 'test smells', 'review AI-written tests', 'test quality audit'. Not for: finding untested areas (use test-coverage-map) or measuring tests with injected faults (use mutation-probe). Related: mutation-probe, test-coverage-map, unit-testing, api-testing."
+description: "Reviews automated tests or manual test cases like a senior test architect: scores fidelity, oracles, assertion depth, edge coverage and determinism, and finds tests that pass on wrong code. Use when the user says 'review my tests' or 'review AI-written tests'. Not for measuring tests with faults (use mutation-probe)."
 argument-hint: "[test files, test folder or test case document]"
 ---
 

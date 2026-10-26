@@ -1,6 +1,6 @@
 ---
 name: roast-my-code
-description: "A direct, honest code review with a quality engineering focus: correctness risks, testability (hidden clock, randomness, global state, static calls, network), error handling, design smells, readability, missing or weak tests, and security and data handling, each point rated with evidence and a concrete fix, in a mild, medium or savage tone. Use when: 'roast my code', 'be brutal', 'tear this apart', 'honest review before merge', 'what is bad about this code'. Not for: proving bugs (use bug-hunter) or reviewing tests only (use testcase-reviewer). Related: bug-hunter, testcase-reviewer, unit-testing, security-testing."
+description: "Gives a direct code review with a quality engineering focus: correctness, testability, error handling, design smells and weak tests, each with evidence and a fix, in a mild, medium or savage tone. Use when the user says 'roast my code' or 'be brutal'. Not for proving bugs (use bug-hunter)."
 argument-hint: "[file, folder or change] [mild|medium|savage]"
 ---
 

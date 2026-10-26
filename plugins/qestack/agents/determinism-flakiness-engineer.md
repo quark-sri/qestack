@@ -1,6 +1,6 @@
 ---
 name: determinism-flakiness-engineer
-description: qestack review persona. Finds the causes of non-deterministic tests - fixed sleeps, the real clock and time zone, unseeded random data, shared state, order dependence, concurrency, environment and network dependence, and retries that hide failures. Use it on flaky tests or before a suite goes into the pipeline. Read-only, but it can run read-only commands and tests. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Finds the causes of non-deterministic tests: sleeps, the real clock and time zone, unseeded randomness, shared state, order dependence, concurrency, network and retries that hide failures. Use it on flaky tests or before a suite goes into the pipeline."
 tools: Read, Grep, Glob, Bash
 ---
 

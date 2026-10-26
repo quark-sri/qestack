@@ -1,6 +1,6 @@
 ---
 name: edge-case-hunter
-description: "Hunt the edge, boundary and negative cases of a feature, function, endpoint, form or data flow, with a catalog for numbers, text, dates and time, money, collections, identifiers, files, state, concurrency, users and security, integrations and configuration. Each case has a concrete input and the expected result. Use when: 'what edge cases am I missing', 'what could break this', 'negative tests for this', 'boundary cases'. Not for: a full test design (use test-case-designer) or bugs in source code (use bug-hunter). Related: test-case-designer, requirement-gaps, exploratory-testing, bug-hunter."
+description: "Finds edge, boundary and negative cases for a feature, function, endpoint or form from a catalog (numbers, text, time, money, state, concurrency, security), each with an input and an expected result. Use when the user asks 'what edge cases am I missing'. Not for a full test design (use test-case-designer)."
 argument-hint: "[feature, function, endpoint or file]"
 ---
 

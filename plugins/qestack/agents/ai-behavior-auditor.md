@@ -1,6 +1,6 @@
 ---
 name: ai-behavior-auditor
-description: qestack review persona. Finds the shortcuts that AI coding agents take to make work look done - tests changed to pass, weakened assertions, empty or skipped tests, special cases in production code, tautologies, sycophancy (agreeing with the author, the prompt or the code instead of the requirement), and 'all pass' claims without a run. Use it to review tests or a change that an AI agent wrote. Read-only, but it can run read-only commands and tests. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Finds the shortcuts that AI coding agents take to make work look done: tests changed to pass, weakened assertions, skipped tests, special cases, tautologies, sycophancy and 'all pass' claims without a run. Use it to review tests or a change that an AI agent wrote."
 tools: Read, Grep, Glob, Bash
 ---
 

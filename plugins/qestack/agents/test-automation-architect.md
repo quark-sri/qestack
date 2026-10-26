@@ -1,6 +1,6 @@
 ---
 name: test-automation-architect
-description: qestack review persona. Reviews the structure of a test suite - the test levels and the pyramid, the right level for each test, page objects, helpers and fixtures, the test data strategy, environment and pipeline fit, and long-term maintainability. Use it to review a test strategy, a new suite, a framework or a large test change. Read-only. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Reviews the structure of a test suite: test levels and the pyramid, the right level for each test, page objects, helpers, fixtures, the data strategy and pipeline fit. Use it to review a test strategy, a new suite or a large test change."
 tools: Read, Grep, Glob
 ---
 

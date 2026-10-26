@@ -1,6 +1,6 @@
 ---
 name: security-testing
-description: "Plan and write security tests for an application or API: authentication and session handling, authorization and object-level access, input handling and injection, sensitive data exposure, security headers and configuration, dependency and secret scanning, rate limits, file upload, and business logic abuse, based on common weakness lists. Use when: 'security test', 'test for OWASP risks', 'can users see other users data', 'injection test', 'auth test', 'pen test checklist'. Not for: a full penetration test by a specialist, or a code review for style (use roast-my-code). Related: api-testing, bug-hunter, ci-cd-integration, test-strategy."
+description: "Plans and writes security tests for an application or API: authentication, authorization and object access, injection, data exposure, headers, secrets, rate limits and business logic abuse. Use when the user says 'security test', 'OWASP' or asks 'can users see other users data'. Not for a style review (use roast-my-code)."
 argument-hint: "[application, API, feature or change]"
 ---
 

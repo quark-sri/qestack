@@ -1,6 +1,6 @@
 ---
 name: test-environments
-description: "Set up reliable, reproducible test environments: dependencies started for each test run in containers, the same engine versions as production, configuration through environment variables, readiness checks instead of waits, isolation between parallel runs, ephemeral environments for pull requests, and parity checks with production. Use when: 'test environment', 'run the tests locally with the real database', 'containers for tests', 'staging is unreliable', 'preview environment', 'tests pass locally but fail in CI'. Not for: test data content (use test-data-management) or simulating third-party services (use service-virtualization). Related: test-data-management, service-virtualization, ci-cd-integration, database-testing."
+description: "Sets up reproducible test environments: dependencies in containers, production engine versions, readiness checks, isolation of parallel runs and preview environments. Use when the user says 'test environment' or 'tests pass locally but fail in CI'. Not for test data content (use test-data-management)."
 argument-hint: "[service, test suite or environment]"
 ---
 

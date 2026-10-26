@@ -124,7 +124,7 @@ A later level overrides an earlier level. `extra_<key>` appends to a list.
 | Tool-neutral method | `SKILL.md` names no tools; the validator checks this |
 | Stack recipes | `references/java.md`, `typescript.md`, `python.md`, loaded only for the project's stack |
 | Shared context | `.agents/qa-project-context.md`, written by `qa-project-context`, read by every skill |
-| Routing | Each description has "Use when", "Not for" and "Related"; the validator checks that related skills exist |
+| Routing | Each description is at most 350 characters, in the third person, with "Use when" and "Not for"; the validator checks this and that the named and related skills exist (see `docs/guides/adding-a-skill.md`) |
 | Personas | One agent per persona, with no edit tools (personas report; the caller changes code), a checklist, an evidence rule and one shared "Reviewer rules" section; only `test-review-panel` uses them, so the other skills stay self-contained; the validator checks this |
 | Structure | Objective, Context, Discovery questions, Principles, Workflow, Anti-patterns, Done when, Related skills |
 

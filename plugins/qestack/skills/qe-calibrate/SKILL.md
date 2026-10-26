@@ -1,6 +1,6 @@
 ---
 name: qe-calibrate
-description: qestack judge calibration. Measures how far the qestack judge agrees with human reviewers (agreement and Cohen's kappa) on a human audit sample, and proposes rubric improvements for the disagreements. Use each sprint, or when the user doubts the judge.
+description: "Measures how far the qestack judge agrees with human reviewers (agreement and Cohen's kappa) and proposes rubric fixes for the disagreements. Use each sprint, or when the user doubts the judge."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

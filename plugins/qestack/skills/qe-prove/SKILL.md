@@ -1,6 +1,6 @@
 ---
 name: qe-prove
-description: qestack red-before-green. Proves that the new feature tests fail before the implementation exists, then locks them so that later work cannot weaken them. Use in a qestack repository after qe-write and before the implementation.
+description: "Proves qestack red-before-green: the new feature tests fail before the implementation exists, then the tests are locked against weakening. Use in a qestack repository after qe-write and before the implementation."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

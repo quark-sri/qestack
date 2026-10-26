@@ -1,6 +1,6 @@
 ---
 name: ui-automation
-description: "Write, fix or structure browser and UI end-to-end tests for the few critical user journeys: stable locators by role, label or test ID, auto-waiting assertions, data setup through the API, page objects or components, authentication reuse, parallel isolation, traces and screenshots on failure. Use when: 'UI test', 'end-to-end test', 'browser test', 'automate this user journey', 'page object', 'our UI tests are slow or brittle'. Not for: business rules (use unit-testing or api-testing), visual pixel checks only, or a flaky test root cause (use flaky-test-detective). Related: api-testing, test-data-management, flaky-test-detective, accessibility-testing."
+description: "Writes, fixes or structures browser end-to-end tests for critical journeys: role, label or test ID locators, auto-waiting assertions, API data setup, page objects, auth reuse and traces. Use when the user says 'UI test', 'end-to-end test' or 'our UI tests are brittle'. Not for business rules (use unit-testing)."
 argument-hint: "[user journey, page or UI test file]"
 ---
 

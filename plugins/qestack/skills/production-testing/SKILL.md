@@ -1,6 +1,6 @@
 ---
 name: production-testing
-description: "Test and verify quality in production, after release: smoke and synthetic checks of critical journeys, health checks, canary and staged rollouts with exit rules, feature flags, monitoring and alerts that act as tests, log and metric checks, error budgets, and rollback and recovery drills. Use when: 'test in production', 'synthetic monitoring', 'canary release', 'post-deploy checks', 'are our alerts any good', 'shift right'. Not for: the release decision itself (use release-readiness), load tests (use performance-testing) or the pipeline design (use ci-cd-integration). Related: release-readiness, ci-cd-integration, performance-testing, quality-postmortem."
+description: "Verifies quality in production after release: synthetic checks, health checks, canary rollouts with exit rules, feature flags, alerts as tests and rollback drills. Use when the user says 'test in production', 'canary release' or 'post-deploy checks'. Not for the release decision (use release-readiness)."
 argument-hint: "[service, release or critical journey]"
 ---
 

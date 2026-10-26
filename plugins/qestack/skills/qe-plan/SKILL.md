@@ -1,6 +1,6 @@
 ---
 name: qe-plan
-description: qestack test design. Writes a spec-first test plan (test-plan.md) for one feature with the qe-test-designer agent, then gets an independent plan review from the qe-test-judge agent. Use in a qestack repository before any test code or implementation exists.
+description: "Writes a spec-first qestack test plan (test-plan.md) for one feature with the qe-test-designer agent, then gets an independent plan review. Use in a qestack repository before any test code or implementation exists."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

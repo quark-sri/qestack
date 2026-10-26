@@ -46,31 +46,91 @@ def long_sentences(path, body, limit=30):
                 warnings.append(f"{path.relative_to(ROOT)}: sentence with {len(words)} words: {sent[:70]}...")
 
 
+# Claude skill and subagent standards (Claude Code skills and subagents docs, Agent Skills best practices):
+# - name: at most 64 characters, lowercase letters, digits and hyphens, no reserved words
+# - description: third person, what the skill does and when to use it, key use case first, no XML tags.
+#   Claude Code keeps all skill descriptions in one listing of about 1% of the context window, so keep them short.
+# - SKILL.md body under 500 lines; references one level deep; a "Contents" section in references over 100 lines
+# - only known frontmatter keys: Claude Code ignores unknown keys without an error, so a typo goes unnoticed
+# - plugin subagents ignore hooks, mcpServers, permissionMode and initialPrompt
+SKILL_KEYS = {"name", "description", "when_to_use", "argument-hint", "arguments", "disable-model-invocation",
+              "user-invocable", "allowed-tools", "disallowed-tools", "model", "effort", "context", "agent",
+              "background", "hooks", "paths", "shell", "metadata", "license", "compatibility"}
+AGENT_KEYS = {"name", "description", "tools", "disallowedTools", "model", "maxTurns", "autoCompactWindow", "skills",
+              "memory", "background", "omitClaudeMd", "effort", "isolation", "color", "experimental"}
+AGENT_KEYS_IGNORED_IN_PLUGINS = {"hooks", "mcpServers", "permissionMode", "initialPrompt"}
+TOOLS = {"Read", "Grep", "Glob", "Bash", "Edit", "Write", "MultiEdit", "NotebookEdit", "WebFetch", "WebSearch",
+         "Agent", "Skill"}
+NAME_RX = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+SKILL_DESC_MAX = 350          # each skill; the documented hard limit is 1024
+SKILL_DESC_TOTAL_MAX = 15000  # all skills of the plugin, so that the listing fits a 200k context (1% budget)
+AGENT_DESC_MAX = 400
+BODY_MAX_LINES = 500
+
+
+def check_description(rp, desc, limit):
+    if not desc:
+        err(f"{rp}: description missing")
+        return ""
+    if ": " in desc and not (desc.startswith('"') and desc.endswith('"')):
+        err(f"{rp}: description has ': ' and must be one double-quoted line (valid YAML)")
+    text = desc[1:-1] if desc.startswith('"') and desc.endswith('"') else desc
+    if '"' in text:
+        err(f"{rp}: description has a double quote inside; use single quotes for trigger phrases")
+    if "<" in text or ">" in text:
+        err(f"{rp}: description has '<' or '>'; XML tags are not allowed")
+    if len(text) > limit:
+        err(f"{rp}: description has {len(text)} characters; keep it at {limit} or less")
+    return text
+
+
 # Skills
 skills = sorted(p for pl in PLUGINS if (pl / "skills").exists() for p in (pl / "skills").iterdir() if p.is_dir())
 names = [d.name for d in skills]
+all_skill_names = set(names)
 for n in sorted({n for n in names if names.count(n) > 1}):
     err(f"skill name '{n}' is used by more than one plugin")
+desc_total = 0
 for d in skills:
     f = d / "SKILL.md"
     if not f.exists():
         err(f"{d.relative_to(ROOT)}: SKILL.md missing")
         continue
+    rp = f.relative_to(ROOT)
     fm, body = frontmatter(f)
     if fm.get("name") != d.name:
-        err(f"{f.relative_to(ROOT)}: name '{fm.get('name')}' does not match folder '{d.name}'")
-    desc = fm.get("description", "")
-    if not desc or len(desc) > 1024:
-        err(f"{f.relative_to(ROOT)}: description missing or longer than 1024 characters")
+        err(f"{rp}: name '{fm.get('name')}' does not match folder '{d.name}'")
+    if not NAME_RX.match(d.name) or len(d.name) > 64 or re.search(r"anthropic|claude", d.name):
+        err(f"{rp}: name must be at most 64 lowercase letters, digits and hyphens, without 'anthropic' or 'claude'")
+    for k in sorted(set(fm) - SKILL_KEYS):
+        err(f"{rp}: unknown frontmatter key '{k}'; Claude Code ignores it")
+    desc = check_description(rp, fm.get("description", ""), SKILL_DESC_MAX)
+    desc_total += len(desc)
+    if desc and not re.match(r"[A-Z][a-z]+s\b", desc):
+        err(f"{rp}: description must start with a verb in the third person, for example 'Writes' or 'Finds'")
+    if desc and "Use " not in desc:
+        err(f"{rp}: description does not say when to use the skill ('Use when ...')")
+    for n in re.findall(r"\(use ([a-z0-9-]+)\)", desc):
+        if n not in all_skill_names:
+            err(f"{rp}: description names the skill '{n}', which does not exist")
+    if len(body.splitlines()) > BODY_MAX_LINES:
+        err(f"{rp}: body has more than {BODY_MAX_LINES} lines; move details to references/")
     long_sentences(f, body)
     for ref in sorted((d / "references").glob("*.md")) if (d / "references").exists() else []:
+        text = ref.read_text(encoding="utf-8")
         if ref.name not in body:
             err(f"{ref.relative_to(ROOT)}: not linked from SKILL.md")
-        long_sentences(ref, ref.read_text(encoding="utf-8"))
+        if re.search(r"\]\((?!https?://)[^)]*\.md\b", text):
+            err(f"{ref.relative_to(ROOT)}: links another markdown file; keep references one level deep from SKILL.md")
+        if len(text.splitlines()) > 100 and not re.search(r"^## Contents", text, re.M):
+            err(f"{ref.relative_to(ROOT)}: more than 100 lines and no '## Contents' section at the top")
+        long_sentences(ref, text)
+if desc_total > SKILL_DESC_TOTAL_MAX:
+    err(f"skill descriptions have {desc_total} characters in total; keep them at {SKILL_DESC_TOTAL_MAX} or less")
 
 # Two skill groups in one plugin, by name: the gated workflow (`qestack`, `qe-*`) needs the engine.
-# All other skills are the library: tool-neutral SKILL.md, routing parts in the description, shared context,
-# existing related skills.
+# All other skills are the library: tool-neutral SKILL.md, "Use when" and "Not for" in the description,
+# shared context, existing related skills.
 def gated(name):
     return name == "qestack" or name.startswith("qe-")
 
@@ -79,7 +139,6 @@ TOOL_NAMES = re.compile(
     r"\b(maven|mvn|gradle|junit|testng|pytest|jest|vitest|mocha|cypress|playwright|selenium|selenide|pitest|stryker|"
     r"mutmut|docker|testcontainers|wiremock|mockito|assertj|rest assured|supertest|msw|k6|gatling|jmeter|locust|pact|"
     r"axe|lighthouse|bash|grep|glob tool|agent tool|webfetch)\b", re.I)
-all_skill_names = set(names)
 for d in skills:
     if gated(d.name):
         continue
@@ -87,23 +146,18 @@ for d in skills:
     if not f.exists():
         continue
     fm, body = frontmatter(f)
-    desc = fm.get("description", "")
+    desc = fm.get("description", "").strip('"')
     rp = f.relative_to(ROOT)
-    if ": " in desc and not (desc.startswith('"') and desc.endswith('"')):
-        err(f"{rp}: description has ': ' and must be one double-quoted line (valid YAML)")
-    if '"' in desc.strip('"'):
-        err(f"{rp}: description has a double quote inside; use single quotes for trigger phrases")
-    for part in ("Use when:", "Not for:", "Related:"):
+    for part in ("Use when", "Not for"):
         if part not in desc:
             err(f"{rp}: description has no '{part}' part")
-    rel_m = re.search(r"Related:\s*([^.]*)", desc)
-    for n in (re.split(r",\s*", rel_m.group(1)) if rel_m else []):
-        n = n.strip().strip('"')
-        if n and n not in all_skill_names:
-            err(f"{rp}: related skill '{n}' does not exist")
     for section in ("## Done when", "## Related skills"):
         if section not in body:
             err(f"{rp}: section '{section}' missing")
+    rel = body.split("## Related skills", 1)[1] if "## Related skills" in body else ""
+    for n in re.findall(r"^- `([a-z0-9-]+)`", rel, re.M):
+        if n not in all_skill_names:
+            err(f"{rp}: related skill '{n}' does not exist")
     if d.name != "qa-project-context" and "qa-project-context.md" not in body:
         err(f"{rp}: does not read .agents/qa-project-context.md")
     for m in TOOL_NAMES.finditer(re.sub(r"\[[^\]]*\]\(references/[^)]*\)", "", body + " " + desc)):
@@ -112,12 +166,23 @@ for d in skills:
 # Agents
 agents = sorted(f for pl in PLUGINS for f in (pl / "agents").glob("*.md"))
 for f in agents:
+    rp = f.relative_to(ROOT)
     fm, body = frontmatter(f)
     if fm.get("name") != f.stem:
-        err(f"{f.relative_to(ROOT)}: name '{fm.get('name')}' does not match file name")
+        err(f"{rp}: name '{fm.get('name')}' does not match file name")
+    if ":" in fm.get("name", "") or fm.get("name", "").startswith("-"):
+        err(f"{rp}: name must not contain ':' or start with '-'; Claude Code skips the agent")
     for k in ("description", "tools"):
         if not fm.get(k):
-            err(f"{f.relative_to(ROOT)}: '{k}' missing")
+            err(f"{rp}: '{k}' missing")
+    for k in sorted(set(fm) & AGENT_KEYS_IGNORED_IN_PLUGINS):
+        err(f"{rp}: '{k}' is ignored for plugin subagents")
+    for k in sorted(set(fm) - AGENT_KEYS - AGENT_KEYS_IGNORED_IN_PLUGINS):
+        err(f"{rp}: unknown frontmatter key '{k}'; Claude Code ignores it")
+    for t in [t.strip() for t in fm.get("tools", "").split(",") if t.strip()]:
+        if t not in TOOLS:
+            err(f"{rp}: unknown tool '{t}'")
+    check_description(rp, fm.get("description", ""), AGENT_DESC_MAX)
     long_sentences(f, body)
 
 # Two agent classes, by name: workflow agents (`qe-*`) change files through the engine. All other agents are

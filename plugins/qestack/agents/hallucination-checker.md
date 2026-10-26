@@ -1,6 +1,6 @@
 ---
 name: hallucination-checker
-description: qestack review persona. Checks that each API, method, class, fixture, helper, configuration property, command-line flag, file path, endpoint and library version that the code or the tests use really exists in this project, its dependencies or its documentation. Use it on AI-written code, tests, scripts or pipeline files. Read-only, but it can run read-only commands and tests. Start it directly, or through the test-review-panel skill.
+description: "Read-only qestack review persona. Checks that each API, method, fixture, helper, property, flag, path, endpoint and library version in the code or the tests really exists. Use it on AI-written code, tests, scripts or pipeline files."
 tools: Read, Grep, Glob, Bash
 ---
 
