@@ -580,6 +580,33 @@ class InitShowTests(unittest.TestCase):
             self.assertIn("-Dsurefire.rerunFailingTestsCount=0", cmds[name])
             self.assertIn("-Dfailsafe.rerunFailingTestsCount=0", cmds[name])  # Failsafe has its own name
 
+    def test_gradle_stack_matches_the_maven_stack(self):
+        import tomllib
+        stacks = SRC / "qestack/data/stacks"
+        mvn = tomllib.loads((stacks / "java-maven-junit5.toml").read_text())
+        gr = tomllib.loads((stacks / "java-gradle-junit5.toml").read_text())
+        # Same Java reading rules: only paths, commands and reports differ.
+        for key in ("language", "tags", "smells"):
+            self.assertEqual(mvn[key], gr[key], key)
+        self.assertIn("**/src/test/java/**/*.java", gr["paths"]["test_globs"])
+        for name in ("test_feature", "test_feature_random", "mutation"):
+            self.assertIn("{feature_tag}" if name != "mutation" else "{target_classes}", gr["commands"][name])
+        self.assertIn("{feature_test_classes}", gr["commands"]["mutation"])
+        self.assertIn("{seed}", gr["commands"]["test_feature_random"])
+        self.assertTrue(gr["reports"]["mutation_path"].endswith("build/reports/pitest/mutations.xml"))
+
+    def test_init_detects_gradle(self):
+        for build_file in ("build.gradle", "build.gradle.kts"):
+            d = Path(tempfile.mkdtemp())
+            try:
+                git(d, "init", "-q")
+                (d / build_file).write_text("plugins { java }\n")
+                r = run(d, "init")
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+                self.assertIn('stack = "java-gradle-junit5"', (d / ".qestack/project.toml").read_text())
+            finally:
+                shutil.rmtree(d)
+
     def test_show(self):
         d = Path(tempfile.mkdtemp())
         try:

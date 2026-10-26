@@ -2658,8 +2658,8 @@ def detect_stack_and_rulesets():
     if "pom.xml" in names:
         stack = "java-maven-junit5"
     elif "build.gradle" in names or "build.gradle.kts" in names:
-        stack = "java-maven-junit5"
-        notes.append("Gradle found: the Java rules apply, but set Gradle commands in [commands] and [reports].")
+        stack = "java-gradle-junit5"
+        notes.append("Gradle found: add the qestack settings to build.gradle.kts (see 'qestack show stacks/java-gradle-junit5').")
     elif any(n.endswith(".csproj") for n in names):
         stack = "dotnet"
     rulesets = []
