@@ -1,6 +1,6 @@
 ---
 name: testcase-reviewer
-description: "Reviews automated tests or manual test cases like a senior test architect: scores fidelity, oracles, assertion depth, edge coverage and determinism, and finds tests that pass on wrong code. Use when the user says 'review my tests' or 'review AI-written tests'. Not for measuring tests with faults (use mutation-probe)."
+description: "Reviews automated tests or manual test cases like a senior test architect: scores fidelity, oracles, assertion depth, edge cases and determinism, and finds tests that pass on wrong code. Use when the user says 'review my tests', 'test smells' or 'review AI-written tests'. Not for fault injection (use mutation-probe)."
 argument-hint: "[test files, test folder or test case document]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: test-runner
-description: "Finds how a project runs its tests, runs the right subset, and triages each failure as product bug, test defect, environment problem or flaky test, with evidence. Use when the user says 'run the tests' or asks 'why do the tests fail'. Not for pipeline design (use ci-cd-integration)."
+description: "Finds how a project runs its tests, runs the right subset, and triages each failure as product bug, test defect, environment problem or flaky test, with evidence. Use when the user says 'run the tests' or asks 'which tests fail and why'. Not for pipeline design (use ci-cd-integration)."
 argument-hint: "[all | path | test name | tag | changed]"
 ---
 

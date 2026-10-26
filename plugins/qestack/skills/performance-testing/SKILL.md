@@ -1,6 +1,6 @@
 ---
 name: performance-testing
-description: "Plans, writes, runs and analyzes load, stress, spike, soak and capacity tests: goals from service levels, workload models, percentiles, throughput, bottlenecks and pipeline thresholds. Use when the user says 'load test' or asks 'how many users can it handle'. Not for functional API checks (use api-testing)."
+description: "Plans, writes, runs and analyzes load, stress, spike, soak and capacity tests: goals from service levels, workload models, percentiles, throughput, bottlenecks and pipeline thresholds. Use when the user says 'load test', 'response time is slow' or asks 'how many users can it handle'. Not for functional API checks (use api-testing)."
 argument-hint: "[service, endpoint, journey or goal]"
 ---
 

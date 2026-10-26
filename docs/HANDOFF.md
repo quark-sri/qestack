@@ -82,6 +82,7 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 - Plugin `qestack`: 10 skills, 4 agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
 - QA library in the `qestack` plugin: 39 skills, 8 personas, `test-review-panel` with the findings format. Merged from the old `qe-skills` plugin (2026-10-26).
 - `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks the plugin, the library rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
+- Stack `java-gradle-junit5` and `examples/order-service-gradle` (PR #1).
 - Task 3: `examples/order-service-maven` runs every gate with real Maven. All Java stack command properties are checked against the plugin parameter lists (Surefire and Failsafe 3.6.0, PIT 1.30.1). Random order, the Failsafe feature filter and PIT on Java 25 work.
 - Local tools on the MacBook: Java 25 (Temurin) and Maven 3.10.0 through SDKMAN, Python 3.14. The engine runs from a virtual environment (`pip install -e ./engine`).
 
@@ -122,7 +123,7 @@ Use a task list. Commit after each task. End each commit message with the traile
 | 3. Runnable Maven example | Done, except step 3b (the strengthened tests come from `/qe-harden` in task 4b). |
 | 4b. Test the `qestack` plugin in a real session | After task 3. |
 | 5. Integration example with database and Kafka | After 4b. |
-| 6. Multi-module Maven | After 5. |
+| 6. Multi-module Maven | Done (PR #2): `examples/order-service-multimodule` and section 3.4 of the Java Maven stack guide. Done before task 5, by owner decision. |
 | 7. Release preparation | Last. Do not publish. |
 
 ### Task 4a: Test the QA library in a real Claude Code session
