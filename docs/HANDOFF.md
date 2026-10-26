@@ -123,7 +123,7 @@ Use a task list. Commit after each task. End each commit message with the traile
 | 3. Runnable Maven example | Done, except step 3b (the strengthened tests come from `/qe-harden` in task 4b). |
 | 4b. Test the `qestack` plugin in a real session | After task 3. |
 | 5. Integration example with database and Kafka | After 4b. |
-| 6. Multi-module Maven | Done (PR #2): `examples/order-service-multimodule` and section 3.4 of the Java Maven stack guide. Done before task 5, by owner decision. |
+| 6. Multi-module Maven | Done (PR #2): `examples/order-service-multimodule` and section 3.4 of the Java Maven stack guide. Merged before task 5. |
 | 7. Release preparation | Last. Do not publish. |
 
 ### Task 4a: Test the QA library in a real Claude Code session
