@@ -383,7 +383,7 @@ if len(set(versions.values())) != 1:
 
 # Relative links in markdown
 for f in ROOT.rglob("*.md"):
-    if ".git" in f.parts:
+    if ".git" in f.parts or f.is_relative_to(ROOT / "dist"):  # dist/: build output of scripts/build_skills.py
         continue
     for m in re.finditer(r"\]\((?!https?://|mailto:|#)([^)#\s]+)(?:#[^)]*)?\)", f.read_text(encoding="utf-8")):
         target = (f.parent / m.group(1)).resolve()

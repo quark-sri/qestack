@@ -55,6 +55,24 @@ scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>
 
 To find the folder for your agent, use the [skill folders](#skill-folders) table.
 
+### Portable packages
+
+The source skills have Claude Code fields, for example `argument-hint`. Some hosts reject these fields: claude.ai and the Skills API do. To get skills that have only the fields of the [Agent Skills spec](https://agentskills.io/specification), build the packages:
+
+```bash
+python3 scripts/build_skills.py                        # writes dist/
+python3 scripts/validate_repo.py --spec dist/skills/*  # checks the output against the spec
+```
+
+| Output | Content |
+|---|---|
+| `dist/skills/<name>/` | Each skill, ready to copy into a skill folder |
+| `dist/zips/<name>.zip` | One zip for each skill. The skill folder is the zip root. Use it for an upload. |
+| `dist/qestack-skills.zip` | All 49 skills |
+| `dist/qestack-qa-library.zip` | The 39 library skills only. They need no engine. |
+
+Each package has `license`, a `metadata` map (author, version, source) and, for the gated skills, a `compatibility` line.
+
 The script makes symbolic links, so `git pull` updates the skills. To upload a skill to claude.ai or the Skills API, remove the `argument-hint` line first: these two reject a field outside the spec. It links all skills of the plugin. The library skills need no engine. The gated skills (`qestack`, `qe-*`) also need the engine. The reviewer personas are agent files in `plugins/qestack/agents/`. The script does not link them. Only the `test-review-panel` skill uses them. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
 
 ## Without sub-agents

@@ -64,6 +64,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 - `docs/other-agents.md`: new tables for Claude Code, Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Antigravity, Devin Desktop (was Windsurf), Cline and OpenCode. Each row gives the skill folders, `.agents/skills` support, unknown frontmatter keys, sub-agents and hooks, with a link to the official documentation and the date of the check. The old unverified paths are gone.
 - Skills follow the Agent Skills spec: each `SKILL.md` has `license: Apache-2.0`, and the 10 gated skills have a `compatibility` line (engine, git, shell; full guard only in Claude Code). The validator checks the spec rules for name, description (1-1024 characters), `compatibility` (at most 500) and `metadata`. The new `--spec <skill-folder>` mode checks a folder against the spec only and rejects the Claude Code fields. New tests in `scripts/tests/`, also in CI.
+- Portable skill packages: `scripts/build_skills.py` writes `dist/` with a spec-clean copy of each skill (no Claude Code fields; `license`, `metadata` and, for gated skills, `compatibility`), one zip for each skill, a bundle of all 49 skills and a bundle of the 39 library skills. The zips are the same for the same source. CI builds the packages and checks them with `validate_repo.py --spec`. The official `skills-ref validate` also passes on each output skill (checked by hand).
 
 ### Changed (one plugin)
 

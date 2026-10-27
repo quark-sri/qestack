@@ -36,7 +36,7 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 - The plugin uses `name`, `description`, `license`, `compatibility` and `argument-hint`.
 - Each skill has `license: Apache-2.0`. (checked)
 - Each gated skill has the same `compatibility` line: it tells other agents that the skill needs the engine, git and a shell. Library skills have no `compatibility`. (checked)
-- The Agent Skills spec allows only `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools`. claude.ai and the Skills API reject other fields. Keep `argument-hint` in the source: Claude Code uses it. The portable build removes it.
+- The Agent Skills spec allows only `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools`. claude.ai and the Skills API reject other fields. Keep `argument-hint` in the source: Claude Code uses it. The portable build (`scripts/build_skills.py`) removes it.
 - To check a skill folder against the spec only, run `python3 scripts/validate_repo.py --spec <skill-folder>`. This mode rejects each field outside the spec. (checked: `scripts/tests/test_validate_repo.py`)
 
 ## Skill body and references
@@ -59,5 +59,5 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 ## After the change
 
 1. Run `python3 scripts/build_llms_txt.py` to update `llms.txt`.
-2. Run `python3 scripts/validate_repo.py` and `python3 -m unittest discover -s scripts/tests`.
+2. Run `python3 scripts/validate_repo.py` and `python3 -m unittest discover -s scripts/tests`. The tests also build the portable packages.
 3. Add a routing eval case in `plugins/qestack/evals/routing/`: a realistic request, a `skill-fired` grader and, if there is a close neighbor, a `<neighbor>-not-fired` grader. Copy an existing case. Run it with `claude plugin eval . --case <case> --ablation none --no-publish` from `plugins/qestack` (see `docs/library-session-test.md`).
