@@ -2,7 +2,7 @@
 
 **qestack: QA and test automation skills, agents and quality gates for AI coding agents.**
 
-One Claude Code plugin with two parts: a QA library of 39 Quality Engineering skills and 8 reviewer personas for any stack, and a gated workflow with an engine that proves AI-written tests catch bugs.
+One Claude Code plugin with two parts: a QA library of 39 Quality Engineering skills and 8 reviewer personas for any stack, and a gated workflow with an engine that proves AI-written tests catch bugs. The skills follow the open [Agent Skills](https://agentskills.io) standard, so they also work in other AI coding agents: Codex, Cursor, GitHub Copilot, Gemini CLI and more (see [Install](#install), option C).
 
 AI coding agents now write code, tests, reviews and specs. qestack's goal is to build a growing toolbox — Claude Code skills, agents and measurable gates — that makes AI-assisted quality engineering trustworthy, not just fast.
 
@@ -89,13 +89,13 @@ The qestack plugin also has a library of 39 Quality Engineering skills and 8 rev
 
 To add it to the panel, add a row to the table in `test-review-panel`. The validator checks the sections, the shared rules, the tools and the table.
 
-To install the library alone, see [Install](#install), option A. [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
+To install the library alone, see [Install](#install), option A, or option C for other agents. [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
 
 Use the gated qestack workflow below when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
 
 ## Install
 
-Choose one option. Option A gives you the library skills and the personas. Option B adds the engine, which the gated workflow (`qestack` and the `qe-*` skills) needs.
+Choose one option. Option A gives you the library skills and the personas in Claude Code. Option B adds the engine, which the gated workflow (`qestack` and the `qe-*` skills) needs. Option C installs the skills in other AI coding agents.
 
 **Option A: the library only (no engine, no Python).** In Claude Code:
 
@@ -104,7 +104,7 @@ Choose one option. Option A gives you the library skills and the personas. Optio
 /plugin install qestack@qestack
 ```
 
-From a clone, `scripts/install.sh --skills-only` does the same. The gated skills are in the plugin too. Without the engine, they tell you how to install it and stop. For other agents that read SKILL.md, `scripts/install-skills.sh <skills-folder>` links the skills (see [other agents](docs/other-agents.md)).
+From a clone, `scripts/install.sh --skills-only` does the same. The gated skills are in the plugin too. Without the engine, they tell you how to install it and stop. For other agents, see option C.
 
 **Option B: the library and the gated workflow.** You need Python 3.11 or later, git, pipx (or uv), and Claude Code. Two commands: the first installs the engine and the Claude Code plugin, the second sets up your repository.
 
@@ -128,7 +128,34 @@ In Claude Code:
 /plugin install qestack@qestack
 ```
 
-Other agents (Codex, Cursor, Copilot): the skills follow the open SKILL.md standard. See [docs/other-agents.md](docs/other-agents.md).
+**Option C: use with any AI coding agent.** Each agent reads skills from a skill folder. Most agents share one folder:
+
+| Agent | Project folder | User folder |
+|---|---|---|
+| Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Devin Desktop (was Windsurf), OpenCode | `.agents/skills/` | `~/.agents/skills/` |
+| Antigravity | `.agents/skills/` | see [other agents](docs/other-agents.md#skill-folders) |
+| Claude Code without the plugin | `.claude/skills/` | `~/.claude/skills/` |
+| Cline | `.cline/skills/` | `~/.cline/skills/` |
+
+Link the skills into the folder of your agent:
+
+```bash
+git clone https://github.com/quark-sri/qestack ~/qestack
+~/qestack/scripts/install-skills.sh ~/.agents/skills     # or another folder from the table
+```
+
+The links point to the clone, so `git pull` updates the skills.
+
+To upload skills to a host that accepts only the fields of the Agent Skills standard, use the portable packages. claude.ai and the Skills API are such hosts. Run `python3 scripts/build_skills.py` in the clone. It writes `dist/`: one zip for each skill, a bundle of all 49 skills and a bundle of the 39 library skills.
+
+What works outside Claude Code in release 0.1:
+
+- **Library skills:** need no engine. Each agent that reads SKILL.md can use them.
+- **Gated skills:** also need the engine, git and a shell. Install the engine with the `pipx` command of the manual install above.
+- **Review panel:** if the agent cannot start separate reviewers, the panel does the reviews in one session. The report then says that the review was not independent. The portable packages do not contain the reviewer texts yet; a later step adds them.
+- **Guard hook:** only in Claude Code. In other agents, run `qestack guard` in CI.
+
+Only Claude Code is tested in 0.1. The folders come from the official documentation of each agent (checked on 2026-10-27). [docs/other-agents.md](docs/other-agents.md) has the sources, the sub-agent and hook support of each agent, and the steps without sub-agents.
 
 ## Supported
 
