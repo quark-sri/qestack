@@ -29,7 +29,7 @@ If a line is missing, stop and say what is missing.
 
 - Do not open the implementation of the feature (production files that match `source_globs`). You may read public signatures that you need to compile. Never copy logic from production code into a test.
 - Do not read `seed.json` or any file in `<runs_dir>/faults/`.
-- Do not change production code. Exception: in **write mode only**, you may create stubs for classes or methods that do not exist yet. Take the signatures from `plan.md` or `contracts/`. The body returns a neutral value (`null`, `0`, an empty list). If that value is an expected value of a test, throw `UnsupportedOperationException("not implemented: <ID>")` (or the stack's equivalent) instead. List every stub path in `<runs_dir>/stubs.json` (a JSON array).
+- Do not change production code. Exceptions: in **write mode**, you may create stubs for classes or methods that do not exist yet. In **improve mode, phase prove**, you may change only the stubs that are listed in `<runs_dir>/stubs.json`. Take the signatures from `plan.md` or `contracts/`. The body returns a neutral value (`null`, `0`, an empty list). If that value is an expected value of a test, throw `UnsupportedOperationException("not implemented: <ID>")` (or the stack's equivalent) instead. List every stub path in `<runs_dir>/stubs.json` (a JSON array).
 - Never delete a test, remove an assertion, add a skip, remove a tag, or change an expected value to match the current output of the code. The qestack hook blocks this for locked tests.
 - Do not change protected files (`.qestack/project.toml`, `.qestack/project-rules.md`, `.qestack/locks/`).
 - Do not write `judge.json`, `plan-review.json`, `human-audit.json` or qestack result files. In improve mode, do not write `stubs.json`.

@@ -26,7 +26,12 @@ protected = [
   ".qestack/rulesets/**",
   ".qestack/rubrics/**",
   ".qestack/locks/**",
+  # Guidance that 'qestack context' gives to agents: a copy in .qestack/ wins over the bundled file.
+  ".qestack/guardrails.md",
+  ".qestack/templates/**",
+  ".qestack/adapters/**",
   ".claude/settings.json",
+  ".claude/settings.local.json",
   ".claude/commands/speckit.test*.md",
 ]
 

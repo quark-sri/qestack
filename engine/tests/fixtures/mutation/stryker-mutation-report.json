@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1",
+  "thresholds": {"high": 80, "low": 60},
+  "files": {
+    "src/Orders/Discount.cs": {
+      "language": "cs",
+      "mutants": [
+        {"id": "1", "mutatorName": "Equality mutation", "replacement": ">", "status": "Killed", "location": {"start": {"line": 4, "column": 9}, "end": {"line": 4, "column": 20}}},
+        {"id": "2", "mutatorName": "Arithmetic mutation", "replacement": "/", "status": "Timeout", "location": {"start": {"line": 5, "column": 9}, "end": {"line": 5, "column": 20}}},
+        {"id": "3", "mutatorName": "String mutation", "replacement": "\"\"", "status": "Survived", "location": {"start": {"line": 7, "column": 30}, "end": {"line": 7, "column": 39}}},
+        {"id": "4", "mutatorName": "Block removal", "replacement": "{}", "status": "NoCoverage", "location": {"start": {"line": 11, "column": 5}, "end": {"line": 13, "column": 6}}},
+        {"id": "5", "mutatorName": "Linq method mutation", "replacement": "Last()", "status": "Ignored", "location": {"start": {"line": 15, "column": 5}, "end": {"line": 15, "column": 15}}},
+        {"id": "6", "mutatorName": "Logical mutation", "replacement": "||", "status": "CompileError", "location": {"start": {"line": 16, "column": 5}, "end": {"line": 16, "column": 15}}}
+      ]
+    },
+    "src/Orders/Unchanged.cs": {
+      "language": "cs",
+      "mutants": [
+        {"id": "7", "mutatorName": "Equality mutation", "replacement": ">", "status": "Survived", "location": {"start": {"line": 2, "column": 1}, "end": {"line": 2, "column": 5}}}
+      ]
+    }
+  }
+}

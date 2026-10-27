@@ -84,6 +84,16 @@ QE_DIR = ROOT / ".qestack"
 DATA_DIR = Path(__file__).resolve().parent / "data"
 PKG_DIR = Path(__file__).resolve().parent
 
+# Version of the result and lock file formats. Raise it when a reader must change.
+RESULT_SCHEMA = 1
+
+
+def set_root(root: Path):
+    """Point the engine at another project root (the hook, and in-process tests)."""
+    global ROOT, QE_DIR
+    ROOT = Path(root)
+    QE_DIR = ROOT / ".qestack"
+
 
 def deep_merge(base: dict, extra: dict) -> dict:
     out = dict(base)
@@ -176,18 +186,61 @@ def rel(p) -> str:
 
 
 def write_json(p: Path, data):
+    """Write to a temporary file, then rename it, so an interrupted run never leaves half a file."""
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    os.replace(tmp, p)
 
 
-def read_json(p: Path, default=None):
+class InvalidResultFile(Exception):
+    pass
+
+
+def read_json(p: Path, default=None, strict: bool = False):
+    """strict: raise InvalidResultFile on invalid JSON. Use it for locks and exemptions, where a
+    silent default would turn a protection off."""
     if not p.exists():
         return default
     try:
         return json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
+        if strict:
+            raise InvalidResultFile(f"Invalid JSON in {rel(p)}: {e}") from e
         warn(f"Invalid JSON in {rel(p)}: {e}")
         return default
+
+
+def check_schema(data, p: Path):
+    """Raise InvalidResultFile if a newer engine wrote the file. A file without 'schema' is schema 1."""
+    if isinstance(data, dict) and isinstance(data.get("schema", 1), int) and data.get("schema", 1) > RESULT_SCHEMA:
+        raise InvalidResultFile(f"{rel(p)} has result schema {data['schema']}; this engine reads schema "
+                                f"{RESULT_SCHEMA} or lower. Update the qestack engine.")
+    return data
+
+
+def write_result(p: Path, data: dict):
+    write_json(p, {"schema": RESULT_SCHEMA, **data})
+
+
+def read_result(p: Path, default=None):
+    try:
+        return check_schema(read_json(p, default), p)
+    except InvalidResultFile as e:
+        die(str(e), 2)
+
+
+def read_jsonl(p: Path) -> list:
+    """Read a JSON lines file. Skip lines that are not valid JSON."""
+    out = []
+    if p.exists():
+        for line in p.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                try:
+                    out.append(json.loads(line))
+                except json.JSONDecodeError:
+                    warn(f"Skipped an invalid line in {rel(p)}")
+    return out
 
 
 # --------------------------------------------------------------------------------------
@@ -813,7 +866,7 @@ def cmd_lint(args, cfg):
               "feature": feature.name if feature else None, "scope": "all" if args.all else (feature.tag if feature else "files"),
               "summary": summary, "findings": findings, "tests": scoped}
     if feature:
-        write_json(feature.runs / "lint.json", result)
+        write_result(feature.runs / "lint.json", result)
     if args.json:
         print(json.dumps(result, indent=2))
     else:
@@ -997,7 +1050,7 @@ def cmd_trace(args, cfg):
     feature = resolve_feature(cfg, args.feature)
     tests = scope_tests(scan_all_tests(cfg), feature)
     result = compute_trace(cfg, feature, tests)
-    write_json(feature.runs / ("trace-plan.json" if args.plan_only else "trace.json"), result)
+    write_result(feature.runs / ("trace-plan.json" if args.plan_only else "trace.json"), result)
     s = result["summary"]
     if args.json:
         print(json.dumps(result, indent=2))
@@ -1164,7 +1217,7 @@ def cmd_red(args, cfg):
                           "exempt": len(exempted), "rate": round(len(ok) / considered, 4) if considered else 0.0},
               "red": ok, "red_by_error": by_error, "error_only": error_only, "violations": viol, "not_run": notrun,
               "exempt": exempted}
-    write_json(feature.runs / "red.json", result)
+    write_result(feature.runs / "red.json", result)
     s = result["summary"]
     print(f"red: {s['red']}/{s['tests']} failed before implementation (rate {s['rate']:.0%}); "
           f"by assertion={s['red_by_assertion']} by error={s['red_by_error']} "
@@ -1224,7 +1277,7 @@ def cmd_flaky(args, cfg):
               "summary": {"tests": len(tests), "flaky": len(flaky), "failing": len(failing), "missing": len(missing),
                           "skipped_at_runtime": len(rt_skipped)},
               "flaky": flaky, "failing": failing, "missing": missing, "skipped_at_runtime": rt_skipped}
-    write_json(feature.runs / "flaky.json", result)
+    write_result(feature.runs / "flaky.json", result)
     print(f"flaky: {len(tests)} tests x {runs} runs | flaky={len(flaky)} failing={len(failing)} missing={len(missing)} "
           f"skipped at run time={len(rt_skipped)}")
     for f in flaky:
@@ -1311,7 +1364,7 @@ def cmd_mutation(args, cfg):
         if not changed_src:
             result = {"tool": "qestack.mutation", "created": now_iso(), "feature": feature.name, "status": "NO_CHANGES",
                       "base": base, "summary": {"score": None}, "survivors": []}
-            write_json(feature.runs / "mutation.json", result)
+            write_result(feature.runs / "mutation.json", result)
             print("mutation: no changed source files; gate is N/A")
             return 0
     fqns = [java_fqn(f) for f in changed_src if java_fqn(f)]
@@ -1364,7 +1417,7 @@ def cmd_mutation(args, cfg):
               "by_file": by_file,
               "changed_without_mutants": [f for f in changed_src if f not in by_file],
               "survivors": sorted(surv, key=lambda m: (m["file"], m["line"]))}
-    write_json(feature.runs / "mutation.json", result)
+    write_result(feature.runs / "mutation.json", result)
     print(f"mutation: score={'n/a' if score is None else f'{score:.0%}'} killed={killed}/{total} "
           f"survived={result['summary']['survived']} no_coverage={result['summary']['no_coverage']} (equivalent excluded: {excluded})")
     for m in result["survivors"][: args.max]:
@@ -1423,7 +1476,7 @@ def cmd_seed(args, cfg):
     if not patches:
         result = {"tool": "qestack.seed", "created": now_iso(), "feature": feature.name, "status": "NOT_RUN",
                   "summary": {"valid": 0, "detected": 0, "rate": None}, "faults": []}
-        write_json(feature.runs / "seed.json", result)
+        write_result(feature.runs / "seed.json", result)
         print("seed: no fault patches found (run the fault seeder first)")
         return 1
     tests = [t for t in scope_tests(scan_all_tests(cfg), feature) if not t["skipped"]]
@@ -1496,11 +1549,11 @@ def cmd_seed(args, cfg):
                "baseline_failing": len(baseline_failed)}
     result = {"tool": "qestack.seed", "created": now_iso(), "feature": feature.name,
               "status": "OK" if n_valid else "NO_VALID_FAULTS", "summary": summary, "faults": results}
-    write_json(feature.runs / "seed.json", result)
+    write_result(feature.runs / "seed.json", result)
     # Redacted version for the test writer and the judge: no fault details, no held-out faults.
     redacted = [{"id": r["id"], "req_id": r.get("req_id"), "layer": r.get("layer"), "status": r["status"]}
                 for r in results if not r["holdout"]]
-    write_json(feature.runs / "seed-feedback.json", {"feature": feature.name, "summary": summary, "faults": redacted})
+    write_result(feature.runs / "seed-feedback.json", {"feature": feature.name, "summary": summary, "faults": redacted})
     print(f"seed: detected {n_det}/{n_valid} valid faults ({'n/a' if all_rate is None else f'{all_rate:.0%}'}); "
           f"held out {h_det}/{h_valid}; gate uses {summary['rate_basis']} ({'n/a' if rate is None else f'{rate:.0%}'}); "
           f"invalid={len(results) - n_valid}")
@@ -1564,14 +1617,15 @@ def lock_path(feature: Feature) -> Path:
     return feature.locks / f"{feature.name}.json"
 
 
-def all_locks(cfg: Cfg):
+def all_locks(cfg: Cfg, strict: bool = False):
+    """Locked test files of all features. strict: raise InvalidResultFile for a lock that cannot be read."""
     d = ROOT / cfg.get_path("paths.locks_dir", ".qestack/locks")
     out = {}
     if d.exists():
         for p in d.glob("*.json"):
-            if p.name.count(".") > 1:  # *.equivalent.json, *.red-exempt.json
+            if p.name.endswith((".equivalent.json", ".red-exempt.json")):  # feature names may contain dots
                 continue
-            data = read_json(p, {}) or {}
+            data = check_schema(read_json(p, {}, strict=strict), p) or {}
             for f, entry in (data.get("files") or {}).items():
                 out[f] = entry
     return out
@@ -1584,7 +1638,10 @@ def cmd_lock(args, cfg):
     if not files:
         die(f"No tests with tag '{feature.tag}' to lock.")
     lp = lock_path(feature)
-    old = read_json(lp, {}) or {}
+    try:
+        old = check_schema(read_json(lp, {}, strict=True), lp) or {}
+    except InvalidResultFile as e:
+        die(f"{e}. Repair or restore the lock file from git before you lock again.", 2)
     new_files = {}
     violations = []
     for f in files:
@@ -1609,7 +1666,7 @@ def cmd_lock(args, cfg):
     data = {"feature": feature.name, "feature_tag": feature.tag, "created": old.get("created", now_iso()),
             "updated": now_iso(), "git_head": git_head(), "phase": args.phase or old.get("phase", ""),
             "files": new_files}
-    write_json(lp, data)
+    write_result(lp, data)
     n_methods = sum(len(v["methods"]) for v in new_files.values())
     print(f"lock: {len(new_files)} file(s), {n_methods} test method(s) locked -> {rel(lp)}")
     return 0
@@ -1620,7 +1677,7 @@ def cmd_snapshot(args, cfg):
     files = find_files(cfg, "source_globs")
     data = {"created": now_iso(), "git_head": git_head(),
             "files": {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in files}}
-    write_json(feature.runs / "source-snapshot.json", data)
+    write_result(feature.runs / "source-snapshot.json", data)
     print(f"snapshot: {len(files)} source file(s) recorded")
     return 0
 
@@ -1661,7 +1718,10 @@ def cmd_guard(args, cfg):
         violations += [dict(x, against="base") for x in v]
         reviews += [dict(x, against="base") for x in r]
     # 3. weakening vs lock
-    lock = read_json(lock_path(feature), {}) or {}
+    try:
+        lock = check_schema(read_json(lock_path(feature), {}, strict=True), lock_path(feature)) or {}
+    except InvalidResultFile as e:
+        die(f"{e}. The guard cannot compare against the lock.", 2)
     for f, entry in (lock.get("files") or {}).items():
         if not (ROOT / f).exists():
             violations.append({"type": "TEST_FILE_REMOVED", "test": f, "detail": "locked test file deleted", "against": "lock"})
@@ -1701,7 +1761,7 @@ def cmd_guard(args, cfg):
             rv.append(x)
     result = {"tool": "qestack.guard", "created": now_iso(), "feature": feature.name, "base": base,
               "summary": {"violations": len(violations), "reviews": len(rv)}, "violations": violations, "reviews": rv}
-    write_json(feature.runs / "guard.json", result)
+    write_result(feature.runs / "guard.json", result)
     print(f"guard: violations={len(violations)} human-review items={len(rv)} (base={base or 'none'})")
     for x in violations:
         print(f"  VIOLATION {x['type']}: {x['test']} ({x['detail']})")
@@ -1740,6 +1800,82 @@ def engine_output(cfg: Cfg, rp: str) -> bool:
     return name in ENGINE_OUTPUTS or bool(re.match(r"feedback-\d+\.md$", name))
 
 
+def _git_root_of(d: Path) -> Path | None:
+    while not d.exists() and d != d.parent:
+        d = d.parent
+    try:
+        out = subprocess.run(["git", "-C", str(d), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    except FileNotFoundError:
+        return None
+    return Path(out.stdout.strip()).resolve() if out.returncode == 0 and out.stdout.strip() else None
+
+
+def hook_root(data: dict, target: Path | None) -> Path | None:
+    """The qestack project that a hook call touches: the nearest .qestack/project.toml above the target
+    file (Edit, Write) or the session folder (Bash), up to the git root. Else the root of this process."""
+    if os.environ.get("QESTACK_ROOT"):
+        return ROOT if (QE_DIR / "project.toml").exists() else None
+    start = target.parent if target is not None else Path(data.get("cwd") or os.environ.get("CLAUDE_PROJECT_DIR") or Path.cwd())
+    start = start.resolve()
+    top = _git_root_of(start)
+    for d in (start, *start.parents):
+        if (d / ".qestack" / "project.toml").is_file():
+            return d
+        if d == top:
+            break
+    return ROOT if (QE_DIR / "project.toml").exists() else None
+
+
+def _qestack_calls(cmd: str):
+    """Yield (subcommand, arguments) for each qestack call in a shell command."""
+    for seg in re.split(r"&&|\|\||[;|&\n]", cmd):
+        try:
+            toks = shlex.split(seg)
+        except ValueError:
+            toks = seg.split()
+        for i, t in enumerate(toks):
+            if Path(t).name == "qestack" and i + 1 < len(toks):
+                yield toks[i + 1], toks[i + 2:]
+                break
+
+
+def _has_flag(args: list, flag: str) -> bool:
+    """True if an argument is the flag or an abbreviation of it (argparse accepts unique prefixes)."""
+    return any(len(a.split("=")[0]) >= 3 and flag.startswith(a.split("=")[0]) for a in args if a.startswith("--"))
+
+
+def shell_block_reason(cfg: Cfg, cmd: str, cwd: Path) -> str | None:
+    """Why the guard blocks this shell command, or None to allow it."""
+    for subcmd, rest in _qestack_calls(cmd):
+        if subcmd == "lock" and _has_flag(rest, "--force"):
+            return "Only a human may force a lock update (qestack lock --force)."
+        if subcmd == "init" and (QE_DIR / "project.toml").exists() and (_has_flag(rest, "--force") or _has_flag(rest, "--existing")):
+            return "qestack init --force or --existing changes the project settings and thresholds. Ask the user to run it."
+    if re.search(r"\bqestack\s+lock\b.*--force", cmd):
+        return "Only a human may force a lock update (qestack lock --force)."
+    scrubbed = re.sub(r"\d?>&\d|\d?>\s*/dev/null", " ", cmd)
+    write_ops = re.compile(r"(>|\btee\b|\brm\b|\bmv\b|\bcp\b|\bsed\s+-i|\bperl\s+-\S*i|\btruncate\b|\bchmod\b|\bln\b|"
+                           r"\bgit\s+(?:checkout|restore|rm|mv)\b|\bpython3?\s+-c\b|\bdd\b)")
+    if not write_ops.search(scrubbed):
+        return None
+    for pat in cfg.get_path("paths.protected", []):
+        prefix = pat.split("*")[0].rstrip("/")
+        if prefix and len(prefix) > 6 and prefix in scrubbed:
+            return f"This shell command may change the protected path '{prefix}'. Agents must not change it."
+    try:
+        locks = all_locks(cfg, strict=True)
+    except InvalidResultFile as e:
+        return f"{e}. A lock file cannot be read, so the guard cannot check this command. Ask the user to repair it."
+    for f in locks:
+        if f in scrubbed or (len(Path(f).name) > 8 and re.search(r"(?<![\w.])" + re.escape(Path(f).name) + r"\b", scrubbed)):
+            return (f"This shell command may change the locked test file '{f}'. Use Edit to strengthen the tests; "
+                    "the guard checks Edit and Write.")
+    for tok in re.findall(r"[\w./-]+", scrubbed):
+        if engine_output(cfg, rel(cwd / tok) if not tok.startswith("/") else rel(Path(tok))):
+            return f"This shell command may change the qestack result file '{tok}'. Only qestack commands write it."
+    return None
+
+
 def cmd_hook(args, cfg_unused=None):
     """Claude Code PreToolUse hook. Exit 2 blocks the tool call. Fails open on internal errors."""
     raw = sys.stdin.read()
@@ -1754,22 +1890,32 @@ def cmd_hook(args, cfg_unused=None):
         data = json.loads(raw)
     except Exception:
         return 0
-    if not (QE_DIR / "project.toml").exists():
+    tool = data.get("tool_name", "")
+    ti = data.get("tool_input") or {}
+    target = None
+    if tool in ("Edit", "Write", "MultiEdit", "NotebookEdit"):
+        path = ti.get("file_path") or ti.get("notebook_path") or ""
+        if not path:
+            return 0
+        target = Path(path)
+        if not target.is_absolute():
+            target = Path(data.get("cwd") or Path.cwd()) / target
+    elif tool != "Bash":
+        return 0
+    try:
+        root = hook_root(data, target)
+    except Exception:
+        root = None
+    if root is None:
         return 0  # not a qestack project: allow everything
+    set_root(root)
     try:
         cfg = load_config()
     except (SystemExit, Exception):
         return 0
     try:
-        tool = data.get("tool_name", "")
-        ti = data.get("tool_input") or {}
-        if tool in ("Edit", "Write", "MultiEdit", "NotebookEdit"):
-            path = ti.get("file_path") or ti.get("notebook_path") or ""
-            if not path:
-                return 0
-            p = Path(path)
-            if not p.is_absolute():
-                p = Path(data.get("cwd") or ROOT) / p
+        if target is not None:
+            p = target
             try:
                 p.resolve().relative_to(PKG_DIR)
                 _block("This file belongs to the installed qestack engine. Agents must not change it.")
@@ -1782,9 +1928,15 @@ def cmd_hook(args, cfg_unused=None):
                 _block(f"'{rp}' is a result file of the qestack engine. Only qestack commands write it. "
                        "Run the qestack command again instead of editing the result.")
             if is_protected(cfg, rp):
-                _block(f"'{rp}' is a protected qestack file (settings, thresholds, rubrics, locks). "
+                _block(f"'{rp}' is a protected qestack file (settings, thresholds, rubrics, guidance, locks). "
                        "Agents must not change it. Ask the user to make this change.")
-            locks = all_locks(cfg)
+            try:
+                locks = all_locks(cfg, strict=True)
+            except InvalidResultFile as e:
+                if matches_any(rp, cfg.get_path("paths.test_globs", [])):
+                    _block(f"{e}. A lock file cannot be read, so the guard cannot check edits to test files. "
+                           "Ask the user to repair or restore the lock file.")
+                locks = {}
             if rp in locks and p.exists():
                 cur = p.read_text(encoding="utf-8", errors="replace")
                 if tool == "Write":
@@ -1806,25 +1958,10 @@ def cmd_hook(args, cfg_unused=None):
                            "You may add tests or strengthen assertions. You must not remove tests, remove assertions, "
                            "add skips or remove requirement tags. If a locked test is wrong, record it in "
                            "suspected-test-defects.md and ask the user.")
-        elif tool == "Bash":
-            cmd = ti.get("command", "") or ""
-            if re.search(r"\bqestack\s+lock\b.*--force", cmd):
-                _block("Only a human may force a lock update (qestack lock --force).")
-            scrubbed = re.sub(r"\d?>&\d|\d?>\s*/dev/null", " ", cmd)
-            write_ops = re.compile(r"(>|\btee\b|\brm\b|\bmv\b|\bcp\b|\bsed\s+-i|\bperl\s+-\S*i|\btruncate\b|\bchmod\b|\bln\b|"
-                                   r"\bgit\s+(?:checkout|restore|rm|mv)\b|\bpython3?\s+-c\b|\bdd\b)")
-            if write_ops.search(scrubbed):
-                for pat in cfg.get_path("paths.protected", []):
-                    prefix = pat.split("*")[0].rstrip("/")
-                    if prefix and len(prefix) > 6 and prefix in scrubbed:
-                        _block(f"This shell command may change the protected path '{prefix}'. Agents must not change it.")
-                for f in all_locks(cfg):
-                    if f in scrubbed or (len(Path(f).name) > 8 and re.search(r"(?<![\w.])" + re.escape(Path(f).name) + r"\b", scrubbed)):
-                        _block(f"This shell command may change the locked test file '{f}'. Use Edit to strengthen the tests; "
-                               "the guard checks Edit and Write.")
-                for tok in re.findall(r"[\w./-]+", scrubbed):
-                    if engine_output(cfg, rel(Path(data.get("cwd") or ROOT) / tok) if not tok.startswith("/") else rel(Path(tok))):
-                        _block(f"This shell command may change the qestack result file '{tok}'. Only qestack commands write it.")
+        else:
+            reason = shell_block_reason(cfg, ti.get("command", "") or "", Path(data.get("cwd") or ROOT))
+            if reason:
+                _block(reason)
     except SystemExit:
         raise
     except Exception as e:  # fail open, but say so
@@ -1855,12 +1992,12 @@ def judge_basis(feature: Feature, tests, ci: bool):
     jp = feature.runs / "judge.json"
     jsha = hashlib.sha256(jp.read_bytes()).hexdigest()
     bp = feature.runs / "judge-basis.json"
-    basis = read_json(bp)
+    basis = read_result(bp)
     cur = {t["key"]: t.get("body_hash") for t in tests}
     if not basis or basis.get("judge_sha") != jsha:
         if ci:
             return set(cur)  # no record of what the judge saw: treat all as unreviewed
-        write_json(bp, {"judge_sha": jsha, "created": now_iso(), "tests": cur})
+        write_result(bp, {"judge_sha": jsha, "created": now_iso(), "tests": cur})
         return set()
     old = basis.get("tests", {})
     return {k for k, h in cur.items() if k in old and old[k] != h}
@@ -1915,18 +2052,18 @@ def compute_score(cfg: Cfg, feature: Feature, ci: bool = False):
     G = cfg.get("gates", {})
     W = cfg.get("weights", {})
     R = feature.runs
-    lint = read_json(R / "lint.json")
-    trace = read_json(R / "trace.json")
-    red = read_json(R / "red.json")
-    flaky = read_json(R / "flaky.json")
-    mut = read_json(R / "mutation.json")
-    seed = read_json(R / "seed.json")
+    lint = read_result(R / "lint.json")
+    trace = read_result(R / "trace.json")
+    red = read_result(R / "red.json")
+    flaky = read_result(R / "flaky.json")
+    mut = read_result(R / "mutation.json")
+    seed = read_result(R / "seed.json")
     if seed is None:  # CI: fault patches are not committed; use the redacted summary
-        sf = read_json(R / "seed-feedback.json")
+        sf = read_result(R / "seed-feedback.json")
         if sf:
             seed = {"status": "OK", "summary": sf.get("summary", {}),
                     "faults": [dict(f, description="(details hidden)") for f in sf.get("faults", [])]}
-    guard = read_json(R / "guard.json")
+    guard = read_result(R / "guard.json")
     tests = (lint or {}).get("tests", [])
     judge = load_judge(feature, tests, ci) if lint else None
     gates = []
@@ -2043,14 +2180,7 @@ def compute_score(cfg: Cfg, feature: Feature, ci: bool = False):
 def decide(cfg: Cfg, feature: Feature, sc: dict, iteration: int):
     L = cfg.get("loop", {})
     hist_p = feature.runs / "history.jsonl"
-    hist = []
-    if hist_p.exists():
-        for line in hist_p.read_text().splitlines():
-            try:
-                hist.append(json.loads(line))
-            except json.JSONDecodeError:
-                pass
-    hist = [h for h in hist if h.get("iteration") != iteration]
+    hist = [h for h in read_jsonl(hist_p) if h.get("iteration") != iteration]
     hist.append({"iteration": iteration, "tqs": sc["tqs"], "accepted": sc["accepted"], "failures": sc["hard_gate_failures"], "at": now_iso()})
     hist.sort(key=lambda h: h["iteration"])
     hist_p.parent.mkdir(parents=True, exist_ok=True)
@@ -2249,10 +2379,7 @@ def cmd_score(args, cfg):
         decision = "ACCEPT" if sc["accepted"] else "FAIL"
         reason = ("all hard gates pass and TQS meets the minimum" if sc["accepted"]
                   else "CI check failed: " + (", ".join(sc["hard_gate_failures"]) or f"TQS below {sc['tqs_min']}"))
-        hist = []
-        hp = feature.runs / "history.jsonl"
-        if hp.exists():
-            hist = [json.loads(x) for x in hp.read_text().splitlines() if x.strip()]
+        hist = read_jsonl(feature.runs / "history.jsonl")
     else:
         decision, reason, hist = decide(cfg, feature, sc, it)
     sc_out = {k: v for k, v in sc.items() if k not in ("inputs", "judge")}
@@ -2263,7 +2390,7 @@ def cmd_score(args, cfg):
             "invalid": len(sc["judge"]["invalid"]),
             "verdicts": {v: sum(1 for t in sc["judge"]["tests"].values() if t["verdict"] == v) for v in ("accept", "revise", "reject")},
         }
-    write_json(feature.runs / "scorecard.json", sc_out)
+    write_result(feature.runs / "scorecard.json", sc_out)
     report = render_report(cfg, feature, sc, decision, reason, hist, it)
     (feature.runs / "quality-report.md").write_text(report, encoding="utf-8")
     if feature.dir.exists():
@@ -2399,7 +2526,7 @@ def cmd_calibrate(args, cfg):
     res = {"feature": feature.name, "created": now_iso(), "n": n, "agreement": round(po, 4), "kappa": round(kappa, 4),
            "disagreements": [{"key": h["key"], "human": h["verdict"], "judge": jt[h["key"]]["verdict"]}
                              for h in human if h.get("key") in jt and h["verdict"].lower() != jt[h["key"]]["verdict"]]}
-    write_json(feature.runs / "calibration.json", res)
+    write_result(feature.runs / "calibration.json", res)
     hist = ROOT / cfg.get_path("paths.runs_dir", ".qestack/runs") / "calibration-history.jsonl"
     with open(hist, "a", encoding="utf-8") as fh:
         fh.write(json.dumps({k: res[k] for k in ("feature", "created", "n", "agreement", "kappa")}) + "\n")
@@ -2504,9 +2631,12 @@ def cmd_fault(args, cfg):
 def cmd_gate(args, cfg):
     feature = resolve_feature(cfg, args.feature)
     skip = set((args.skip or "").split(",")) - {""}
-    ns = argparse.Namespace(feature=feature.name, all=False, files=None, json=False, max=30, plan_only=False,
-                            runs=None, skip_run=False, base=args.base, all_files=False, no_baseline=False,
-                            allow_protected=args.allow_protected, source_unchanged=args.source_unchanged)
+    base = ["--base", args.base] if args.base else []
+    extra = {"guard": base + ["--allow-protected"] * bool(args.allow_protected) + ["--source-unchanged"] * bool(args.source_unchanged),
+             "mutation": base}
+
+    def step_args(name):  # the real parser, so a new option of a step cannot break gate
+        return build_parser().parse_args([name, "--feature", feature.name, *extra.get(name, [])])
     steps = [("lint", cmd_lint), ("trace", cmd_trace), ("guard", cmd_guard), ("flaky", cmd_flaky),
              ("mutation", cmd_mutation), ("seed", cmd_seed)]
     rc = {}
@@ -2518,7 +2648,7 @@ def cmd_gate(args, cfg):
             continue
         print(f"\n== {name} ==")
         try:
-            rc[name] = fn(ns, cfg)
+            rc[name] = fn(step_args(name), cfg)
         except SystemExit as e:
             rc[name] = e.code if isinstance(e.code, int) else 1
         if args.fast and rc[name] and name in ("lint", "trace", "guard"):
@@ -2812,9 +2942,18 @@ def cmd_show(args, cfg_unused=None):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="qestack", description="qestack: AI test quality gates")
+    ap = build_parser()
+    args = ap.parse_args(argv)
+    return dispatch(args)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    # allow_abbrev=False: '--forc' must not mean '--force' (the guard hook checks exact flags)
+    ap = argparse.ArgumentParser(prog="qestack", description="qestack: AI test quality gates", allow_abbrev=False)
     ap.add_argument("--version", action="version", version=TOOL_VERSION)
     sub = ap.add_subparsers(dest="cmd", required=True)
+    _add = sub.add_parser
+    sub.add_parser = lambda *a, **kw: _add(*a, allow_abbrev=False, **kw)
 
     def feat(p):
         p.add_argument("--feature", "-f", default=None, help="speckit feature dir name/number (default: from branch)")
@@ -2882,7 +3021,10 @@ def main(argv=None):
     p.add_argument("what", nargs="?", help="for example: stacks, rubrics/test-judge, guardrails")
     p.add_argument("--path", action="store_true", help="print the file path, not the content")
 
-    args = ap.parse_args(argv)
+    return ap
+
+
+def dispatch(args):
     if args.cmd == "hook":
         return cmd_hook(args)
     if args.cmd == "init":

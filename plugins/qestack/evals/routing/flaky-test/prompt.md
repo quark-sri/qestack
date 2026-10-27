@@ -1,5 +1,5 @@
 ---
-description: "Neighbor check: an intermittent CI failure starts flaky-test-detective, not test-runner."
+description: "Neighbor check: an intermittent CI failure starts flaky-test-detective, not test-runner or test-environments."
 tags: [routing]
 max_turns: 12
 allowed_tools: [Read, Glob, Grep, Skill]
