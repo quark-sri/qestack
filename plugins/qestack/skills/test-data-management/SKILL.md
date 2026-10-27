@@ -1,6 +1,7 @@
 ---
 name: test-data-management
 description: "Designs test data: builders with valid defaults, unique keys for each test, seeded reference data, synthetic data, masking of personal data and cleanup. Use when the user says 'test data', 'fixtures', 'factories' or 'our tests share data'. Not for environments and containers (use test-environments)."
+license: Apache-2.0
 argument-hint: "[domain objects, test suite or environment]"
 ---
 

@@ -2,11 +2,11 @@
 
 The skills and agents follow the Claude standards for skills and subagents. `scripts/validate_repo.py` checks each rule that has a "checked" mark. Run it before each commit.
 
-Sources: [Claude Code skills](https://code.claude.com/docs/en/skills), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) and [Agent Skills best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
+Sources: [Agent Skills specification](https://agentskills.io/specification), [Claude Code skills](https://code.claude.com/docs/en/skills), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) and [Agent Skills best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
 
 ## Skill name
 
-- At most 64 characters: lowercase letters, digits and hyphens. No "anthropic" or "claude". (checked)
+- 1 to 64 characters: lowercase letters, digits and single hyphens. No hyphen at the start or the end. No "anthropic" or "claude". (checked)
 - The folder name and the `name` field are the same. (checked)
 - Gated workflow skills start with `qe-`. Library skills do not. (checked: the validator uses the name to choose the rules)
 
@@ -20,7 +20,7 @@ Claude Code keeps the descriptions of all skills in one listing. The listing get
 | Starts with a verb in the third person: "Writes", "Finds", "Tests" | yes |
 | What the skill does first, then when to use it: "Use when the user says '...'" | yes |
 | Library skills: one "Not for ... (use <skill>)" part; the named skill exists | yes |
-| At most 350 characters. All skill descriptions together at most 15,000 characters | yes |
+| At most 350 characters (the spec allows 1024). All skill descriptions together at most 15,000 characters. Other frontmatter fields do not count | yes |
 | Plain words that users type, for example 'flaky test' or 'load test' | review |
 | No list of related skills. The "Related skills" section of the body has them | review |
 
@@ -33,8 +33,11 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 ## Skill frontmatter
 
 - Use only the fields that Claude Code knows. Claude Code ignores an unknown field without an error, so a typo has no effect. (checked)
-- The plugin uses `name`, `description` and `argument-hint`.
-- Outside Claude Code (an upload to claude.ai or the Skills API), only `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools` are allowed. Remove `argument-hint` before such an upload.
+- The plugin uses `name`, `description`, `license`, `compatibility` and `argument-hint`.
+- Each skill has `license: Apache-2.0`. (checked)
+- Each gated skill has the same `compatibility` line: it tells other agents that the skill needs the engine, git and a shell. Library skills have no `compatibility`. (checked)
+- The Agent Skills spec allows only `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools`. claude.ai and the Skills API reject other fields. Keep `argument-hint` in the source: Claude Code uses it. The portable build removes it.
+- To check a skill folder against the spec only, run `python3 scripts/validate_repo.py --spec <skill-folder>`. This mode rejects each field outside the spec. (checked: `scripts/tests/test_validate_repo.py`)
 
 ## Skill body and references
 
@@ -56,5 +59,5 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 ## After the change
 
 1. Run `python3 scripts/build_llms_txt.py` to update `llms.txt`.
-2. Run `python3 scripts/validate_repo.py`.
+2. Run `python3 scripts/validate_repo.py` and `python3 -m unittest discover -s scripts/tests`.
 3. Add a routing eval case in `plugins/qestack/evals/routing/`: a realistic request, a `skill-fired` grader and, if there is a close neighbor, a `<neighbor>-not-fired` grader. Copy an existing case. Run it with `claude plugin eval . --case <case> --ablation none --no-publish` from `plugins/qestack` (see `docs/library-session-test.md`).

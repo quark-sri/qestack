@@ -1,6 +1,8 @@
 ---
 name: qe-harden
 description: "Runs the qestack quality loop after implementation: seeds hidden faults, runs the gates, gets an independent judge review, and scores and improves the tests until the bar is met. Use in a qestack repository after the feature is implemented."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

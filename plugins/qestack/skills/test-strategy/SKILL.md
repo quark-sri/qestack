@@ -1,6 +1,7 @@
 ---
 name: test-strategy
 description: "Writes a test strategy for a product, system or team: quality goals, test levels and their share, environments, data, automation scope, non-functional testing, metrics and a roadmap. Use when the user says 'test strategy' or 'QA strategy'. Not for one sprint or release plan (use test-planning)."
+license: Apache-2.0
 argument-hint: "[product, system or team]"
 ---
 

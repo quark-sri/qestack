@@ -1,6 +1,7 @@
 ---
 name: ui-automation
 description: "Writes, fixes or structures browser end-to-end tests for critical journeys: role, label or test ID locators, auto-waiting assertions, API data setup, page objects, auth reuse and traces. Use when the user says 'UI test', 'end-to-end test' or 'our UI tests are brittle'. Not for business rules (use unit-testing)."
+license: Apache-2.0
 argument-hint: "[user journey, page or UI test file]"
 ---
 

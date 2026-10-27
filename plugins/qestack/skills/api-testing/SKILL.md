@@ -1,6 +1,7 @@
 ---
 name: api-testing
 description: "Writes or improves tests for HTTP APIs (REST, GraphQL): status, body, schema, headers, errors, auth, idempotency, pagination and side effects, with any HTTP client. Use when the user says 'API test', 'endpoint test' or 'validate the response schema'. Not for cross-team contracts (use contract-testing)."
+license: Apache-2.0
 argument-hint: "[endpoint, controller, contract file or API area]"
 ---
 

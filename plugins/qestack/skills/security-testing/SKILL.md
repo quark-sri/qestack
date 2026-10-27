@@ -1,6 +1,7 @@
 ---
 name: security-testing
 description: "Plans and writes security tests for an application or API: authentication, authorization and object access, injection, data exposure, headers, secrets, rate limits and business logic abuse. Use when the user says 'security test', 'OWASP', 'pen test checklist' or asks 'can users see other users data'. Not for a specialist penetration test."
+license: Apache-2.0
 argument-hint: "[application, API, feature or change]"
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: qa-navigator
 description: "Routes a QA request to the right qestack skill or to the gated workflow, and gives the next steps when the request matches no skill clearly. Use when the user asks 'which QA skill should I use' or 'where do I start with testing'. Not for a request that clearly matches one skill (use that skill)."
+license: Apache-2.0
 ---
 
 # qa-navigator

@@ -1,6 +1,7 @@
 ---
 name: test-environments
 description: "Sets up reproducible test environments: containers, production engine versions, readiness checks, isolated parallel runs and preview environments. Use when the user says 'test environment' or 'tests fail in CI every time'. Not for intermittent failures (use flaky-test-detective) or test data (use test-data-management)."
+license: Apache-2.0
 argument-hint: "[service, test suite or environment]"
 ---
 

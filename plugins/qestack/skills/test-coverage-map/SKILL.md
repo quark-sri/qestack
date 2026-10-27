@@ -1,6 +1,7 @@
 ---
 name: test-coverage-map
 description: "Maps what is tested and what is not by requirement, journey, code area and test level, not only line coverage, and shows the pyramid shape. Use when the user says 'coverage gaps' or asks 'what is not tested' or 'which requirements have no tests'. Not for the quality of each test (use testcase-reviewer)."
+license: Apache-2.0
 argument-hint: "[repository, module, feature or requirement set]"
 ---
 

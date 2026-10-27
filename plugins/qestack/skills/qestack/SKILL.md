@@ -1,6 +1,8 @@
 ---
 name: qestack
 description: "Explains the qestack gated workflow that proves AI-written tests catch bugs, and routes to the right qe-* skill. Use when the user names qestack or a qe-* skill, or asks which qestack step comes next in a repository with .qestack/."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 ---
 
 # qestack

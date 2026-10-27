@@ -1,6 +1,7 @@
 ---
 name: production-testing
 description: "Verifies quality in production after release: synthetic checks, health checks, canary rollouts with exit rules, feature flags, alerts as tests and rollback drills. Use when the user says 'test in production', 'canary release', 'shift right' or 'post-deploy checks'. Not for the release decision (use release-readiness)."
+license: Apache-2.0
 argument-hint: "[service, release or critical journey]"
 ---
 

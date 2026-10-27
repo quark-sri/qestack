@@ -1,6 +1,7 @@
 ---
 name: risk-based-testing
 description: "Builds a risk matrix (impact times likelihood, with evidence) for a product, release or change, sets the test depth for each risk zone and analyzes the top failure modes. Use when the user says 'risk assessment' or asks 'where should we focus testing'. Not for the long-term QA direction (use test-strategy)."
+license: Apache-2.0
 argument-hint: "[product area, release, feature or change]"
 ---
 

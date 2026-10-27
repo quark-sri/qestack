@@ -3,6 +3,7 @@
 
 Standard library only. Exit code 1 on errors. Long sentences are warnings (writing style).
 Run: python3 scripts/validate_repo.py
+     python3 scripts/validate_repo.py --spec <skill-folder>...   (only the Agent Skills spec, strict)
 """
 import json
 import re
@@ -27,11 +28,18 @@ def frontmatter(path):
     if not m:
         err(f"{path.relative_to(ROOT)}: no YAML frontmatter")
         return {}, text
-    fm = {}
+    fm, parent = {}, None
     for line in m.group(1).splitlines():
-        if ":" in line:
-            k, v = line.split(":", 1)
-            fm[k.strip()] = v.strip()
+        if ":" not in line:
+            continue
+        k, v = (x.strip() for x in line.split(":", 1))
+        if line[:1] in " \t" and parent:  # one level of a map, for example "metadata:"
+            if not isinstance(fm[parent], dict):
+                fm[parent] = {}
+            fm[parent][k] = v
+            continue
+        fm[k] = v
+        parent = k if not v else None
     return fm, text[m.end():]
 
 
@@ -62,6 +70,13 @@ AGENT_KEYS_IGNORED_IN_PLUGINS = {"hooks", "mcpServers", "permissionMode", "initi
 TOOLS = {"Read", "Grep", "Glob", "Bash", "Edit", "Write", "MultiEdit", "NotebookEdit", "WebFetch", "WebSearch",
          "Agent", "Skill"}
 NAME_RX = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+# Agent Skills specification (agentskills.io/specification): the fields that every SKILL.md reader knows.
+# The source may also use the Claude Code fields in SKILL_KEYS; the portable build removes them.
+SPEC_SKILL_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+SPEC_DESC_MAX = 1024
+SPEC_COMPAT_MAX = 500
+LICENSE = "Apache-2.0"
+GATED_COMPAT = "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 SKILL_DESC_MAX = 350          # each skill; the documented hard limit is 1024
 # All skills of the plugin, about 3,750 tokens. The listing budget is 1% of the context window: this fits a 1M
 # context with room for other skills. A 200k context (2,000 tokens) is smaller; there Claude Code drops the
@@ -87,6 +102,45 @@ def check_description(rp, desc, limit):
     return text
 
 
+def unquote(v):
+    return v[1:-1] if isinstance(v, str) and len(v) > 1 and v[0] == v[-1] and v[0] in "\"'" else v
+
+
+def check_spec(rp, folder, fm, strict):
+    """Agent Skills spec rules. strict: only spec fields (portable output); else Claude Code fields are allowed."""
+    name = unquote(fm.get("name", ""))
+    if not isinstance(name, str) or not 1 <= len(name) <= 64 or not NAME_RX.match(name):
+        err(f"{rp}: name '{name}' must be 1-64 lowercase letters, digits and single hyphens, "
+            "with no hyphen at the start or end")
+    if name != folder:
+        err(f"{rp}: name '{name}' does not match folder '{folder}'")
+    desc = unquote(fm.get("description", ""))
+    if not isinstance(desc, str) or not 1 <= len(desc) <= SPEC_DESC_MAX:
+        err(f"{rp}: description must have 1-{SPEC_DESC_MAX} characters (spec)")
+    if "compatibility" in fm:
+        compat = unquote(fm["compatibility"])
+        if not isinstance(compat, str) or not 1 <= len(compat) <= SPEC_COMPAT_MAX:
+            err(f"{rp}: compatibility must have 1-{SPEC_COMPAT_MAX} characters (spec)")
+    if "metadata" in fm and not isinstance(fm["metadata"], dict):
+        err(f"{rp}: metadata must be a map of keys to strings (spec)")
+    if strict:
+        for k in sorted(set(fm) - SPEC_SKILL_KEYS):
+            err(f"{rp}: frontmatter key '{k}' is not in the Agent Skills spec")
+
+
+if sys.argv[1:2] == ["--spec"]:
+    for arg in sys.argv[2:]:
+        d = Path(arg).resolve()
+        if not (d / "SKILL.md").exists():
+            err(f"{arg}: SKILL.md missing")
+            continue
+        fm, _ = frontmatter(d / "SKILL.md")
+        check_spec(f"{arg}/SKILL.md", d.name, fm, strict=True)
+    for e in errors:
+        print(f"ERROR {e}")
+    print(f"\nspec check: {len(sys.argv) - 2} skills, errors: {len(errors)}")
+    sys.exit(1 if errors else 0)
+
 # Skills
 skills = sorted(p for pl in PLUGINS if (pl / "skills").exists() for p in (pl / "skills").iterdir() if p.is_dir())
 names = [d.name for d in skills]
@@ -101,10 +155,11 @@ for d in skills:
         continue
     rp = f.relative_to(ROOT)
     fm, body = frontmatter(f)
-    if fm.get("name") != d.name:
-        err(f"{rp}: name '{fm.get('name')}' does not match folder '{d.name}'")
-    if not NAME_RX.match(d.name) or len(d.name) > 64 or re.search(r"anthropic|claude", d.name):
-        err(f"{rp}: name must be at most 64 lowercase letters, digits and hyphens, without 'anthropic' or 'claude'")
+    check_spec(rp, d.name, fm, strict=False)
+    if re.search(r"anthropic|claude", d.name):
+        err(f"{rp}: name must not contain 'anthropic' or 'claude'")
+    if unquote(fm.get("license", "")) != LICENSE:
+        err(f"{rp}: license must be '{LICENSE}'")
     for k in sorted(set(fm) - SKILL_KEYS):
         err(f"{rp}: unknown frontmatter key '{k}'; Claude Code ignores it")
     desc = check_description(rp, fm.get("description", ""), SKILL_DESC_MAX)
@@ -136,6 +191,19 @@ if desc_total > SKILL_DESC_TOTAL_MAX:
 # shared context, existing related skills.
 def gated(name):
     return name == "qestack" or name.startswith("qe-")
+
+
+# Other agents read `compatibility` to know what a skill needs. Only the gated skills need more than the agent.
+for d in skills:
+    f = d / "SKILL.md"
+    if not f.exists():
+        continue
+    fm, _ = frontmatter(f)
+    compat = unquote(fm.get("compatibility", ""))
+    if gated(d.name) and compat != GATED_COMPAT:
+        err(f"{f.relative_to(ROOT)}: compatibility must be '{GATED_COMPAT}'")
+    if not gated(d.name) and compat:
+        err(f"{f.relative_to(ROOT)}: library skills need no engine; remove compatibility")
 
 
 TOOL_NAMES = re.compile(

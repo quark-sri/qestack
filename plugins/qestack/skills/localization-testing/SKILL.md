@@ -1,6 +1,7 @@
 ---
 name: localization-testing
 description: "Tests internationalization and localization: hard-coded text, pseudo-localization, translations, plurals, dates, numbers, currency, Unicode, right-to-left layout and locale fallback. Use when the user says 'i18n test', 'localization test' or 'right-to-left'. Not for accessibility (use accessibility-testing)."
+license: Apache-2.0
 argument-hint: "[feature, screen, locale list or release region]"
 ---
 

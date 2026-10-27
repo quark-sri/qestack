@@ -1,6 +1,7 @@
 ---
 name: bug-report
 description: "Writes a clear, reproducible defect report from a failing test, log, stack trace or complaint: minimal repro, evidence without secrets, severity, impact and a regression test idea. Use when the user says 'write a bug report', 'file this bug' or 'minimal repro'. Not for hunting new bugs (use bug-hunter)."
+license: Apache-2.0
 argument-hint: "[failing test, log, issue text or finding]"
 ---
 
