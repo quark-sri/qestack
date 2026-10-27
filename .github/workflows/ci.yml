@@ -43,6 +43,10 @@ jobs:
         run: python scripts/validate_repo.py
       - name: Tests of the repository scripts
         run: python -m unittest discover -s scripts/tests -v
+      - name: Build the portable skill packages and check them against the Agent Skills spec
+        run: |
+          python scripts/build_skills.py
+          python scripts/validate_repo.py --spec dist/skills/*
 
   # The real build tools on the runnable examples. Not on pull requests (slow, needs Java).
   # The numbers are the "Results" sections of the example READMEs.
