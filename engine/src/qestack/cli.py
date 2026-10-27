@@ -14,7 +14,7 @@ from rulesets (API, database, Kafka, UI). Project settings live in .qestack/proj
 
 Run "qestack --help" or "qestack <command> --help".
 
-Copyright 2026 The qestack authors. Licensed under the Apache License, Version 2.0.
+Copyright 2026 The qestack authors. Licensed under the MIT License.
 """
 from __future__ import annotations
 

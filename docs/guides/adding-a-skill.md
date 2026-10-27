@@ -34,7 +34,7 @@ description: "Finds the root cause of a flaky test: <two to five key methods>. U
 
 - Use only the fields that Claude Code knows. Claude Code ignores an unknown field without an error, so a typo has no effect. (checked)
 - The plugin uses `name`, `description`, `license`, `compatibility` and `argument-hint`.
-- Each skill has `license: Apache-2.0`. (checked)
+- Each skill has `license: MIT`. (checked)
 - Each gated skill has the same `compatibility` line: it tells other agents that the skill needs the engine, git and a shell. Library skills have no `compatibility`. (checked)
 - The Agent Skills spec allows only `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools`. claude.ai and the Skills API reject other fields. Keep `argument-hint` in the source: Claude Code uses it. The portable build removes it.
 - To check a skill folder against the spec only, run `python3 scripts/validate_repo.py --spec <skill-folder>`. This mode rejects each field outside the spec. (checked: `scripts/tests/test_validate_repo.py`)

@@ -1,7 +1,7 @@
 ---
 name: qe-plan
 description: "Writes a spec-first qestack test plan (test-plan.md) for one feature with the qe-test-designer agent, then gets an independent plan review. Use in a qestack repository before any test code or implementation exists."
-license: Apache-2.0
+license: MIT
 compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---

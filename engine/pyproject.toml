@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "qestack AI test quality: gates that prove AI-written tests catch bugs (mutation, seeded faults, traceability, red-before-green, test locks, independent judge)."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "Apache-2.0"
+license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "The qestack authors" }]
 keywords = ["testing", "test-quality", "mutation-testing", "ai-agents", "claude-code", "qa", "test-automation"]

@@ -1,7 +1,7 @@
 ---
 name: release-readiness
 description: "Decides go or no-go for a release with evidence: exit criteria, test results by risk, open defects, non-functional results, rollback and monitoring readiness. Use when the user says 'go no-go' or asks 'are we ready to release'. Not for planning the testing (use test-planning)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[release, version or date]"
 ---
 

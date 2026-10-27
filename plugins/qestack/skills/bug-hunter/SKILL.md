@@ -1,7 +1,7 @@
 ---
 name: bug-hunter
 description: "Hunts real bugs in code, a change or a feature with a defect taxonomy, traces real values and proves each suspect with a failing test or exact repro steps. Use when the user says 'find bugs', 'bug hunt' or asks 'what is wrong with this code'. Not for style review (use roast-my-code)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[file, folder, change or feature]"
 ---
 

@@ -62,8 +62,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Changed (any-agent support, 2026-10-27)
 
+- License: qestack now uses the MIT License (before: Apache License 2.0). The `NOTICE` file is removed. The Gradle wrapper in `examples/order-service-gradle` keeps its own Apache 2.0 license.
 - `docs/other-agents.md`: new tables for Claude Code, Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Antigravity, Devin Desktop (was Windsurf), Cline and OpenCode. Each row gives the skill folders, `.agents/skills` support, unknown frontmatter keys, sub-agents and hooks, with a link to the official documentation and the date of the check. The old unverified paths are gone.
-- Skills follow the Agent Skills spec: each `SKILL.md` has `license: Apache-2.0`, and the 10 gated skills have a `compatibility` line (engine, git, shell; full guard only in Claude Code). The validator checks the spec rules for name, description (1-1024 characters), `compatibility` (at most 500) and `metadata`. The new `--spec <skill-folder>` mode checks a folder against the spec only and rejects the Claude Code fields. New tests in `scripts/tests/`, also in CI.
+- Skills follow the Agent Skills spec: each `SKILL.md` has `license: MIT`, and the 10 gated skills have a `compatibility` line (engine, git, shell; full guard only in Claude Code). The validator checks the spec rules for name, description (1-1024 characters), `compatibility` (at most 500) and `metadata`. The new `--spec <skill-folder>` mode checks a folder against the spec only and rejects the Claude Code fields. New tests in `scripts/tests/`, also in CI.
 
 ### Changed (one plugin)
 

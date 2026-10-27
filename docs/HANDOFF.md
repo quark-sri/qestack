@@ -39,7 +39,7 @@ Do not change these without the owner's approval. "2026-10-24" marks the decisio
 | Name and position | `qestack`: "QA and test automation skills, agents and quality gates for AI coding agents" (2026-10-26; before: "skills, plugins and agents for AI Quality Engineering"). Release 0.1 is "AI test quality", the first capability. The name stays `qestack` for discovery; "QA skills" goes in descriptions and keywords. (2026-10-24, 2026-10-26) |
 | Repository | Public. It is the owner's personal repository, and the owner decided to make it public. (2026-10-24) |
 | Publishing | Do not publish to PyPI. Do not create tags or releases without the owner. |
-| License | Apache-2.0 |
+| License | MIT. The owner changed it from Apache-2.0. (2026-10-27) |
 | Problem tracking | No GitHub issues. Track problems as tasks in `TASKS.local.md` (git-ignored through `.git/info/exclude`, never pushed). (2026-10-24) |
 | Acknowledgement | The README credits `petrkindlmann/qa-skills` (MIT) as the inspiration for the QA library structure. Keep it. (2026-10-24) |
 | One plugin | `qe-skills` is merged into the `qestack` plugin. The name `qe-skills` is dropped. The engine stays optional: library skills work without it, gated skills stop in the preflight. Final merge decisions D1 to D11 are in the pull request of branch `merge-qe-skills-into-qestack`. (2026-10-26) |

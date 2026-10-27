@@ -1,7 +1,7 @@
 ---
 name: quality-postmortem
 description: "Runs a blameless postmortem for an escaped defect: timeline, impact, five whys, why the tests and monitoring missed it, and actions with owners. Use when the user says 'postmortem', 'incident review', 'escaped bug' or asks 'why did our tests miss this'. Not for the defect report itself (use bug-report)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[incident, defect or release]"
 ---
 

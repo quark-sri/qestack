@@ -1,7 +1,7 @@
 ---
 name: qe-grill-spec
 description: "Checks a spec before qestack test design: finds requirements without IDs, vague rules, missing examples and missing error behavior, and asks one question at a time. Use before qe-plan in a qestack repository, or when a spec has [NEEDS CLARIFICATION] items."
-license: Apache-2.0
+license: MIT
 compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---

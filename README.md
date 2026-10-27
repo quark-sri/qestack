@@ -200,4 +200,4 @@ The skill structure, the description routing and the shared context convention (
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[MIT License](LICENSE)

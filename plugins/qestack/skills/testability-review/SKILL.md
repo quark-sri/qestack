@@ -1,7 +1,7 @@
 ---
 name: testability-review
 description: "Scores how testable a feature, module or design is before tests exist (seams for clock, randomness and network, hidden state, observability) and gives the smallest production change per blocker. Use when the user asks 'is this testable' or 'why is this hard to test'. Not for writing the tests (use unit-testing)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[feature, module, design or pull request]"
 ---
 

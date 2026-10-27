@@ -1,7 +1,7 @@
 ---
 name: qa-project-context
 description: "Creates or updates .agents/qa-project-context.md, the file of project facts (stack, test commands, CI, environments, risks) that every QA skill reads first. Use when the user says 'set up QA context' or 'onboard QA to this repo'. Not for a test strategy (use test-strategy)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[create | update | check]"
 ---
 

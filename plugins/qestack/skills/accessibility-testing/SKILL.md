@@ -1,7 +1,7 @@
 ---
 name: accessibility-testing
 description: "Tests web and app accessibility against WCAG level AA: automated rule checks, keyboard and focus order, names and roles, contrast, forms and manual screen reader checks. Use when the user says 'accessibility test', 'a11y', 'WCAG' or 'screen reader'. Not for general UI journeys (use ui-automation)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[page, component or user journey]"
 ---
 

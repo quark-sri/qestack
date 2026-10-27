@@ -75,7 +75,7 @@ NAME_RX = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SPEC_SKILL_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 SPEC_DESC_MAX = 1024
 SPEC_COMPAT_MAX = 500
-LICENSE = "Apache-2.0"
+LICENSE = "MIT"
 GATED_COMPAT = "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 SKILL_DESC_MAX = 350          # each skill; the documented hard limit is 1024
 # All skills of the plugin, about 3,750 tokens. The listing budget is 1% of the context window: this fits a 1M

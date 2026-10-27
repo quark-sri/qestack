@@ -1,7 +1,7 @@
 ---
 name: roast-my-code
 description: "Gives a direct code review with a quality engineering focus: correctness, testability, error handling, design smells and weak tests, each with evidence and a fix, in a mild, medium or savage tone. Use when the user says 'roast my code' or 'be brutal'. Not for proving bugs (use bug-hunter)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[file, folder or change] [mild|medium|savage]"
 ---
 

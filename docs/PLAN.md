@@ -168,7 +168,7 @@ qestack is not yet tested on real projects, so we publish no benchmark and no pe
 
 | Topic | Decision |
 |---|---|
-| License | Apache-2.0 |
+| License | MIT (before 2026-10-27: Apache-2.0) |
 | Maintainer | quark-sri (single maintainer for 0.x) |
 | Contributions | Pull requests with tests. Stacks and rulesets follow the contributor guides. |
 | Decisions | Issues with the label `proposal`. The maintainer decides in 0.x. |

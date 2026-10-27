@@ -1,7 +1,7 @@
 ---
 name: contract-testing
 description: "Sets up consumer-driven contract tests for APIs and events: provider verification, provider states, a broker, can-I-deploy checks and schema compatibility. Use when the user says 'contract test' or asks 'will this API change break clients'. Not for deep tests of one API (use api-testing)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[consumer, provider or interface]"
 ---
 

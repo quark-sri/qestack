@@ -33,7 +33,7 @@ class SpecCheck(unittest.TestCase):
         self.assertIn(message, result.stdout)
 
     def test_spec_clean_skill_passes(self):
-        r = self.spec("edge-cases", f'name: edge-cases\ndescription: "{GOOD_DESC}"\nlicense: Apache-2.0\n'
+        r = self.spec("edge-cases", f'name: edge-cases\ndescription: "{GOOD_DESC}"\nlicense: MIT\n'
                                     'compatibility: "Needs git."\nmetadata:\n  author: quark-sri\n  version: "0.1.0"')
         self.assertEqual(r.returncode, 0, r.stdout)
         self.assertIn("errors: 0", r.stdout)

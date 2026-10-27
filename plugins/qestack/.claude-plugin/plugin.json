@@ -7,6 +7,6 @@
   },
   "homepage": "https://github.com/quark-sri/qestack",
   "repository": "https://github.com/quark-sri/qestack",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "keywords": ["qa", "qa-skills", "testing", "test-automation", "quality-engineering", "test-quality", "mutation-testing", "test-design", "bug-hunting", "code-review", "ai-agents", "claude-skills"]
 }

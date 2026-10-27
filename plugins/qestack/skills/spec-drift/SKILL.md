@@ -1,7 +1,7 @@
 ---
 name: spec-drift
 description: "Detects drift between what is specified, documented, built and tested, and reports each mismatch with the likely truth and the side to change. Use when the user asks 'does the code still match the spec' or 'are the docs up to date'. Not for gaps inside the requirements (use requirement-gaps)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[spec or contract] [code area]"
 ---
 

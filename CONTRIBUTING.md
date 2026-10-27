@@ -64,4 +64,4 @@ This project follows the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-By contributing, you agree that your contribution uses the [Apache License 2.0](LICENSE).
+By contributing, you agree that your contribution uses the [MIT License](LICENSE).

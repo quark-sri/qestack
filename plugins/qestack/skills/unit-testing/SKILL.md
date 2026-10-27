@@ -1,7 +1,7 @@
 ---
 name: unit-testing
 description: "Writes, fixes or improves unit tests for rules, calculations, validation and state logic: arrange-act-assert, exact oracles, boundary sets, doubles only at boundaries, controlled clock and randomness. Use when the user says 'write unit tests', 'TDD this' or 'mock this dependency'. Not for HTTP endpoints (use api-testing)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[class, function or file]"
 ---
 

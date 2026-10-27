@@ -1,7 +1,7 @@
 ---
 name: qe-setup
 description: "Sets up qestack in a repository: creates .qestack/, detects the stack and rulesets, registers assertion helpers and checks the build commands and the guard hook. Use when the user installs qestack or changes the stack, or when lint reports false 'no assertion' findings."
-license: Apache-2.0
+license: MIT
 compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 ---
 

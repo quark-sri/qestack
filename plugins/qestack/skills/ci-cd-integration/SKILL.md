@@ -1,7 +1,7 @@
 ---
 name: ci-cd-integration
 description: "Designs or fixes how tests run in the delivery pipeline: stages, quality gates, sharding, caching, reports, flaky test handling and post-deploy smoke checks. Use when the user says 'run tests in CI', 'pipeline is too slow' or 'add a quality gate'. Not for one flaky test (use flaky-test-detective)."
-license: Apache-2.0
+license: MIT
 argument-hint: "[pipeline file, stage or test suite]"
 ---
 
