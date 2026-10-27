@@ -178,7 +178,65 @@ class GuardTests(unittest.TestCase):
         self.repo.close()
 
     def hook(self, payload):
-        return run(self.repo.dir, "hook", stdin=json.dumps(payload))
+        r = run(self.repo.dir, "hook", stdin=json.dumps(payload))
+        self.assertNotIn("hook error", r.stderr)  # the hook fails open: an error must not look like an allow
+        return r
+
+    def weaken(self):
+        return {"tool_name": "Edit", "cwd": str(self.repo.dir), "tool_input": {
+            "file_path": TEST_FILE, "old_string": '        assertEquals("ORD-400", e.getMessage());\n', "new_string": ""}}
+
+    def test_hook_blocks_flag_abbreviations_and_init_overrides(self):
+        for cmd in ("qestack lock --forc", "qestack lock --feature 003 --fo", "cd . && qestack init --existing",
+                    "qestack init --force", "QESTACK_X=1 qestack init --exist"):
+            r = self.hook({"tool_name": "Bash", "tool_input": {"command": cmd}})
+            self.assertEqual(r.returncode, 2, cmd)
+        self.assertEqual(self.hook({"tool_name": "Bash", "tool_input": {"command": "qestack lint --all"}}).returncode, 0)
+        r = run(self.repo.dir, "lock", "--forc")
+        self.assertEqual(r.returncode, 2, r.stderr)  # argparse: no abbreviations
+        self.assertIn("unrecognized arguments", r.stderr)
+
+    def test_hook_protects_agent_guidance_and_local_settings(self):
+        for path in (".qestack/guardrails.md", ".qestack/templates/judge-output.schema.json",
+                     ".qestack/adapters/speckit/x.md", ".claude/settings.local.json"):
+            r = self.hook({"tool_name": "Write", "tool_input": {"file_path": path, "content": "x"}})
+            self.assertEqual(r.returncode, 2, path)
+        r = self.hook({"tool_name": "Write", "tool_input": {"file_path": ".qestack/audit-2026-10-27.md", "content": "x"}})
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_hook_sees_the_lock_of_a_feature_with_a_dot_in_its_name(self):
+        locks = self.repo.dir / ".qestack/locks"
+        (locks / f"{FEATURE}.json").rename(locks / "003-v1.2-discount.json")
+        self.assertEqual(self.hook(self.weaken()).returncode, 2)
+
+    def test_hook_blocks_test_edits_when_a_lock_cannot_be_read(self):
+        lock = self.repo.dir / f".qestack/locks/{FEATURE}.json"
+        lock.write_text("{ not json")
+        r = self.hook({"tool_name": "Edit", "cwd": str(self.repo.dir), "tool_input": {
+            "file_path": TEST_FILE, "old_string": "assertEquals", "new_string": "assertEquals"}})
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("cannot be read", r.stderr)
+        r = self.hook({"tool_name": "Edit", "cwd": str(self.repo.dir), "tool_input": {
+            "file_path": PROD_FILE, "old_string": "class", "new_string": "class"}})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(run(self.repo.dir, "lock").returncode, 2)  # no silent re-lock over a broken lock
+
+    def test_hook_blocks_edits_against_a_newer_lock_schema(self):
+        lock = self.repo.dir / f".qestack/locks/{FEATURE}.json"
+        data = json.loads(lock.read_text())
+        self.assertEqual(data["schema"], 1)
+        lock.write_text(json.dumps(dict(data, schema=99)))
+        self.assertEqual(self.hook(self.weaken()).returncode, 2)
+        r = run(self.repo.dir, "guard")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("Update the qestack engine", r.stderr)
+
+    def test_hook_checks_multiedit_and_notebookedit(self):
+        r = self.hook({"tool_name": "MultiEdit", "tool_input": {"file_path": TEST_FILE, "edits": [
+            {"old_string": '        assertEquals("ORD-400", e.getMessage());\n', "new_string": ""}]}})
+        self.assertEqual(r.returncode, 2)
+        r = self.hook({"tool_name": "NotebookEdit", "tool_input": {"notebook_path": ".qestack/project.toml", "new_source": "x"}})
+        self.assertEqual(r.returncode, 2)
 
     def test_hook_blocks_weakening_edit(self):
         r = self.hook({"tool_name": "Edit", "cwd": str(self.repo.dir), "tool_input": {
@@ -448,7 +506,10 @@ class ReviewFixTests(unittest.TestCase):
 
     def test_hook_protects_results_and_locked_files_in_shell(self):
         run(self.d, "lock")
-        hook = lambda p: run(self.d, "hook", stdin=json.dumps(p))
+        def hook(p):
+            r = run(self.d, "hook", stdin=json.dumps(p))
+            self.assertNotIn("hook error", r.stderr)
+            return r
         r = hook({"tool_name": "Write", "tool_input": {"file_path": f"{RUNS}/seed-feedback.json", "content": "{}"}})
         self.assertEqual(r.returncode, 2, r.stderr)
         r = hook({"tool_name": "Write", "tool_input": {"file_path": f"{RUNS}/judge.json", "content": "{}"}})
@@ -520,6 +581,93 @@ class ReviewFixTests(unittest.TestCase):
         js = self.repo.read_json("scorecard.json")["judge_summary"]
         self.assertEqual(js["verdicts"]["revise"], 1)
         self.assertEqual(js["invalid"], 1)
+
+
+def judge_payload(lint, verdict="accept"):
+    return {"feature": FEATURE, "mode": "test-review", "iteration": 1, "tests": [
+        {"key": t["key"], "verdict": verdict,
+         "scores": {f"R{i}": {"score": 4, "evidence": f"DiscountTest.java:{t['line']}"} for i in range(1, 8)}}
+        for t in lint["tests"]]}
+
+
+class CalibrateTests(unittest.TestCase):
+    def setUp(self):
+        self.repo = Repo("GoodDiscountTest.java")
+        self.d = self.repo.dir
+        run(self.d, "lint")
+        self.keys = [t["key"] for t in self.repo.read_json("lint.json")["tests"]]
+        (self.d / RUNS / "judge.json").write_text(json.dumps(judge_payload(self.repo.read_json("lint.json"))))
+
+    def tearDown(self):
+        self.repo.close()
+
+    def audit(self, verdicts):
+        (self.d / RUNS / "human-audit.json").write_text(json.dumps([{"key": k, "verdict": v} for k, v in verdicts]))
+        return run(self.d, "calibrate")
+
+    def test_full_agreement_on_one_label_is_kappa_one(self):
+        r = self.audit([(k, "accept") for k in self.keys])
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        c = self.repo.read_json("calibration.json")
+        self.assertEqual((c["n"], c["agreement"], c["kappa"]), (len(self.keys), 1.0, 1.0))
+
+    def test_agreement_at_chance_level_fails(self):
+        # The judge accepts all; the human rejects one. Observed agreement = expected agreement, so kappa = 0.
+        r = self.audit([(self.keys[0], "reject")] + [(k, "accept") for k in self.keys[1:]])
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        c = self.repo.read_json("calibration.json")
+        self.assertEqual(c["kappa"], 0.0)
+        self.assertEqual(c["agreement"], round((len(self.keys) - 1) / len(self.keys), 4))
+        self.assertEqual([x["key"] for x in c["disagreements"]], [self.keys[0]])
+        hist = (self.d / ".qestack/runs/calibration-history.jsonl").read_text().splitlines()
+        self.assertEqual(len(hist), 1)
+
+    def test_no_overlap_is_an_error(self):
+        r = self.audit([("unknown::key", "accept")])
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("No overlap", r.stderr)
+
+
+class GateTests(unittest.TestCase):
+    def test_fast_mode_stops_after_a_failed_cheap_gate(self):
+        repo = Repo("WeakDiscountTest.java")
+        try:
+            r = run(repo.dir, "gate", "--fast")
+            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+            self.assertIn("fast mode: stopping after 'lint' failed", r.stdout)
+            self.assertNotIn("== mutation ==", r.stdout)
+            self.assertIn("lint      FAIL", r.stdout)
+        finally:
+            repo.close()
+
+    def test_skip_and_seed_without_patches(self):
+        repo = Repo("GoodDiscountTest.java")
+        try:
+            r = run(repo.dir, "gate", "--skip", "mutation,flaky", "--base", "main")
+            summary = r.stdout.split("== summary ==")[1]
+            self.assertEqual([ln.split()[0] for ln in summary.strip().splitlines()], ["lint", "trace", "guard"])
+            self.assertIn("seed: no fault patches; skipped", r.stdout + r.stderr)
+            self.assertEqual(r.returncode, 0 if "FAIL" not in summary else 1)
+        finally:
+            repo.close()
+
+
+class MonorepoHookTests(unittest.TestCase):
+    def test_hook_started_at_the_git_root_guards_a_sub_project(self):
+        d = Path(tempfile.mkdtemp())
+        try:
+            git(d, "init", "-q", "-b", "main")
+            (d / "svc/.qestack").mkdir(parents=True)
+            (d / "svc/.qestack/project.toml").write_text(PROJECT_TOML)
+            target = d / "svc/.qestack/project.toml"
+            r = run(d, "hook", root=False, stdin=json.dumps(
+                {"tool_name": "Write", "cwd": str(d), "tool_input": {"file_path": str(target), "content": "x"}}))
+            self.assertEqual(r.returncode, 2, r.stderr)
+            r = run(d, "hook", root=False, stdin=json.dumps(
+                {"tool_name": "Write", "cwd": str(d), "tool_input": {"file_path": str(d / "README.md"), "content": "x"}}))
+            self.assertEqual(r.returncode, 0, r.stderr)
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
 
 
 class FillTests(unittest.TestCase):

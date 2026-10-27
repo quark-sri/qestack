@@ -77,9 +77,9 @@ All docs, skills, agent prompts and CLI messages in STE. `scripts/validate_repo.
 
 ### Done and checked
 
-- Engine with 19 commands. 30 end-to-end tests pass: `python3 -m unittest discover -s engine/tests`.
+- Engine with 19 commands. The tests pass: `python3 -m unittest discover -s engine/tests` (end-to-end tests in `test_cli.py`, in-process rule tests in `test_rules.py`).
 - CI is green on ubuntu and macOS, Python 3.11 to 3.13. The CI builds and installs the package, so the package data (`qestack/data/**`) is in the wheel.
-- Plugin `qestack`: 10 skills, 4 agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
+- Plugin `qestack`: 10 gated skills, 4 workflow agents, hook. Architecture review fixes are in (held-out faults, the `trivial` and `shallow` gates, fault recovery, a stricter hook and others; see `CHANGELOG.md`).
 - QA library in the `qestack` plugin: 39 skills, 8 personas, `test-review-panel` with the findings format. Merged from the old `qe-skills` plugin (2026-10-26).
 - `scripts/validate_repo.py`: 0 errors, 0 warnings. It checks the plugin, the library rules (routing parts, related skills, no tool names, shared context) and the persona rules (sections, the same shared rules, no edit tools, only the panel uses them).
 - Stack `java-gradle-junit5` and `examples/order-service-gradle` (PR #1).
@@ -126,6 +126,11 @@ Use a task list. Commit after each task. End each commit message with the traile
 | 6. Multi-module Maven | Done (PR #2): `examples/order-service-multimodule` and section 3.4 of the Java Maven stack guide. Merged before task 5. |
 | 7. Release preparation | Last. Do not publish. |
 
+Finished tasks, for reference only (do not redo them):
+
+- Task 3: `examples/order-service-maven` runs every gate with real Maven. The results are in its README. Step 3b (the strengthened tests) comes from `/qe-harden` in task 4b.
+- Task 6: `examples/order-service-multimodule` and section 3.4 of `java-maven-junit5.md` (PR #2).
+
 ### Task 4a: Test the QA library in a real Claude Code session
 
 Follow `docs/library-session-test.md`. The routing checks S2, S3, S4 and S7 now run as plugin evals (`plugins/qestack/evals/routing/`, results of 2026-10-26 in that document: 23 of 24 runs, then 4 of 5 for the flaky case). The other checks stay manual. It has 22 checks (skills, personas, review panel) and an answer key of 14 expected findings for `examples/order-discount`.
@@ -135,38 +140,6 @@ Follow `docs/library-session-test.md`. The routing checks S2, S3, S4 and S7 now 
 3. Fix the skills and personas. Then decide if the personas need a hook that blocks file writes (checks P4 and R8).
 
 **Done when:** all 22 checks pass, and the panel finds at least 11 of the 14 expected findings.
-
-### Task 3: Runnable Maven example (most important)
-
-Create `examples/order-service-maven/`. It replaces "static only" in the README.
-
-1. A small Maven project, plain Java, no Spring Boot:
-   - Java 17, JUnit 5 (Jupiter), AssertJ
-   - `Discount` and `OrderService` classes with the rules from `examples/order-discount/specs/001-order-discount/spec.md`
-   - Surefire and Failsafe with `<groups>${qe.groups}</groups>` and the property `<qe.groups></qe.groups>`
-   - PIT (`pitest-maven` + `pitest-junit5-plugin`), current versions from Maven Central, not bound to a phase
-2. `.qestack/project.toml` with `stack = "java-maven-junit5"`.
-3. Two test classes:
-   - `WeakDiscountTest` with tag `feature-001`: typical weak AI tests (status-only, not-null, hollow, skipped)
-   - after `/qe-harden` (task 4b): the strengthened tests
-4. Run each engine command by hand and record the results:
-   ```bash
-   cd examples/order-service-maven
-   qestack doctor
-   qestack lint --feature 001
-   qestack trace --feature 001
-   qestack red --feature 001        # on a stub version of the code
-   qestack flaky --feature 001 --runs 3
-   qestack mutation --feature 001   # needs a change against the base ref
-   qestack fault begin --feature 001   # then inject one fault, then:
-   qestack fault save --feature 001 --id F01 --req FR-001 --layer domain
-   qestack seed --feature 001
-   qestack score --feature 001
-   ```
-5. Fix every wrong command, property name or report path in `engine/src/qestack/data/stacks/java-maven-junit5.toml` and in `java-maven-junit5.md`. Each engine change needs a test.
-6. Add a short "Results" section to the example README with the real numbers.
-
-**Done when:** every command above works on the MacBook with real Maven, and the stack file has no unverified commands.
 
 ### Task 4b: Test the `qestack` plugin in a real Claude Code session
 
@@ -196,12 +169,6 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 
 **Done when:** the hidden faults for the database and Kafka layers are detected, and the report shows it.
 
-### Task 6: Multi-module Maven
-
-1. Make the example (or a copy) a multi-module build.
-2. Find the right `[commands]` overrides (`-pl <module> -am`). Check that `mutation` targets the module with the changed classes, and that the merged multi-module mutation report is right.
-3. Document the result in `java-maven-junit5.md`.
-
 ### Task 7: Release preparation (do not publish)
 
 1. Update `CHANGELOG.md`.
@@ -229,7 +196,7 @@ Create `examples/order-service-maven/`. It replaces "static only" in the README.
 |---|---|
 | `engine/src/qestack/cli.py` | All engine commands (one file) |
 | `engine/src/qestack/data/defaults.toml` | Core defaults: paths, gates, weights, loop |
-| `engine/src/qestack/data/stacks/java-maven-junit5.{toml,md}` | The Java stack (verify in task 3) |
+| `engine/src/qestack/data/stacks/java-maven-junit5.{toml,md}` | The Java stack (verified in task 3) |
 | `engine/src/qestack/data/rulesets/*.md` | API, database, Kafka, UI rules for agents |
 | `engine/src/qestack/data/rubrics/*.md` | Judge rubrics |
 | `engine/src/qestack/data/templates/` | Files that `qestack init` and `qestack show` use |

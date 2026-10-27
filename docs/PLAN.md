@@ -136,7 +136,7 @@ Candidates for later releases: `mobile-testing`, `visual-testing`, `resilience-t
 
 | Release | Target | Scope |
 |---|---|---|
-| 0.1 | Week 1–4 | Engine, plugin, 10 skills, 4 agents, hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The QA library in the same plugin. Owner review. |
+| 0.1 | Week 1–4 | Engine, plugin (10 gated skills, 4 workflow agents), hook. Stack: Java/Maven/JUnit 5 only. Rulesets: API, database, Kafka, Playwright UI. Speckit adapter. Docs. CI. A runnable Maven example. The QA library in the same plugin. Owner review. |
 | 0.2 | Week 5–8 | Install guides for Codex, Cursor, Copilot. Runnable example projects. PyPI release. Public launch. |
 | 0.3 | Week 9–14 | Code-intelligence step: map changed code to its callers and tests, to aim hidden faults and mutation at risky code. Judge calibration dataset. LLM equivalent-mutant check. HTML report. Benchmark: only after qestack is tested on real projects (see section 8). |
 | 0.4 | Week 15–20 | Rulesets: contract testing (Pact), security, gRPC, GraphQL. Gate results as SARIF for code scanning. |

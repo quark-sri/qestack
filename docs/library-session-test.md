@@ -15,7 +15,7 @@ claude plugin eval . --tag routing --ablation none --scaffold --no-publish --max
 
 - `--scaffold` runs the fixture script of the case `library-in-qestack-repo` (our own script: it writes `.qestack/project.toml` and one test class).
 - `--no-publish` keeps the report on your machine. Without it, the report is published to claude.ai.
-- Each run uses your Claude usage. One run costs about $0.17. The suite has 8 cases with 3 runs each, about $4.
+- Each run uses your Claude usage. One run costs about $0.17. The suite has 9 cases with 3 runs each, about $4.60.
 
 Results of 2026-10-26 (Claude Code default model, 3 runs per case):
 
@@ -25,10 +25,11 @@ Results of 2026-10-26 (Claude Code default model, 3 runs per case):
 | `edge-cases` | S3 | 3 of 3 |
 | `where-to-start` | S4 | 3 of 3: `qa-navigator` |
 | `library-in-qestack-repo` | S7 | 3 of 3: `testcase-reviewer`, no gated skill |
-| `flaky-test` | neighbor | 2 of 3. After 'passes on my machine' went back into the description: 4 of 5. In the other runs, Claude answered the one-snippet question without a skill |
+| `flaky-test` | neighbor | Before the `test-environments` check was added (2026-10-27): 2 of 3. After 'passes on my machine' went back into the description: 4 of 5. In the other runs, Claude answered the one-snippet question without a skill |
 | `bug-report` | neighbor | 3 of 3: `bug-report`, never `bug-hunter` |
 | `load-test` | neighbor | 3 of 3 |
 | `gated-setup` | gated | 3 of 3 |
+| `no-skill-general` | over-trigger | Not run yet (added 2026-10-27) |
 
 The evals do not replace the persona and panel checks (P and R). Those need real files and agents. Run them by hand as below.
 

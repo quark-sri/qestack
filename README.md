@@ -89,20 +89,24 @@ The qestack plugin also has a library of 39 Quality Engineering skills and 8 rev
 
 To add it to the panel, add a row to the table in `test-review-panel`. The validator checks the sections, the shared rules, the tools and the table.
 
-```
-/plugin marketplace add quark-sri/qestack
-/plugin install qestack@qestack
-```
-
-Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>` links them (see [other agents](docs/other-agents.md)). [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
+To install the library alone, see [Install](#install), option A. [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
 
 Use the gated qestack workflow below when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
 
 ## Install
 
-You need Python 3.11 or later, git, pipx (or uv), and Claude Code.
+Choose one option. Option A gives you the library skills and the personas. Option B adds the engine, which the gated workflow (`qestack` and the `qe-*` skills) needs.
 
-**Two commands.** The first installs the engine and the Claude Code plugin. The second sets up your repository.
+**Option A: the library only (no engine, no Python).** In Claude Code:
+
+```
+/plugin marketplace add quark-sri/qestack
+/plugin install qestack@qestack
+```
+
+From a clone, `scripts/install.sh --skills-only` does the same. The gated skills are in the plugin too. Without the engine, they tell you how to install it and stop. For other agents that read SKILL.md, `scripts/install-skills.sh <skills-folder>` links the skills (see [other agents](docs/other-agents.md)).
+
+**Option B: the library and the gated workflow.** You need Python 3.11 or later, git, pipx (or uv), and Claude Code. Two commands: the first installs the engine and the Claude Code plugin, the second sets up your repository.
 
 ```bash
 git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
@@ -111,9 +115,7 @@ cd your-repo && qestack init --existing    # drop --existing for a new project; 
 
 `qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
 
-Only the library, with no engine? `scripts/install.sh --skills-only`.
-
-**Manual install** (the same steps, one by one):
+**Manual install of option B** (the same steps, one by one):
 
 ```bash
 pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"

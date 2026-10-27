@@ -64,6 +64,8 @@ All result files for one feature are in `.qestack/runs/<feature>/`.
 
 The report is also copied to `specs/<feature>/quality-report.md`.
 
+The engine result files and the lock files have a `schema` field. A file without the field is schema 1. When a reader must change, raise `RESULT_SCHEMA` in the engine and read the older schema too. The engine refuses a file with a newer schema, so an old engine cannot misread it. For a lock file, the hook then blocks edits to test files. The engine writes each JSON file to a temporary file and then renames it, so a stopped run leaves no half-written file.
+
 ## Feature scope
 
 Speckit numbers requirements again in each feature (`FR-001` in each feature). So each test also has a feature tag, for example `feature-003`. The engine uses the feature tag to find the tests of one feature. The feature name comes from `--feature`, from the environment (`QESTACK_FEATURE`, `SPECIFY_FEATURE`, `GITHUB_HEAD_REF`), or from the git branch name.
@@ -73,7 +75,7 @@ Speckit numbers requirements again in each feature (`FR-001` in each feature). S
 The guard has three layers:
 
 1. **Agent rules.** Each agent prompt has a "Forbidden" section.
-2. **Hook.** `qestack hook` runs before each Edit, Write and Bash call in Claude Code. It blocks changes to protected files. For locked test files, it computes the file after the edit and blocks the edit if a test is removed, an assertion is removed or weaker, a skip is added, or a requirement tag is removed.
+2. **Hook.** `qestack hook` runs before each Edit, Write and Bash call in Claude Code. It finds the qestack project from the edited file (or from the session folder for Bash), so it also works when the session starts at the root of a monorepo. It blocks changes to protected files. For locked test files, it computes the file after the edit and blocks the edit if a test is removed, an assertion is removed or weaker, a skip is added, or a requirement tag is removed.
 3. **CI.** `qestack guard` compares the tests with the base branch and with the lock. CI is the authority, because a hook can be bypassed.
 
 ## Test parsing

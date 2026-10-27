@@ -278,6 +278,27 @@ for r in (DATA / "rulesets").glob("*.md"):
     if "Seeded faults for this layer" not in r.read_text(encoding="utf-8"):
         err(f"{r.relative_to(ROOT)}: section 'Seeded faults for this layer' missing")
 
+# Counts in the public descriptions agree with the files (they drift when a skill or persona is added)
+n_library = sum(1 for d in skills if not gated(d.name))
+count_rx = re.compile(r"(\d+) Quality Engineering skills and (\d+) reviewer personas")
+for f, text in [("plugins/qestack/.claude-plugin/plugin.json", (PLUGIN / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")),
+                (".claude-plugin/marketplace.json", (ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")),
+                ("README.md", (ROOT / "README.md").read_text(encoding="utf-8")),
+                ("llms.txt", llms_text)]:
+    found = count_rx.findall(text)
+    if not found:
+        err(f"{f}: no '<n> Quality Engineering skills and <m> reviewer personas' text")
+    for a, b in found:
+        if (int(a), int(b)) != (n_library, len(personas)):
+            err(f"{f}: says {a} skills and {b} personas; the plugin has {n_library} library skills and {len(personas)} personas")
+
+# The guard hook of the plugin and the hook that 'qestack init --hook' installs are the same
+plugin_hook = json.loads((PLUGIN / "hooks" / "hooks.json").read_text(encoding="utf-8"))["hooks"]["PreToolUse"]
+init_hook = json.loads((DATA / "templates" / "claude-settings.json").read_text(encoding="utf-8"))["hooks"]["PreToolUse"]
+if plugin_hook != init_hook:
+    err("plugins/qestack/hooks/hooks.json and engine/src/qestack/data/templates/claude-settings.json: "
+        "the PreToolUse hooks differ; keep them the same")
+
 # Versions agree
 init = (ROOT / "engine" / "src" / "qestack" / "__init__.py").read_text()
 engine_v = re.search(r'__version__ = "([^"]+)"', init).group(1)

@@ -10,14 +10,14 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Stacks: `java-maven-junit5` (PIT), `java-gradle-junit5` (PIT), `dotnet` (Stryker.NET).
 - Rulesets: `api-http`, `database`, `kafka`, `ui-playwright`.
 - Rubrics: test review (R1–R7), plan review (P1–P7), fault catalog.
-- Claude Code plugin: 10 skills, 4 agents, guard hook, marketplace manifest.
+- Claude Code plugin `qestack`: 49 skills (10 gated skills that use the engine, 39 library skills that do not), 12 agents (4 workflow agents, 8 reviewer personas), guard hook, marketplace manifest.
 - Speckit adapter: `/speckit.testplan`, `/speckit.testwrite`, `/speckit.testquality`.
 - Documentation, project plan, CI workflow, static example.
-- Plugin `qe-skills`: 39 Quality Engineering skills for any project, with no engine, in 10 categories. Tool-neutral `SKILL.md` files, stack recipes for Java, TypeScript and Python in `references/`, and a shared `.agents/qa-project-context.md`.
-- `qe-skills` reviewer personas: 8 agents in `plugins/qe-skills/agents/` (AI Behavior Auditor, Hallucination Checker, Domain Oracle Reviewer, Saboteur, Test Automation Architect, Determinism and Flakiness Engineer, Maintainability Craftsperson, Suite Cost and Speed Reviewer). In this plugin, only the `test-review-panel` skill uses them. No persona has an edit tool: personas find and report, and the caller changes code. The Saboteur returns a fault plan; the panel runs it with the `mutation-probe` method in an isolated copy. All personas share one "Reviewer rules" section: no fixes, file:line evidence, and a findings block in one format. Users can start a persona directly. The panel starts several, in parallel, and merges the findings. The panel saves each run in `qa-reviews/<date>-<scope>/` (`panel-report.md`, `findings.json`, `personas/`). The other skills do not depend on them.
-- `scripts/validate_repo.py` checks every plugin, the reference files of each skill, duplicate skill names and the marketplace sources. For `qe-skills`, it also checks the routing parts of each description, the related skills, the required sections, the shared context and that `SKILL.md` names no tools.
+- Library skills: 39 Quality Engineering skills for any project, with no engine, in 10 categories. Tool-neutral `SKILL.md` files, stack recipes for Java, TypeScript and Python in `references/`, and a shared `.agents/qa-project-context.md`.
+- Reviewer personas: 8 agents in `plugins/qestack/agents/` (AI Behavior Auditor, Hallucination Checker, Domain Oracle Reviewer, Saboteur, Test Automation Architect, Determinism and Flakiness Engineer, Maintainability Craftsperson, Suite Cost and Speed Reviewer). In this plugin, only the `test-review-panel` skill uses them. No persona has an edit tool: personas find and report, and the caller changes code. The Saboteur returns a fault plan; the panel runs it with the `mutation-probe` method in an isolated copy. All personas share one "Reviewer rules" section: no fixes, file:line evidence, and a findings block in one format. Users can start a persona directly. The panel starts several, in parallel, and merges the findings. The panel saves each run in `qa-reviews/<date>-<scope>/` (`panel-report.md`, `findings.json`, `personas/`). The other skills do not depend on them.
+- `scripts/validate_repo.py` checks every plugin, the reference files of each skill, duplicate skill names and the marketplace sources. For the library skills, it also checks the routing parts of each description, the related skills, the required sections, the shared context and that `SKILL.md` names no tools.
 
-- `qe-skills` gaps closed after a review of related projects: new skills `testability-review`, `production-testing`, `resilience-testing` and `localization-testing`; a property-based testing recipe in `unit-testing`; tautology checks and eight named sycophancy patterns in the `ai-behavior-auditor` persona; `qa-navigator` routes to the new skills.
+- Library gaps closed after a review of related projects: new skills `testability-review`, `production-testing`, `resilience-testing` and `localization-testing`; a property-based testing recipe in `unit-testing`; tautology checks and eight named sycophancy patterns in the `ai-behavior-auditor` persona; `qa-navigator` routes to the new skills.
 - Faster setup: `scripts/install.sh` (engine and plugins in one step, `--skills-only` for the skills alone). `qestack init` gets `--hook` (merge the guard hook into `.claude/settings.json`), `--existing` (lower start thresholds) and ends with a lint preview and next steps.
 - Runnable example `examples/order-service-maven` (plain Java, no Spring Boot). All gates run with real Maven; the README has the results.
 
@@ -47,6 +47,18 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - TQS: requirement depth uses the depth ratio only. Judge: R3 < 3 gives revise; evidence needs a file and line or a spec anchor.
 - Skills and agents: `qestack:` agent handoffs with fixed inputs, writer phases, judge audit-sample mode, neutral stubs.
 - Rulesets: more database, Kafka and API rules and required cases.
+
+### Fixed (review panel, 2026-10-27)
+
+- Hook: it finds the qestack project from the edited file, so a session started at the root of a monorepo guards its sub-projects.
+- Hook: it sees the lock of a feature whose name contains a dot. It blocks `qestack lock` with an abbreviated `--force` and `qestack init --force` or `--existing` in an existing project. The CLI no longer accepts abbreviated options.
+- Hook: it protects `.qestack/guardrails.md`, `.qestack/templates/`, `.qestack/adapters/` and `.claude/settings.local.json`. A copy of a guidance file in `.qestack/` wins over the bundled file, so agents must not write it.
+- A lock file that cannot be read, or that a newer engine wrote, no longer turns the protection off: the hook blocks edits to test files, and `lock` and `guard` stop with an error.
+- Result and lock files have a `schema` field (1). The engine refuses a file with a newer schema. Files without the field are schema 1.
+- JSON results are written to a temporary file and then renamed, so a stopped run leaves no half-written file. `score --ci` skips an invalid line in `history.jsonl`, as the local `score` does.
+- `gate` builds the options of each step with the real parser.
+- Skills: `test-environments` no longer uses the 'pass locally, fail in CI' trigger of `flaky-test-detective`. `qe-test-writer` may change the stubs listed in `stubs.json` in improve mode, phase prove, as `qe-prove` asks. New routing eval `no-skill-general` (a general request starts no skill) and a `test-environments` check in `flaky-test`.
+- New tests: the hook cases above, `calibrate`, `gate`, the PIT and Stryker parsers, and an in-process rule file (`engine/tests/test_rules.py`).
 
 ### Changed (one plugin)
 

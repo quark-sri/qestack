@@ -3,6 +3,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 1"  # weekly: new Maven, Gradle or PIT releases can break the stack commands
 
 jobs:
   engine:
@@ -38,3 +41,35 @@ jobs:
           python-version: "3.12"
       - name: Validate skills, agents, manifests and data files
         run: python scripts/validate_repo.py
+
+  # The real build tools on the runnable examples. Not on pull requests (slow, needs Java).
+  # The numbers are the "Results" sections of the example READMEs.
+  examples:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example: [order-service-maven, order-service-gradle]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: ${{ matrix.example == 'order-service-gradle' && 'gradle' || 'maven' }}
+      - name: Install the engine
+        run: python -m pip install ./engine
+      - name: Run lint and mutation with the real build tool
+        working-directory: examples/${{ matrix.example }}
+        shell: bash
+        run: |
+          # mutation scores the changed source files: make a change that keeps the code the same
+          for f in src/main/java/com/example/order/*.java; do echo >> "$f"; done
+          qestack lint --feature 001 || true       # the example tests are weak on purpose
+          qestack mutation --feature 001 --base HEAD || true
+      - name: Check the results against the README
+        run: python scripts/check_example.py examples/${{ matrix.example }} --lint-total 5 --mutation 7/15
