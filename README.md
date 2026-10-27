@@ -8,8 +8,6 @@ AI coding agents now write code, tests, reviews and specs. qestack's goal is to 
 
 The first capability, and the full scope of release 0.1, is **AI test quality**: proving that your AI-written tests catch bugs. AI agents write tests very fast. Many of these tests are green and give high coverage, but they do not find bugs. qestack gives your AI agent a process to write the right tests, and it measures the result with evidence, not with opinions. Later releases add more AI Quality Engineering skills beyond test quality (see the [roadmap](docs/PLAN.md#7-roadmap)).
 
-> Status: **0.1 alpha, owner review.** Release 0.1 supports Java with Maven and JUnit 5. The .NET stack is in the repository but is experimental and not supported in 0.1. Read [Limits](#limits) before you use it.
-
 ## Why
 
 Coverage shows that a line **ran**. A green build shows that no assertion **failed**. Neither shows that the tests can **detect a defect**.
