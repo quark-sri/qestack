@@ -1,6 +1,8 @@
 ---
 name: qe-write
 description: "Writes the feature tests blind from test-plan.md with the qe-test-writer agent, without the implementation, and passes the qestack lint and trace gates. Use in a qestack repository after qe-plan and before the implementation."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

@@ -1,6 +1,8 @@
 ---
 name: qe-prove
 description: "Proves qestack red-before-green: the new feature tests fail before the implementation exists, then the tests are locked against weakening. Use in a qestack repository after qe-write and before the implementation."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

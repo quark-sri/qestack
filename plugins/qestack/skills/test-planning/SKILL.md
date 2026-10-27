@@ -1,6 +1,7 @@
 ---
 name: test-planning
 description: "Writes a test plan for a sprint, release, epic or feature: scope, risks, approach by level, regression scope, environments, owners and exit criteria. Use when the user says 'test plan' or asks 'what do we test this sprint'. Not for the long-term QA direction (use test-strategy)."
+license: Apache-2.0
 argument-hint: "[sprint, release, epic or feature]"
 ---
 

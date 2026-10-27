@@ -1,6 +1,7 @@
 ---
 name: service-virtualization
 description: "Simulates external and third-party services in tests with stubs, fakes and simulated servers: contract-based responses, errors, timeouts, request checks and drift checks. Use when the user says 'mock this external API' or 'stub the payment provider'. Not for owned service agreements (use contract-testing)."
+license: Apache-2.0
 argument-hint: "[external service or dependency]"
 ---
 

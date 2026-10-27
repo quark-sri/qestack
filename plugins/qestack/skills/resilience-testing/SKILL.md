@@ -1,6 +1,7 @@
 ---
 name: resilience-testing
 description: "Tests behavior when a dependency fails: timeouts, retries, circuit breakers, fallbacks, partial failures, outages, recovery and graceful shutdown, with safe fault injection. Use when the user says 'chaos test' or asks 'what happens if the database is down'. Not for load (use performance-testing)."
+license: Apache-2.0
 argument-hint: "[service, dependency or failure scenario]"
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: edge-case-hunter
 description: "Finds edge, boundary and negative cases for a feature, function, endpoint or form from a catalog (numbers, text, time, money, state, concurrency, security), each with an input and an expected result. Use when the user asks 'what edge cases am I missing'. Not for a full test design (use test-case-designer)."
+license: Apache-2.0
 argument-hint: "[feature, function, endpoint or file]"
 ---
 

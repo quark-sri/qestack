@@ -1,6 +1,7 @@
 ---
 name: change-impact
 description: "Analyzes what a diff, branch or pull request can break, which existing tests to run in which order, which tests are missing and which changed tests now check less. Use when the user says 'regression scope' or asks 'what should I test for this change' or 'what can this PR break'. Not for running the tests (use test-runner)."
+license: Apache-2.0
 argument-hint: "[branch, commit range or pull request]"
 ---
 

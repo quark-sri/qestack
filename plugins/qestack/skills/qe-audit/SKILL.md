@@ -1,6 +1,8 @@
 ---
 name: qe-audit
 description: "Reports the quality of an existing test suite or module with qestack, read-only and also without feature tags: weak and skipped tests, traceability, mutation score and a judge sample. Use when the user asks how good a whole suite is, or wants a baseline before adopting qestack."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 ---
 
 # qe-audit

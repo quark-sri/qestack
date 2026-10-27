@@ -1,6 +1,8 @@
 ---
 name: qe-calibrate
 description: "Measures how far the qestack judge agrees with human reviewers (agreement and Cohen's kappa) and proposes rubric fixes for the disagreements. Use each sprint, or when the user doubts the judge."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 

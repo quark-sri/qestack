@@ -1,6 +1,7 @@
 ---
 name: requirement-gaps
 description: "Finds gaps in requirements before tests or code exist: missing acceptance criteria, vague words, undefined limits, error behavior, states and conflicts, with proposed answers. Use when the user asks 'is this story testable' or 'what is missing in this spec'. Not for comparing spec and code (use spec-drift)."
+license: Apache-2.0
 argument-hint: "[spec, story, ticket or contract]"
 ---
 

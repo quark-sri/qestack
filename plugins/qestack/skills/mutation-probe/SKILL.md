@@ -1,6 +1,7 @@
 ---
 name: mutation-probe
 description: "Measures test strength with mutation testing: runs the mutation tool, or applies small faults one at a time in an isolated copy, and names the missing test for each survivor. Use when the user says 'mutation score' or asks 'would our tests catch a bug here' or 'are these AI-written tests strong'. Not for untested code (use test-coverage-map)."
+license: Apache-2.0
 argument-hint: "[file, function, class or change]"
 ---
 

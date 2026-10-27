@@ -41,6 +41,8 @@ jobs:
           python-version: "3.12"
       - name: Validate skills, agents, manifests and data files
         run: python scripts/validate_repo.py
+      - name: Tests of the repository scripts
+        run: python -m unittest discover -s scripts/tests -v
 
   # The real build tools on the runnable examples. Not on pull requests (slow, needs Java).
   # The numbers are the "Results" sections of the example READMEs.

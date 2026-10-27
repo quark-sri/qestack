@@ -1,6 +1,7 @@
 ---
 name: exploratory-testing
 description: "Plans, runs and reports session-based exploratory testing: charters from risks, time-boxed sessions, notes, bugs, questions and a debrief. Use when the user says 'exploratory testing', 'explore this feature' or 'test charter'. Not for scripted regression cases (use test-case-designer)."
+license: Apache-2.0
 argument-hint: "[feature, area or release]"
 ---
 

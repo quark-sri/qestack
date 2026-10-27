@@ -1,6 +1,7 @@
 ---
 name: messaging-testing
 description: "Tests event-driven systems with a real broker: producers, consumers, keys, headers, schemas, idempotency, ordering, retries, dead letters and outbox flows, without fixed sleeps. Use when the user says 'Kafka test', 'queue test' or 'test this consumer'. Not for HTTP endpoints (use api-testing)."
+license: Apache-2.0
 argument-hint: "[producer, consumer, topic, queue or event flow]"
 ---
 

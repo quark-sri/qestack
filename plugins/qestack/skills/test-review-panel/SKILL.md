@@ -1,6 +1,7 @@
 ---
 name: test-review-panel
 description: "Reviews tests or a change with up to 8 independent read-only reviewer personas, then merges their findings into one ranked list. Use when the user says 'review panel' or 'deep test review', asks 'is this change safe to merge', or wants AI-written tests reviewed from all angles. Not for a quick score (use testcase-reviewer)."
+license: Apache-2.0
 argument-hint: "[tests, change or pull request] [--personas a,b,c]"
 ---
 

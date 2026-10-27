@@ -1,6 +1,7 @@
 ---
 name: database-testing
 description: "Tests persistence against a real database engine: mappings, constraints, transactions, concurrency, queries, precision, time zones and migrations with existing data. Use when the user says 'database test', 'repository test' or 'test this migration'. Not for creating test data sets (use test-data-management)."
+license: Apache-2.0
 argument-hint: "[repository, query, migration or data flow]"
 ---
 

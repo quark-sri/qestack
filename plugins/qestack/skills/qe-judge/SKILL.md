@@ -1,6 +1,8 @@
 ---
 name: qe-judge
 description: "Gives an independent qestack verdict on the tagged tests of one feature with the qe-test-judge agent and the rubric, and changes no code. Use in a qestack repository when the user asks if the tests of a feature are correct or trustworthy. Not for a whole untagged suite (use qe-audit)."
+license: Apache-2.0
+compatibility: "Needs the qestack engine (Python 3.11+), git and a shell. Full guard only in Claude Code."
 argument-hint: "[feature, for example 003-order-discount]"
 ---
 
