@@ -60,6 +60,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Skills: `test-environments` no longer uses the 'pass locally, fail in CI' trigger of `flaky-test-detective`. `qe-test-writer` may change the stubs listed in `stubs.json` in improve mode, phase prove, as `qe-prove` asks. New routing eval `no-skill-general` (a general request starts no skill) and a `test-environments` check in `flaky-test`.
 - New tests: the hook cases above, `calibrate`, `gate`, the PIT and Stryker parsers, and an in-process rule file (`engine/tests/test_rules.py`).
 
+### Changed (any-agent support, 2026-10-27)
+
+- `docs/other-agents.md`: new tables for Claude Code, Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Antigravity, Devin Desktop (was Windsurf), Cline and OpenCode. Each row gives the skill folders, `.agents/skills` support, unknown frontmatter keys, sub-agents and hooks, with a link to the official documentation and the date of the check. The old unverified paths are gone.
+
 ### Changed (one plugin)
 
 - One plugin: the `qe-skills` plugin is now part of the `qestack` plugin. The 39 library skills and the 8 review personas are in `plugins/qestack/`. The library still needs no engine; only the gated skills (`qestack`, `qe-*`) need it. Skill commands change from `/qe-skills:<skill>` to `/qestack:<skill>`. If you installed the old plugin, run `/plugin uninstall qe-skills@qestack`, then `/plugin install qestack@qestack`.
