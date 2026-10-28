@@ -55,6 +55,10 @@ scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>
 
 To find the folder for your agent, use the [skill folders](#skill-folders) table.
 
+The script makes symbolic links, so `git pull` updates the skills. It links all skills of the plugin. The library skills need no engine. The gated skills (`qestack`, `qe-*`) also need the engine.
+
+The reviewer personas are agent files in `plugins/qestack/agents/`. Only the `test-review-panel` skill uses them. The script does not link them. If your agent cannot start the persona agents, the panel reads the persona texts and runs each persona as a separate reviewer. If the agent cannot start separate reviewers, the panel runs the personas one at a time in one session, and the report says that the review was not independent. The portable package of the panel has the persona texts in `references/personas/`. Use it when your agent has no access to the clone.
+
 ### Portable packages
 
 The source skills have Claude Code fields, for example `argument-hint`. Some hosts reject these fields: claude.ai and the Skills API do. To get skills that have only the fields of the [Agent Skills spec](https://agentskills.io/specification), build the packages:
@@ -71,13 +75,11 @@ python3 scripts/validate_repo.py --spec dist/skills/*  # checks the output again
 | `dist/qestack-skills.zip` | All 49 skills |
 | `dist/qestack-qa-library.zip` | The 39 library skills only. They need no engine. |
 
-Each package has `license`, a `metadata` map (author, version, source) and, for the gated skills, a `compatibility` line.
-
-The script makes symbolic links, so `git pull` updates the skills. To upload a skill to claude.ai or the Skills API, remove the `argument-hint` line first: these two reject a field outside the spec. It links all skills of the plugin. The library skills need no engine. The gated skills (`qestack`, `qe-*`) also need the engine. The reviewer personas are agent files in `plugins/qestack/agents/`. The script does not link them. Only the `test-review-panel` skill uses them. If your agent cannot start separate reviewers, the panel applies the checklists in one session and says that the review was not independent.
+Each package has `license`, a `metadata` map (author, version, source) and, for the gated skills, a `compatibility` line. The `test-review-panel` package also has the 8 persona texts in `references/personas/`. The build copies them from `plugins/qestack/agents/`.
 
 ## Without sub-agents
 
-Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review persona, give the new session the text of its file in `plugins/qestack/agents/`, for example `domain-oracle-reviewer.md`. A new session has no memory of writing the tests, so the review is still independent.
+Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review persona, give the new session the text of its file in `plugins/qestack/agents/`, for example `domain-oracle-reviewer.md`, or in `references/personas/` of the panel package. A new session has no memory of writing the tests, so the review is still independent.
 
 ## Without the hook
 

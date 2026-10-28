@@ -37,7 +37,7 @@ One reviewer sees one kind of problem. A panel of reviewers with different jobs 
 | Maintainability Craftsperson | `maintainability-craftsperson` | Can the next person read, change and diagnose it? | always |
 | Suite Cost and Speed Reviewer | `suite-cost-speed-reviewer` | Where do the time and the money go? | suite or pipeline |
 
-Each persona is an agent of this plugin, with only the tools that its job needs. No persona has an edit tool. Personas find and report. The lead, this skill, makes any change. Each persona has a scope, a checklist, an evidence rule, an output table, limits and the same "Reviewer rules". The rules make each persona return its report and a findings block, and write no files. This skill is the only skill in this plugin that uses the personas. The other skills work without them. Users can also start a persona directly, or from their own skills.
+Each persona is an agent of this plugin, with only the tools that its job needs. No persona has an edit tool. Personas find and report. The lead, this skill, makes any change. Each persona has a scope, a checklist, an evidence rule, an output table, limits and the same "Reviewer rules". The rules make each persona return its report and a findings block, and write no files. This skill is the only skill in this plugin that uses the personas. The other skills work without them. Users can also start a persona directly, or from their own skills. The portable package of this skill has the same persona texts in `references/personas/`, for hosts that do not have the agents.
 
 ## Principles
 
@@ -50,7 +50,7 @@ Each persona is an agent of this plugin, with only the tools that its job needs.
 
 1. **Scope.** List the files, the requirement sources, the test command and the facts from the context file. Say if the personas may run tests against a shared environment; the default is no. This is the brief.
 2. **Choose the panel.** Use the "Default" column, or the `--personas` list from the user. Say which personas you chose and why.
-3. **Start the persona agents in parallel.** Each one gets the same brief. If the host cannot start these agents, give the text of each agent file to a separate reviewer. If the host cannot start separate reviewers, apply each agent file yourself, one at a time. Say in the report that the review was not independent.
+3. **Start the persona agents in parallel.** Each one gets the same brief. If the host cannot start these agents, read the text of each persona in `references/personas/<agent>.md` of this skill. If that folder does not exist, read the agent file of the plugin. Give each text to a separate reviewer. If the host cannot start separate reviewers, apply each text yourself, one persona at a time. Finish the report of one persona before you read the next text. Say in the report that the review was not independent.
 4. **Run the fault plan.** If the Saboteur returned a fault plan, run it with the method of `mutation-probe`: in an isolated copy, one fault at a time. Mark each predicted survivor as proven or wrong. Do this after all personas have reported, so that no persona sees a fault.
 5. **Verify.** For each blocker and major finding, open the evidence. Reject findings that the evidence does not support, and say why.
 6. **Merge.** Two findings are the same when they have the same root cause at the same place. Keep the strongest evidence, list all personas that found it, and use the highest severity.

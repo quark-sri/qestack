@@ -15,6 +15,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent.parent
 SKILLS = SCRIPTS.parent / "plugins" / "qestack" / "skills"
+AGENTS = SCRIPTS.parent / "plugins" / "qestack" / "agents"
 BUILD = SCRIPTS / "build_skills.py"
 VALIDATOR = SCRIPTS / "validate_repo.py"
 
@@ -78,10 +79,29 @@ class BuildSkills(unittest.TestCase):
             src, dst = SKILLS / name, self.out / "skills" / name
             self.assertEqual(body((dst / "SKILL.md").read_text()), body((src / "SKILL.md").read_text()), name)
             src_files = sorted(p.relative_to(src) for p in src.rglob("*") if p.is_file() and p.name != "SKILL.md")
-            dst_files = sorted(p.relative_to(dst) for p in dst.rglob("*") if p.is_file() and p.name != "SKILL.md")
+            dst_files = sorted(p.relative_to(dst) for p in dst.rglob("*")
+                               if p.is_file() and p.name != "SKILL.md" and "personas" not in p.parts)
             self.assertEqual(dst_files, src_files, name)
             for f in src_files:
                 self.assertEqual((dst / f).read_bytes(), (src / f).read_bytes(), f"{name}/{f}")
+
+    def test_panel_package_has_each_persona_text_unchanged(self):
+        expected = sorted(f for f in AGENTS.glob("*.md") if not f.stem.startswith("qe-"))
+        folder = self.out / "skills" / "test-review-panel" / "references" / "personas"
+        self.assertEqual(len(expected), 8)
+        self.assertEqual(sorted(f.name for f in folder.iterdir()), [f.name for f in expected])
+        for f in expected:
+            self.assertEqual((folder / f.name).read_bytes(), f.read_bytes(), f.name)
+
+    def test_no_workflow_agent_and_no_other_skill_gets_persona_texts(self):
+        self.assertEqual(list((self.out / "skills").glob("*/references/personas/qe-*.md")), [])
+        self.assertEqual([p.parent.parent.name for p in (self.out / "skills").glob("*/references/personas")],
+                         ["test-review-panel"])
+
+    def test_panel_zip_has_the_persona_texts(self):
+        names = self.zip_names(self.out / "zips" / "test-review-panel.zip")
+        self.assertIn("test-review-panel/references/personas/saboteur.md", names)
+        self.assertEqual(sum("/references/personas/" in n for n in names), 8)
 
     def test_skill_zip_has_the_skill_folder_as_root(self):
         names = self.zip_names(self.out / "zips" / "unit-testing.zip")
