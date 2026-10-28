@@ -135,14 +135,16 @@ In Claude Code:
 | Claude Code without the plugin | `.claude/skills/` | `~/.claude/skills/` |
 | Cline | `.cline/skills/` | `~/.cline/skills/` |
 
-Link the skills into the folder of your agent:
+Install the skills for your agent:
 
 ```bash
 git clone https://github.com/quark-sri/qestack ~/qestack
-~/qestack/scripts/install-skills.sh ~/.agents/skills     # or another folder from the table
+~/qestack/scripts/install-skills.sh --agent codex --user                 # all your projects
+~/qestack/scripts/install-skills.sh --agent cursor --project ~/my-repo   # one repository
+~/qestack/scripts/install-skills.sh --help                               # all agents and options
 ```
 
-The links point to the clone, so `git pull` updates the skills.
+The script puts the skills in the folder of the agent, from the table above. `--agent all` installs for each agent except Claude Code; Claude Code gets the skills from the plugin. The script needs python3: it builds the portable packages first. By default, it makes links to the packages in the clone. After `git pull`, run the same command again. Use `--copy` for real copies, for example on Windows. Use `--library-only` to leave out the gated skills.
 
 To upload skills to a host that accepts only the fields of the Agent Skills standard, use the portable packages. claude.ai and the Skills API are such hosts. Run `python3 scripts/build_skills.py` in the clone. It writes `dist/`: one zip for each skill, a bundle of all 49 skills and a bundle of the 39 library skills.
 

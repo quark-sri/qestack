@@ -50,12 +50,23 @@ Status in 0.1: only Claude Code is tested. The other installs are planned for 0.
 
 ```bash
 git clone https://github.com/quark-sri/qestack ~/qestack
-scripts/install-skills.sh ~/.agents/skills      # or ~/.claude/skills, or <repo>/.agents/skills
+cd ~/qestack
+scripts/install-skills.sh --agent <name> --user               # for all your projects
+scripts/install-skills.sh --agent <name> --project <repo>     # for one repository
 ```
 
-To find the folder for your agent, use the [skill folders](#skill-folders) table.
+| Option | Effect |
+|---|---|
+| `--agent <name>` | `claude`, `codex`, `cursor`, `copilot`, `gemini`, `antigravity`, `devin`, `opencode`, `cline`, or `all`. `all` is each agent except `claude`: Claude Code gets the skills from the plugin. An unknown name prints the list. |
+| `--user` or `--project <repo>` | The user folder or the project folder of the agent, from the [skill folders](#skill-folders) table. Agents that share `.agents/skills/` get one install. |
+| `--copy` | Copy the skills. The default is symbolic links. On Windows, use `--copy`: links need extra rights there. |
+| `--library-only` | Install only the 39 library skills. Leave out the gated skills (`qestack`, `qe-*`). |
 
-The script makes symbolic links, so `git pull` updates the skills. It links all skills of the plugin. The library skills need no engine. The gated skills (`qestack`, `qe-*`) also need the engine.
+The script needs python3. It builds the [portable packages](#portable-packages) first and installs them, so the skills have only the spec fields. The links point to `dist/skills/` in the clone. After `git pull`, run the same command again to rebuild the packages. Codex documents that it follows linked skill folders. The other agents do not document this; if an agent does not find the linked skills, use `--copy`. The script does not change a folder that has the name of a qestack skill but is not from qestack.
+
+The library skills need no engine. The gated skills (`qestack`, `qe-*`) also need the engine.
+
+The old form `scripts/install-skills.sh <skills-folder>` still works. It links the source skills, with the Claude Code fields, into one folder.
 
 The reviewer personas are agent files in `plugins/qestack/agents/`. Only the `test-review-panel` skill uses them. The script does not link them. If your agent cannot start the persona agents, the panel reads the persona texts and runs each persona as a separate reviewer. If the agent cannot start separate reviewers, the panel runs the personas one at a time in one session, and the report says that the review was not independent. The portable package of the panel has the persona texts in `references/personas/`. Use it when your agent has no access to the clone.
 
