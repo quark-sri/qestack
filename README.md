@@ -150,7 +150,7 @@ What works outside Claude Code in release 0.1:
 
 - **Library skills:** need no engine. Each agent that reads SKILL.md can use them.
 - **Gated skills:** also need the engine, git and a shell. Install the engine with the `pipx` command of the manual install above.
-- **Review panel:** if the agent cannot start separate reviewers, the panel does the reviews in one session. The report then says that the review was not independent. The portable packages do not contain the reviewer texts yet; a later step adds them.
+- **Review panel:** if the agent cannot start separate reviewers, the panel does the reviews in one session. The report then says that the review was not independent. The portable package of the panel has the reviewer texts.
 - **Guard hook:** only in Claude Code. In other agents, run `qestack guard` in CI.
 
 Only Claude Code is tested in 0.1. The folders come from the official documentation of each agent (checked on 2026-10-27). [docs/other-agents.md](docs/other-agents.md) has the sources, the sub-agent and hook support of each agent, and the steps without sub-agents.
