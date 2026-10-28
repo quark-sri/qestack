@@ -210,7 +210,8 @@ Follow `docs/library-session-test.md`. The routing checks S2, S3, S4 and S7 now 
 | `plugins/qestack/skills/test-review-panel/references/findings-format.md` | The findings block and the review folder format |
 | `.claude-plugin/marketplace.json` | Marketplace entry for the plugin |
 | `scripts/validate_repo.py` | Repository checks |
-| `scripts/install-skills.sh` | Links all skills of the plugin for other agents |
+| `scripts/install-skills.sh` | Installs the skills for other agents (`--agent <name>`), from the portable packages |
+| `scripts/build_skills.py` | Builds the portable skill packages in `dist/` |
 | `docs/PLAN.md` | Vision, roadmap, governance, risks |
 | `docs/library-session-test.md` | The checks for task 4a |
 | `TASKS.local.md` | Local problem and task list (not in git) |

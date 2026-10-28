@@ -42,7 +42,7 @@ lines = [
     "test locks, hidden faults, mutation score, independent judge).",
     "",
     "Install in Claude Code: `/plugin marketplace add quark-sri/qestack`, then `/plugin install qestack@qestack`. "
-    "Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>`.",
+    "Other agents that read SKILL.md: `scripts/install-skills.sh --agent <name> --user` (see docs/other-agents.md).",
     "",
     "## Docs",
     "",

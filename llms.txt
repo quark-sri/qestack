@@ -2,7 +2,7 @@
 
 > qestack: QA and test automation skills, agents and quality gates for AI coding agents. One Claude Code plugin with a QA library (39 Quality Engineering skills and 8 reviewer personas for any stack, no engine needed) and a gated workflow with an engine that proves AI-written tests catch bugs (spec-first test design, red-before-green, test locks, hidden faults, mutation score, independent judge).
 
-Install in Claude Code: `/plugin marketplace add quark-sri/qestack`, then `/plugin install qestack@qestack`. Other agents that read SKILL.md: `scripts/install-skills.sh <skills-folder>`.
+Install in Claude Code: `/plugin marketplace add quark-sri/qestack`, then `/plugin install qestack@qestack`. Other agents that read SKILL.md: `scripts/install-skills.sh --agent <name> --user` (see docs/other-agents.md).
 
 ## Docs
 
