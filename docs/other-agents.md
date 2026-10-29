@@ -92,6 +92,10 @@ Each package has `license`, a `metadata` map (author, version, source) and, for 
 
 Where an agent cannot start a separate sub-agent, run the role in a new session. Example for the judge: start a new session, give it the text of `plugins/qestack/agents/qe-test-judge.md`, and ask it to review the feature. For a review persona, give the new session the text of its file in `plugins/qestack/agents/`, for example `domain-oracle-reviewer.md`, or in `references/personas/` of the panel package. A new session has no memory of writing the tests, so the review is still independent. In the portable packages, the `qestack` skill has the 4 workflow agent texts in `references/agents/`. The `qestack` skill tells the agent to stop and ask for a new session for each role. It never does the writer, the judge or the fault seeder role in the same session.
 
+## Session test
+
+To check the skills in a real session of another agent, follow [any-agent-session-test.md](any-agent-session-test.md). It also has the results of each agent.
+
 ## Without the hook
 
 Run `qestack guard --feature <feature>` after each agent session, and in CI. The guard finds weakened, skipped and deleted tests against the base branch and the lock. Without the hook, nothing blocks a weakened test or an edit to a result file during the session. The CI guard is then the authority. `qestack init` also writes a short qestack section into `AGENTS.md`: the rules that the hook enforces in Claude Code, as instructions. Many agents read `AGENTS.md` at the start of each session, for example Codex, Cursor, GitHub Copilot, Gemini CLI, Devin and OpenCode ([agents.md](https://agents.md), checked 2026-10-29). Claude Code reads `CLAUDE.md`, and gets the hook instead. `qestack init` keeps the other text of an existing `AGENTS.md` and replaces only the qestack section. `--no-agents-md` turns this off. For a CI example, run `qestack show templates/ci-github-actions` and copy it to `.github/workflows/qestack.yml`.
