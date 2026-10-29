@@ -102,14 +102,15 @@ pitest {
     failWhenNoMutations = false
     excludedGroups = setOf("integration", "ui")
     // The gate tool sets these for each run (class patterns, separated by commas).
-    providers.gradleProperty("qe.targetClasses").orNull?.let { targetClasses = it.split(",").toSet() }
-    providers.gradleProperty("qe.targetTests").orNull?.let { targetTests = it.split(",").toSet() }
+    providers.gradleProperty("qe.targetClasses").orNull?.takeIf { it.isNotBlank() }?.let { targetClasses = it.split(",").toSet() }
+    providers.gradleProperty("qe.targetTests").orNull?.takeIf { it.isNotBlank() }?.let { targetTests = it.split(",").toSet() }
 }
 ```
 
 Notes:
 
 - The gate tool passes `-Pqe.targetClasses=` with only the classes that the feature changed, and `-Pqe.targetTests=` with the test classes of the feature (`{feature_test_classes}`). Without `targetTests`, PIT uses the `targetClasses` pattern as the test filter and misses tests in other packages.
+- `qestack mutation --all-files` and a feature without tagged tests have no class list. Then the gate tool leaves out the empty property, and PIT uses its default: the classes of the project `group` (`<group>.*`). Set `group` in the build file, or set a default `targetClasses` before the two lines above.
 - `failWhenNoMutations = false`: in a multi-module build, a module with no changed classes does not fail the build.
 - Multi-module build: the gate tool reads every `mutations.xml` that the run wrote (one for each module). You can also run PIT only in the module that holds the changed classes: override `commands.mutation` with `:module:pitest`.
 - First run the command by hand once. Check that `build/reports/pitest/mutations.xml` exists.

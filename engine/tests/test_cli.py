@@ -678,6 +678,60 @@ class FillTests(unittest.TestCase):
                            env=dict(os.environ, PYTHONPATH=str(SRC)), capture_output=True, text=True)
         self.assertEqual(r.stdout.rstrip("\n"), "x 'com.acme.Foo*' 'a b' ", r.stderr)
 
+    def test_empty_build_property_is_left_out(self):
+        code = ("import json, sys, tomllib; from qestack.cli import fill; "
+                "cmd = tomllib.load(open(sys.argv[1], 'rb'))['commands']['mutation']; "
+                "print(json.dumps([fill(cmd, {'target_classes': '', 'feature_test_classes': 'a.BTest*'}), "
+                "fill(cmd, {'target_classes': 'a.B*', 'feature_test_classes': ''})]))")
+        for stack, prop in (("java-gradle-junit5", "-Pqe."), ("java-maven-junit5", "-D")):
+            with self.subTest(stack=stack):
+                r = subprocess.run([sys.executable, "-c", code, str(SRC / f"qestack/data/stacks/{stack}.toml")],
+                                   env=dict(os.environ, PYTHONPATH=str(SRC)), capture_output=True, text=True)
+                no_classes, no_tests = json.loads(r.stdout)
+                self.assertNotIn(prop + "targetClasses", no_classes)
+                self.assertIn(prop + "targetTests='a.BTest*'", no_classes)
+                self.assertIn(prop + "targetClasses='a.B*'", no_tests)
+                self.assertNotIn(prop + "targetTests", no_tests)
+                self.assertNotIn("{", no_classes + no_tests)
+
+
+class MutationAllFilesTests(unittest.TestCase):
+    """qestack mutation runs the configured command; a fake tool records its arguments."""
+
+    def setUp(self):
+        self.repo = Repo("GoodDiscountTest.java")
+        d = self.d = self.repo.dir
+        (d / "fake_pit.py").write_text(
+            "import json, pathlib, sys\n"
+            "pathlib.Path('args.json').write_text(json.dumps(sys.argv[1:]))\n"
+            "out = pathlib.Path('target/pit-reports'); out.mkdir(parents=True, exist_ok=True)\n"
+            "(out / 'mutations.xml').write_text(\"<mutations><mutation status='KILLED'><mutatedClass>com.acme.order.Discount\"\n"
+            "    \"</mutatedClass><lineNumber>5</lineNumber><mutator>a.M</mutator><description>x</description></mutation></mutations>\")\n")
+        proj = d / ".qestack/project.toml"
+        proj.write_text(proj.read_text().replace(
+            'mutation = "true"',
+            'mutation = "python3 fake_pit.py -Pqe.targetClasses={target_classes} -Pqe.targetTests={feature_test_classes}"'))
+
+    def tearDown(self):
+        self.repo.close()
+
+    def args(self):
+        return json.loads((self.d / "args.json").read_text())
+
+    def test_all_files_leaves_out_the_empty_class_list(self):
+        r = run(self.d, "mutation", "--all-files")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.args(), ["-Pqe.targetTests=com.acme.order.DiscountTest*"])
+        self.assertEqual(self.repo.read_json("mutation.json")["summary"]["total"], 1)
+
+    def test_changed_class_is_still_passed(self):
+        prod = self.d / PROD_FILE
+        prod.write_text(prod.read_text() + "\n")
+        r = run(self.d, "mutation")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.args(), ["-Pqe.targetClasses=com.acme.order.Discount*",
+                                       "-Pqe.targetTests=com.acme.order.DiscountTest*"])
+
 
 class InitShowTests(unittest.TestCase):
     def test_init_detects_stack_and_rulesets(self):
