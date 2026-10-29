@@ -2842,6 +2842,8 @@ def cmd_init(args, cfg_unused=None):
         shutil.copy2(DATA_DIR / "templates" / "locks-README.md", locks / "README.md")
     if args.hook:
         install_guard_hook()
+    if not args.no_agents_md:
+        write_agents_md()
     if args.existing:
         apply_existing_codebase_thresholds(proj)
     if args.speckit:
@@ -2863,6 +2865,31 @@ def cmd_init(args, cfg_unused=None):
     if not args.hook:
         print("  3. No qestack plugin? Run 'qestack init --hook' to add the guard hook to .claude/settings.json.")
     return 0
+
+
+AGENTS_START, AGENTS_END = "<!-- qestack:start", "<!-- qestack:end -->"
+
+
+def write_agents_md():
+    """Write the qestack section into AGENTS.md: the rules for agents that have no guard hook.
+    Keep all other text of an existing AGENTS.md. Replace only the text between the qestack markers."""
+    path = ROOT / "AGENTS.md"
+    section = (DATA_DIR / "templates" / "agents-md.md").read_text(encoding="utf-8")
+    if not path.exists():
+        path.write_text(section, encoding="utf-8")
+        print(f"created {rel(path)}  (qestack rules for AI coding agents; turn off with --no-agents-md)")
+        return
+    text = path.read_text(encoding="utf-8")
+    start, end = text.find(AGENTS_START), text.find(AGENTS_END)
+    if start >= 0 and end > start:
+        new = text[:start] + section.rstrip("\n") + text[end + len(AGENTS_END):]
+    else:
+        new = text + ("" if text.endswith("\n") or not text else "\n") + ("\n" if text else "") + section
+    if new == text:
+        print(f"kept {rel(path)}  (the qestack section is current)")
+        return
+    path.write_text(new, encoding="utf-8")
+    print(f"updated {rel(path)}  (qestack section only)")
 
 
 def install_guard_hook():
@@ -3015,6 +3042,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--rulesets", help="comma list of rulesets (default: detected)")
     p.add_argument("--speckit", action="store_true", help="also add the speckit phase commands")
     p.add_argument("--hook", action="store_true", help="add the guard hook to .claude/settings.json (not needed with the plugin)")
+    p.add_argument("--no-agents-md", action="store_true", help="do not write the qestack section into AGENTS.md")
     p.add_argument("--existing", action="store_true", help="existing codebase: start with lower mutation and seed thresholds")
     p.add_argument("--force", action="store_true", help="overwrite existing files")
     p = sub.add_parser("show", help="list or print bundled stacks, rulesets, rubrics, templates")

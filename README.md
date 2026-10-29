@@ -111,7 +111,7 @@ git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
 cd your-repo && qestack init --existing    # drop --existing for a new project; add --speckit for GitHub Spec Kit
 ```
 
-`qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
+`qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). `init` also writes a short qestack section into `AGENTS.md` with the rules for AI coding agents. It keeps the other text of an existing `AGENTS.md`. `--no-agents-md` turns this off. Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
 
 **Manual install of option B** (the same steps, one by one):
 

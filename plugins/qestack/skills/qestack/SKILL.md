@@ -31,6 +31,18 @@ Iteration: <n>                 (qe-test-judge in test-review mode only)
 Feedback: <path>               (qe-test-writer in improve mode only)
 ```
 
+## If the host cannot start `qestack:` agents
+
+Some hosts cannot start the plugin agents, for example an agent other than Claude Code, or Claude Code without the plugin. Then do not do the role yourself. A new session has no memory of this session, so the role stays independent.
+
+1. Stop at the step that starts the agent.
+2. Find the agent text: `references/agents/<agent>.md` of this skill, for example `references/agents/qe-test-judge.md`. If that folder does not exist, use the agent file of the plugin, `plugins/qestack/agents/<agent>.md`.
+3. Tell the user to start a new session of their agent in the same repository. Give the user the text to paste into it: "Act as the agent in `<path of the agent text>`. Follow it exactly." and the start lines above.
+4. Wait until the user says that the role is done. Then continue with the next step. Read only the files that the role writes, for example `plan-review.json`. Do not read the fault details.
+5. Use one new session for each role and each start. Never use the session of one role for another role.
+
+Never do the writer, the judge or the fault seeder role in this session. This session saw the plan, the tests, the code or the faults. The designer reads only the spec. You can do the designer role in this session only if this session did not read the implementation. Then say "Independent: no" in the report.
+
 ## Run the long commands in the background
 
 `qestack gate`, `qestack flaky`, `qestack mutation` and `qestack seed` can run longer than the time limit of one shell command. Run them with `run_in_background: true` and wait for the completion notice. Do not poll. If a run stops early, run it again: the engine reverts a fault that a stopped `seed` run left in the code.
@@ -65,4 +77,5 @@ With speckit: `qestack init --speckit` adds `/speckit.testplan`, `/speckit.testw
 - Report numbers from the engine. Do not give opinions without evidence.
 - Never weaken a test to pass a gate. Never change thresholds or protected files.
 - Do not edit qestack result files (gate JSON files, `feedback-<n>.md`, `quality-report.md`, `faults/`). Run the command again. The hook blocks these edits.
+- Without the hook (any host other than Claude Code with the plugin or `qestack init --hook`), nothing blocks these edits in the session. Then the CI guard is the authority: run `qestack guard --feature <feature>` before each commit, and in CI.
 - A correct test that fails shows a product bug. Report it as a finding.

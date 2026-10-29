@@ -12,7 +12,7 @@ The settings files (`.qestack/project.toml`, `.qestack/project-rules.md`) are pr
 ## Steps
 
 1. **Engine.** Run `qestack --version`. If it is missing, give the install command (`pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"`) and stop. The version must be 0.1.x, the same as this plugin.
-2. **Create the folder.** If `.qestack/project.toml` does not exist, run `qestack init`. Add `--speckit` if `.specify/` exists, and `--existing` if the codebase already has code and tests (lower start thresholds). Read the lint preview at the end of the output: it shows early if an assertion helper is unknown. The command detects the stack and the rulesets. It creates the files once. After that, only the user changes them.
+2. **Create the folder.** If `.qestack/project.toml` does not exist, run `qestack init`. Add `--speckit` if `.specify/` exists, and `--existing` if the codebase already has code and tests (lower start thresholds). Read the lint preview at the end of the output: it shows early if an assertion helper is unknown. The command detects the stack and the rulesets. It creates the files once. After that, only the user changes them. It also writes the qestack section of `AGENTS.md`, the rules for agents without the guard hook. If the user does not want it, add `--no-agents-md`.
 3. **Check the detection.** Read the build files. Compare them with `[project] stack` and `rulesets`. Run `qestack show stacks` and `qestack show rulesets` to see the options. Gradle: use the `java-gradle-junit5` stack, and add the settings from its guide to `build.gradle.kts`.
 4. **Assertion helpers.**
    1. Run `qestack lint --all --max 100`.
