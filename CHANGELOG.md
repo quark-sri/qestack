@@ -30,6 +30,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - The engine finds the nearest `.qestack/` from the current folder, and `qestack init` in a sub-project with its own build file creates `.qestack/` there (monorepos). Before, it always used the top of the git repository.
 - In a project below the git top, `changed_files` and the base version of a file used paths from the git top. Now they use paths from the project root (`git diff --relative`, `git show <ref>:./<path>`).
 - Java stack: `-Dfailsafe.rerunFailingTestsCount=0`. Failsafe has its own property name, so reruns of integration tests were not turned off.
+- Gradle stack: `qestack mutation --all-files` failed, because PIT got an empty `targetClasses` ("Missing required option(s) [targetClasses]"). The engine now leaves out a `-D` or `-P` build property when its value is empty, so the build tool uses its default (for PIT: the classes of the project group). The Gradle build snippet also ignores an empty value. Checked with Gradle 9.8.2, the PIT plugin 1.19.0, PIT 1.30.1 and Java 25, also with the old snippet.
 - Java stack commands are verified with Maven 3.10.0, Surefire and Failsafe 3.6.0, PIT 1.30.1, JUnit 5.14.4 and Java 25.
 
 ### Changed (architecture review)

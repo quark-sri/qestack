@@ -1087,6 +1087,10 @@ PRE_QUOTED = {"changed_files"}
 def fill(cmd: str, mapping: dict) -> str:
     for k, v in mapping.items():
         v = str(v)
+        if v == "":
+            # An empty build property (-Dname= or -Pname=) is not "no value" for every tool: the Gradle
+            # snippet would give PIT one empty class pattern. Leave the option out; the tool uses its default.
+            cmd = re.sub(r"\s+-[DP][\w.-]+=\{" + re.escape(k) + r"\}(?=\s|$)", "", cmd)
         cmd = cmd.replace("{" + k + "}", v if k in PRE_QUOTED or v == "" else shlex.quote(v))
     return cmd
 
