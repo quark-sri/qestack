@@ -721,6 +721,60 @@ class InitShowTests(unittest.TestCase):
         finally:
             shutil.rmtree(d)
 
+    def test_init_writes_the_agents_md_section(self):
+        d = Path(tempfile.mkdtemp())
+        try:
+            git(d, "init", "-q", "-b", "main")
+            r = run(d, "init")
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            self.assertIn("created AGENTS.md", r.stdout)
+            t = (d / "AGENTS.md").read_text()
+            self.assertTrue(t.startswith("<!-- qestack:start"))
+            self.assertTrue(t.endswith("<!-- qestack:end -->\n"))
+            self.assertIn("Never weaken, skip or delete a locked test", t)
+            self.assertIn("qestack guard --feature <feature>", t)
+            r = run(d, "init")  # a second run keeps the file as it is
+            self.assertIn("kept AGENTS.md", r.stdout)
+            self.assertEqual((d / "AGENTS.md").read_text(), t)
+        finally:
+            shutil.rmtree(d)
+
+    def test_init_keeps_the_text_of_an_existing_agents_md(self):
+        d = Path(tempfile.mkdtemp())
+        try:
+            git(d, "init", "-q", "-b", "main")
+            own = "# Team rules\n\nUse tabs.\n"
+            (d / "AGENTS.md").write_text(own)
+            run(d, "init")
+            t = (d / "AGENTS.md").read_text()
+            self.assertTrue(t.startswith(own + "\n<!-- qestack:start"), t)
+            self.assertEqual(t.count("<!-- qestack:start"), 1)
+            # An old qestack section is replaced; the text before and after it stays.
+            old = own + "\n<!-- qestack:start -->\nold rules\n<!-- qestack:end -->\n\n## More team rules\n"
+            (d / "AGENTS.md").write_text(old)
+            r = run(d, "init")
+            self.assertIn("updated AGENTS.md", r.stdout)
+            t = (d / "AGENTS.md").read_text()
+            self.assertNotIn("old rules", t)
+            self.assertTrue(t.startswith(own + "\n<!-- qestack:start"))
+            self.assertTrue(t.endswith("<!-- qestack:end -->\n\n## More team rules\n"), t)
+            self.assertEqual(t.count("<!-- qestack:end -->"), 1)
+        finally:
+            shutil.rmtree(d)
+
+    def test_init_no_agents_md_flag(self):
+        d = Path(tempfile.mkdtemp())
+        try:
+            git(d, "init", "-q", "-b", "main")
+            r = run(d, "init", "--no-agents-md")
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            self.assertFalse((d / "AGENTS.md").exists())
+            (d / "AGENTS.md").write_text("# Team rules\n")
+            run(d, "init", "--no-agents-md")
+            self.assertEqual((d / "AGENTS.md").read_text(), "# Team rules\n")
+        finally:
+            shutil.rmtree(d)
+
     def test_java_stack_disables_reruns_in_surefire_and_failsafe(self):
         import tomllib
         cmds = tomllib.loads((SRC / "qestack/data/stacks/java-maven-junit5.toml").read_text())["commands"]

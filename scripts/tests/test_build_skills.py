@@ -79,8 +79,9 @@ class BuildSkills(unittest.TestCase):
             src, dst = SKILLS / name, self.out / "skills" / name
             self.assertEqual(body((dst / "SKILL.md").read_text()), body((src / "SKILL.md").read_text()), name)
             src_files = sorted(p.relative_to(src) for p in src.rglob("*") if p.is_file() and p.name != "SKILL.md")
+            added = {"test-review-panel": "personas", "qestack": "agents"}.get(name)
             dst_files = sorted(p.relative_to(dst) for p in dst.rglob("*")
-                               if p.is_file() and p.name != "SKILL.md" and "personas" not in p.parts)
+                               if p.is_file() and p.name != "SKILL.md" and added not in p.parts)
             self.assertEqual(dst_files, src_files, name)
             for f in src_files:
                 self.assertEqual((dst / f).read_bytes(), (src / f).read_bytes(), f"{name}/{f}")
@@ -97,6 +98,25 @@ class BuildSkills(unittest.TestCase):
         self.assertEqual(list((self.out / "skills").glob("*/references/personas/qe-*.md")), [])
         self.assertEqual([p.parent.parent.name for p in (self.out / "skills").glob("*/references/personas")],
                          ["test-review-panel"])
+
+    def test_qestack_package_has_each_workflow_agent_text_unchanged(self):
+        expected = sorted(AGENTS.glob("qe-*.md"))
+        folder = self.out / "skills" / "qestack" / "references" / "agents"
+        self.assertEqual(len(expected), 4)
+        self.assertEqual(sorted(f.name for f in folder.iterdir()), [f.name for f in expected])
+        for f in expected:
+            self.assertEqual((folder / f.name).read_bytes(), f.read_bytes(), f.name)
+
+    def test_no_persona_and_no_other_skill_gets_workflow_agent_texts(self):
+        self.assertEqual([p.parent.parent.name for p in (self.out / "skills").glob("*/references/agents")],
+                         ["qestack"])
+        self.assertEqual(sorted(p.stem for p in (self.out / "skills").glob("*/references/agents/*.md")),
+                         sorted(f.stem for f in AGENTS.glob("qe-*.md")))
+
+    def test_qestack_zip_has_the_workflow_agent_texts(self):
+        names = self.zip_names(self.out / "zips" / "qestack.zip")
+        self.assertIn("qestack/references/agents/qe-test-judge.md", names)
+        self.assertEqual(sum("/references/agents/" in n for n in names), 4)
 
     def test_panel_zip_has_the_persona_texts(self):
         names = self.zip_names(self.out / "zips" / "test-review-panel.zip")

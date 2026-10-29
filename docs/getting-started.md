@@ -17,7 +17,7 @@ cd your-repo
 qestack init --existing   # existing codebase: lower start thresholds. Add --speckit for GitHub Spec Kit.
 ```
 
-`init` ends with a lint preview of your existing tests. In Claude Code, run `/qe-setup`. It checks the stack, the rulesets, your assertion helpers and the build commands. Then:
+`init` ends with a lint preview of your existing tests. It also writes a short qestack section into `AGENTS.md`, with the rules for AI coding agents (`--no-agents-md` turns it off). In Claude Code, run `/qe-setup`. It checks the stack, the rulesets, your assertion helpers and the build commands. Then:
 
 ```bash
 qestack doctor

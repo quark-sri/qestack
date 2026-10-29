@@ -10,11 +10,13 @@ Output:
     skills/<name>/              each skill, with only the spec frontmatter fields and a metadata map
     skills/test-review-panel/references/personas/<name>.md
                                 the 8 reviewer persona texts, for hosts that cannot start the plugin agents
+    skills/qestack/references/agents/<name>.md
+                                the 4 workflow agent texts (qe-*), for the same hosts
     zips/<name>.zip             one zip for each skill; the skill folder is the zip root
     qestack-skills.zip          all skills
     qestack-qa-library.zip      the library skills only (no engine needed)
 The source keeps the Claude Code fields (for example argument-hint); the build removes them.
-The persona texts have one source: the agent files in plugins/qestack/agents/. The build copies them unchanged.
+The agent texts have one source: the agent files in plugins/qestack/agents/. The build copies them unchanged.
 """
 import argparse
 import json
@@ -26,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugins" / "qestack"
 PANEL = "test-review-panel"
+WORKFLOW = "qestack"
 SOURCE = "https://github.com/quark-sri/qestack"
 # Keep the same list as SPEC_SKILL_KEYS in validate_repo.py. metadata is written by the build.
 SPEC_KEYS = ("name", "description", "license", "compatibility", "allowed-tools")
@@ -40,6 +43,15 @@ def gated(name):
 def personas():
     """The review persona agent files: all agents except the workflow agents (qe-*)."""
     return sorted(f for f in (PLUGIN / "agents").glob("*.md") if not f.stem.startswith("qe-"))
+
+
+def workflow_agents():
+    """The workflow agent files (qe-*) that the gated skills start."""
+    return sorted((PLUGIN / "agents").glob("qe-*.md"))
+
+
+# The skill packages that get agent texts: skill name -> (folder in the package, agent files).
+AGENT_TEXTS = {PANEL: ("references/personas", personas), WORKFLOW: ("references/agents", workflow_agents)}
 
 
 def portable(text, version):
@@ -84,17 +96,19 @@ def main():
         shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
         (dst / "SKILL.md").write_text(portable((src / "SKILL.md").read_text(encoding="utf-8"), version),
                                       encoding="utf-8")
-        if src.name == PANEL:
-            (dst / "references" / "personas").mkdir(parents=True)
-            for f in personas():
-                shutil.copyfile(f, dst / "references" / "personas" / f.name)
+        if src.name in AGENT_TEXTS:
+            folder, files = AGENT_TEXTS[src.name]
+            (dst / folder).mkdir(parents=True)
+            for f in files():
+                shutil.copyfile(f, dst / folder / f.name)
         write_zip(out / "zips" / f"{src.name}.zip", [dst], out / "skills")
     for bundle, wanted in BUNDLES.items():
         write_zip(out / bundle, [out / "skills" / d.name for d in skills if wanted(d.name)], out / "skills")
 
     library = sum(not gated(d.name) for d in skills)
     print(f"{out}: {len(skills)} skills ({library} library, {len(skills) - library} gated), "
-          f"{len(skills)} zips, {len(BUNDLES)} bundles, {len(personas())} persona texts in {PANEL}")
+          f"{len(skills)} zips, {len(BUNDLES)} bundles, {len(personas())} persona texts in {PANEL}, "
+          f"{len(workflow_agents())} workflow agent texts in {WORKFLOW}")
 
 
 if __name__ == "__main__":
