@@ -1,14 +1,46 @@
-# qestack
+<p align="center">
+  <img src="docs/assets/qestack-banner.svg" alt="qestack: prove that AI-written tests catch bugs. Workflow: plan tests from the spec, write them without the code, prove they fail first and lock them, harden them with mutants and hidden faults. The result is ACCEPT or ESCALATE, with evidence." width="100%">
+</p>
 
-**qestack: QA and test automation skills, agents and quality gates for AI coding agents.**
+<h1 align="center">qestack</h1>
 
-One Claude Code plugin with two parts: a QA library of 39 Quality Engineering skills and 8 reviewer personas for any stack, and a gated workflow with an engine that proves AI-written tests catch bugs. The skills follow the open [Agent Skills](https://agentskills.io) standard, so they also work in other AI coding agents: Codex, Cursor, GitHub Copilot, Gemini CLI and more (see [Install](#install), option C).
+<p align="center">
+  <strong>QA and test automation skills, reviewer personas and quality gates for AI coding agents.</strong><br>
+  Prove that AI-written tests catch bugs · Claude Code plugin · works in Codex, Cursor, Copilot and more
+</p>
 
-AI coding agents now write code, tests, reviews and specs. qestack's goal is to build a growing toolbox — Claude Code skills, agents and measurable gates — that makes AI-assisted quality engineering trustworthy, not just fast.
+<p align="center">
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+  <a href="https://www.python.org"><img alt="Engine: Python 3.11+" src="https://img.shields.io/badge/engine-Python%203.11%2B-3776AB?logo=python&logoColor=white"></a>
+  <a href="https://agentskills.io"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent%20Skills-Claude%20Code%20%7C%20Codex-8B5CF6"></a>
+  <a href="CHANGELOG.md"><img alt="Release 0.1" src="https://img.shields.io/badge/release-0.1-F59E0B"></a>
+</p>
 
-The first capability, and the full scope of release 0.1, is **AI test quality**: proving that your AI-written tests catch bugs. AI agents write tests very fast. Many of these tests are green and give high coverage, but they do not find bugs. qestack gives your AI agent a process to write the right tests, and it measures the result with evidence, not with opinions. Later releases add more AI Quality Engineering skills beyond test quality (see the [roadmap](docs/PLAN.md#7-roadmap)).
+<p align="center">
+  <a href="#install">Install</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#qa-library-for-any-project">QA library</a> ·
+  <a href="#the-gates">Gates</a> ·
+  <a href="#documentation">Documentation</a> ·
+  <a href="#contributing">Contributing</a>
+</p>
 
-## Why
+---
+
+## About
+
+AI coding agents now write code, tests, reviews and specifications. They write tests very fast. Many of these tests are green and give high coverage, but they do not find bugs.
+
+qestack is one Claude Code plugin with two parts:
+
+- **A QA library** of Quality Engineering skills and reviewer personas. It works for any language and any test framework, and it needs no engine.
+- **A gated workflow** with an engine. It proves that AI-written tests catch bugs, and it measures the result with evidence, not with opinions.
+
+The skills follow the open [Agent Skills](https://agentskills.io) standard, so they also work in other AI coding agents: Codex, Cursor, GitHub Copilot, Gemini CLI and more (see [Install](#install), option C).
+
+The goal of qestack is a growing toolbox of skills, agents and measurable gates that makes AI-assisted quality engineering trustworthy, not only fast. Release 0.1 is about **AI test quality**. Later releases add more skills beyond test quality (see the [roadmap](docs/PLAN.md#7-roadmap)).
+
+### Why
 
 Coverage shows that a line **ran**. A green build shows that no assertion **failed**. Neither shows that the tests can **detect a defect**.
 
@@ -20,7 +52,17 @@ Typical problems with AI-written tests:
 - The agent deletes or weakens tests to get a green build.
 - The agent that wrote the tests also says that they are good.
 
-## What qestack does today (release 0.1: AI test quality)
+## How it works
+
+```
+spec.md ─► /qe-plan ─► test-plan.md ─► /qe-write ─► tests ─► /qe-prove ─► red + lock
+                                                                             │
+                                          (you or your agent implement the feature)
+                                                                             │
+quality-report.md ◄─ score ◄─ judge ◄─ gates (mutation, hidden faults, …) ◄─ /qe-harden
+        │                                         ▲
+        └── CONTINUE: specific feedback ──► writer improves the tests ──┘
+```
 
 | Step | Skill | Evidence |
 |---|---|---|
@@ -32,16 +74,121 @@ Typical problems with AI-written tests:
 | Measure an existing suite | `/qe-audit` | A read-only report with numbers |
 | Check the judge | `/qe-calibrate` | Agreement and Cohen's kappa against human verdicts |
 
-The result of each feature is `specs/<feature>/quality-report.md` with the decision **ACCEPT** or **ESCALATE**. A human reads the report and a small audit sample, not every line of test code.
+The result for each feature is `specs/<feature>/quality-report.md` with the decision **ACCEPT** or **ESCALATE**. A person reads the report and a small audit sample, not each line of test code.
 
-## QA library for any project (no engine needed)
+Agents with separate roles do the work:
 
-The qestack plugin also has a library of 39 Quality Engineering skills and 8 reviewer personas. They work in any repository, with any language and any test framework, and they need no engine. Only the gated workflow (`qestack` and the `qe-*` skills) needs the engine. Without the engine, these skills tell you how to install it and stop.
+| Agent | Job | Must not |
+|---|---|---|
+| `qe-test-designer` | Test plan from the spec | Read the implementation |
+| `qe-test-writer` | Tests from the plan | Read the implementation; change production code; weaken tests |
+| `qe-test-judge` | Independent review with a rubric and file:line evidence | Change any code |
+| `qe-fault-seeder` | Hidden realistic faults as patches | Change tests; tell the writer about the faults |
+
+See it on a real build: [`examples/order-service-maven`](examples/order-service-maven/) runs each gate with Maven, Surefire, Failsafe and PIT. It shows the real numbers for a weak AI-written test class.
+
+## Install
+
+Choose one option:
+
+| Option | You get | You need |
+|---|---|---|
+| **A** | The library skills and the personas in Claude Code | Claude Code |
+| **B** | Option A plus the engine for the gated workflow (`qestack` and the `qe-*` skills) | Claude Code, Python 3.11 or later, git, pipx (or uv) |
+| **C** | The skills in other AI coding agents | git, python3 |
+
+### Option A: the library only (no engine, no Python)
+
+In Claude Code:
+
+```
+/plugin marketplace add quark-sri/qestack
+/plugin install qestack@qestack
+```
+
+From a clone, `scripts/install.sh --skills-only` does the same. The gated skills are in the plugin too. Without the engine, they tell you how to install it and stop.
+
+### Option B: the library and the gated workflow
+
+1. Install the engine and the Claude Code plugin:
+
+   ```bash
+   git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
+   ```
+
+2. Set up your repository:
+
+   ```bash
+   cd your-repo && qestack init --existing    # leave out --existing for a new project; add --speckit for GitHub Spec Kit
+   ```
+
+3. Run `qestack doctor`. Then run `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
+
+`qestack init` finds the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps.
+
+- `--existing` starts with lower mutation and seed thresholds.
+- `--hook` adds the guard hook to `.claude/settings.json`. You need it only without the plugin.
+- `init` writes a short qestack section into `AGENTS.md` with the rules for AI coding agents. It keeps the other text of an existing `AGENTS.md`. `--no-agents-md` turns this off.
+
+**Manual install of option B** (the same steps, one by one):
+
+```bash
+pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"
+```
+
+In Claude Code:
+
+```
+/plugin marketplace add quark-sri/qestack
+/plugin install qestack@qestack
+```
+
+### Option C: use with any AI coding agent
+
+Each agent reads skills from a skill folder. Most agents share one folder:
+
+| Agent | Project folder | User folder |
+|---|---|---|
+| Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Devin Desktop (was Windsurf), OpenCode | `.agents/skills/` | `~/.agents/skills/` |
+| Antigravity | `.agents/skills/` | see [other agents](docs/other-agents.md#skill-folders) |
+| Claude Code without the plugin | `.claude/skills/` | `~/.claude/skills/` |
+| Cline | `.cline/skills/` | `~/.cline/skills/` |
+
+Install the skills for your agent:
+
+```bash
+git clone https://github.com/quark-sri/qestack ~/qestack
+~/qestack/scripts/install-skills.sh --agent codex --user                 # all your projects
+~/qestack/scripts/install-skills.sh --agent cursor --project ~/my-repo   # one repository
+~/qestack/scripts/install-skills.sh --help                               # all agents and options
+```
+
+- The script puts the skills in the folder of the agent, from the table above.
+- `--agent all` installs for each agent except Claude Code. Claude Code gets the skills from the plugin.
+- The script needs python3, because it builds the portable packages first.
+- By default, it makes links to the packages in the clone. After `git pull`, run the same command again.
+- Use `--copy` for real copies, for example on Windows.
+- Use `--library-only` to leave out the gated skills.
+
+To upload skills to a host that accepts only the fields of the Agent Skills standard, use the portable packages. claude.ai and the Skills API are such hosts. Run `python3 scripts/build_skills.py` in the clone. It writes `dist/`: one zip for each skill, a bundle of all skills and a bundle of the library skills.
+
+What works outside Claude Code in release 0.1:
+
+- **Library skills:** need no engine. Each agent that reads SKILL.md can use them.
+- **Gated skills:** also need the engine, git and a shell. Install the engine with the `pipx` command of the manual install above.
+- **Review panel:** if the agent cannot start separate reviewers, the panel does the reviews in one session. The report then says that the review was not independent. The portable package of the panel has the reviewer texts.
+- **Guard hook:** only in Claude Code. In other agents, run `qestack guard` in CI.
+
+Only Claude Code is tested in 0.1. The folders come from the official documentation of each agent (checked on 2026-10-27). [docs/other-agents.md](docs/other-agents.md) has the sources, the sub-agent and hook support of each agent, and the steps without sub-agents.
+
+## QA library for any project
+
+The library has Quality Engineering skills and reviewer personas. They work in any repository, with any language and any test framework, and they need no engine. Only the gated workflow (`qestack` and the `qe-*` skills) needs the engine. Without the engine, these skills tell you how to install it and stop.
 
 - **Method first.** Each `SKILL.md` gives the QE method: objective, discovery questions, principles, workflow, anti-patterns and a "Done when" checklist. It names no tools.
-- **Stack recipes on demand.** Tool details live in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the project's stack.
-- **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` once (stack, test commands, CI, environments, risks). Every other skill reads it first.
-- **Reviewer personas.** Eight agents, each with one job, a checklist, an evidence rule (file and line) and no edit tools. Personas find and report; they never change a file. The caller changes code. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin stay self-contained and do not depend on the personas.
+- **Stack recipes on demand.** Tool details are in `references/` (Java, TypeScript and JavaScript, Python). A skill reads only the recipe for the stack of the project.
+- **One shared context.** `qa-project-context` writes `.agents/qa-project-context.md` one time (stack, test commands, CI, environments, risks). Each other skill reads it first.
+- **Reviewer personas.** Each persona is an agent with one job, a checklist, an evidence rule (file and line) and no edit tools. Personas find and report; they never change a file. The caller changes code. Start one directly, use them in your own skills, or let `test-review-panel` run several and merge their findings into one ranked list. The other skills of this plugin do not depend on the personas.
 - **Clear routing.** Each description is short, in the third person, and says what the skill does, "Use when" and "Not for". `qa-navigator` routes a request that fits no skill clearly. The skills follow the Claude standards for skills and agents ([guide](docs/guides/adding-a-skill.md)).
 
 | Category | Skills |
@@ -73,8 +220,7 @@ The qestack plugin also has a library of 39 Quality Engineering skills and 8 rev
 **How the review panel works.** Ask for a panel review, for example "review the tests in this pull request with the panel". To choose the personas: `/qestack:test-review-panel src/test/orders --personas domain-oracle-reviewer,saboteur`.
 
 1. The panel chooses the personas for the work. AI-written work always gets the AI Behavior Auditor and the Hallucination Checker.
-2. The personas run in parallel. None of them has an edit tool. The Saboteur returns a fault plan: the exact change for each fault, and a prediction.
-   After all reports, the panel runs the fault plan with the `mutation-probe` method. It works in an isolated copy, one fault at a time, and marks each prediction as proven or wrong.
+2. The personas run in parallel. None of them has an edit tool. The Saboteur returns a fault plan: the exact change for each fault, and a prediction. After all reports, the panel runs the fault plan with the `mutation-probe` method. It works in an isolated copy, one fault at a time, and marks each prediction as proven or wrong.
 3. Each persona gets the same brief. A persona does not see the other reports.
 4. The panel checks the evidence for each blocker and major finding. It merges duplicates and gives one ranked list with a verdict.
 5. The reviewers only return their reports. The panel saves the run in `qa-reviews/<date>-<scope>/`: `panel-report.md` for people, `findings.json` for pipelines and trends, and `personas/<name>.md` with each full report. It can also offer to publish the report as a page or a pull request comment.
@@ -87,75 +233,9 @@ The qestack plugin also has a library of 39 Quality Engineering skills and 8 rev
 
 To add it to the panel, add a row to the table in `test-review-panel`. The validator checks the sections, the shared rules, the tools and the table.
 
-To install the library alone, see [Install](#install), option A, or option C for other agents. [`llms.txt`](llms.txt) lists every skill and agent in one file, for AI agents and skill registries.
+To install the library alone, see [Install](#install), option A, or option C for other agents. [`llms.txt`](llms.txt) lists each skill and agent in one file, for AI agents and skill registries.
 
-Use the gated qestack workflow below when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
-
-## Install
-
-Choose one option. Option A gives you the library skills and the personas in Claude Code. Option B adds the engine, which the gated workflow (`qestack` and the `qe-*` skills) needs. Option C installs the skills in other AI coding agents.
-
-**Option A: the library only (no engine, no Python).** In Claude Code:
-
-```
-/plugin marketplace add quark-sri/qestack
-/plugin install qestack@qestack
-```
-
-From a clone, `scripts/install.sh --skills-only` does the same. The gated skills are in the plugin too. Without the engine, they tell you how to install it and stop. For other agents, see option C.
-
-**Option B: the library and the gated workflow.** You need Python 3.11 or later, git, pipx (or uv), and Claude Code. Two commands: the first installs the engine and the Claude Code plugin, the second sets up your repository.
-
-```bash
-git clone https://github.com/quark-sri/qestack && qestack/scripts/install.sh
-cd your-repo && qestack init --existing    # drop --existing for a new project; add --speckit for GitHub Spec Kit
-```
-
-`qestack init` detects the stack and the rulesets, creates `.qestack/`, shows a lint preview of your existing tests and prints the next steps. `--existing` starts with lower mutation and seed thresholds. `--hook` adds the guard hook to `.claude/settings.json` (only needed without the plugin). `init` also writes a short qestack section into `AGENTS.md` with the rules for AI coding agents. It keeps the other text of an existing `AGENTS.md`. `--no-agents-md` turns this off. Then run `qestack doctor`, and `/qe-setup` in Claude Code to check the assertion helpers and the build commands.
-
-**Manual install of option B** (the same steps, one by one):
-
-```bash
-pipx install "git+https://github.com/quark-sri/qestack#subdirectory=engine"
-```
-
-In Claude Code:
-
-```
-/plugin marketplace add quark-sri/qestack
-/plugin install qestack@qestack
-```
-
-**Option C: use with any AI coding agent.** Each agent reads skills from a skill folder. Most agents share one folder:
-
-| Agent | Project folder | User folder |
-|---|---|---|
-| Codex, Cursor, GitHub Copilot (CLI and VS Code), Gemini CLI, Devin Desktop (was Windsurf), OpenCode | `.agents/skills/` | `~/.agents/skills/` |
-| Antigravity | `.agents/skills/` | see [other agents](docs/other-agents.md#skill-folders) |
-| Claude Code without the plugin | `.claude/skills/` | `~/.claude/skills/` |
-| Cline | `.cline/skills/` | `~/.cline/skills/` |
-
-Install the skills for your agent:
-
-```bash
-git clone https://github.com/quark-sri/qestack ~/qestack
-~/qestack/scripts/install-skills.sh --agent codex --user                 # all your projects
-~/qestack/scripts/install-skills.sh --agent cursor --project ~/my-repo   # one repository
-~/qestack/scripts/install-skills.sh --help                               # all agents and options
-```
-
-The script puts the skills in the folder of the agent, from the table above. `--agent all` installs for each agent except Claude Code; Claude Code gets the skills from the plugin. The script needs python3: it builds the portable packages first. By default, it makes links to the packages in the clone. After `git pull`, run the same command again. Use `--copy` for real copies, for example on Windows. Use `--library-only` to leave out the gated skills.
-
-To upload skills to a host that accepts only the fields of the Agent Skills standard, use the portable packages. claude.ai and the Skills API are such hosts. Run `python3 scripts/build_skills.py` in the clone. It writes `dist/`: one zip for each skill, a bundle of all 49 skills and a bundle of the 39 library skills.
-
-What works outside Claude Code in release 0.1:
-
-- **Library skills:** need no engine. Each agent that reads SKILL.md can use them.
-- **Gated skills:** also need the engine, git and a shell. Install the engine with the `pipx` command of the manual install above.
-- **Review panel:** if the agent cannot start separate reviewers, the panel does the reviews in one session. The report then says that the review was not independent. The portable package of the panel has the reviewer texts.
-- **Guard hook:** only in Claude Code. In other agents, run `qestack guard` in CI.
-
-Only Claude Code is tested in 0.1. The folders come from the official documentation of each agent (checked on 2026-10-27). [docs/other-agents.md](docs/other-agents.md) has the sources, the sub-agent and hook support of each agent, and the steps without sub-agents.
+Use the gated qestack workflow when you want measured proof for each feature: test locks, hidden faults, mutation gates and an independent judge.
 
 ## Supported
 
@@ -168,36 +248,11 @@ Only Claude Code is tested in 0.1. The folders come from the official documentat
 
 Planned: .NET (full support), TypeScript (Vitest, Jest), Python (pytest). See the [roadmap](docs/PLAN.md#7-roadmap).
 
-## How it works
-
-```
-spec.md ─► /qe-plan ─► test-plan.md ─► /qe-write ─► tests ─► /qe-prove ─► red + lock
-                                                                             │
-                                          (you or your agent implement the feature)
-                                                                             │
-quality-report.md ◄─ score ◄─ judge ◄─ gates (mutation, hidden faults, …) ◄─ /qe-harden
-        │                                         ▲
-        └── CONTINUE: specific feedback ──► writer improves the tests ──┘
-```
-
-Four agents with separate roles do the work:
-
-| Agent | Job | Must not |
-|---|---|---|
-| `qe-test-designer` | Test plan from the spec | Read the implementation |
-| `qe-test-writer` | Tests from the plan | Read the implementation; change production code; weaken tests |
-| `qe-test-judge` | Independent review with a rubric and file:line evidence | Change any code |
-| `qe-fault-seeder` | Hidden realistic faults as patches | Change tests; tell the writer about the faults |
-
-See it on a real build: [`examples/order-service-maven`](examples/order-service-maven/) runs every gate with Maven, Surefire, Failsafe and PIT, and shows the real numbers for a weak AI-written test class.
-
-Read more: [why qestack and the metrics](docs/why-qestack.md), [architecture](docs/architecture.md), [configuration](docs/configuration.md).
-
 ## The gates
 
 | Gate | Question | Default |
 |---|---|---|
-| trace | Does every required requirement have a test? | 100% |
+| trace | Does each required requirement have a test? | 100% |
 | hollow / no_assertion / skipped | Is there a test that checks nothing? | 0 |
 | red | Did each new test fail before the feature existed? | 100% |
 | flaky / failing | Are the results stable and green? | 0 |
@@ -215,11 +270,32 @@ All values are in `.qestack/project.toml`. Start lower on an existing codebase.
 - **Hooks help, but they are not security.** A shell trick can bypass them. The CI guard against the base branch is the authority. Use CODEOWNERS for `.qestack/`.
 - **Mutation testing is slow** on tests that start containers. The Java stack excludes the `integration` and `ui` tags from PIT. Hidden faults measure those tests.
 - **The judge is a model.** Calibrate it each sprint with `/qe-calibrate`.
-- **Check the build commands once by hand.** The Java commands are verified with Surefire and Failsafe 3.6.0 and PIT 1.30.1. Other plugin versions can use other property names.
+- **Check the build commands one time by hand.** The Java commands are verified with Surefire and Failsafe 3.6.0 and PIT 1.30.1. Other plugin versions can use other property names.
+
+## Documentation
+
+| Document | Content |
+|---|---|
+| [Getting started](docs/getting-started.md) | Install, set up a repository and run the workflow |
+| [Why qestack](docs/why-qestack.md) | The problem and the metrics |
+| [Architecture](docs/architecture.md) | Engine, plugin, agents and gates |
+| [Configuration](docs/configuration.md) | `.qestack/project.toml` and the thresholds |
+| [CI](docs/ci.md) | Run the gates in a pipeline |
+| [Other agents](docs/other-agents.md) | Skill folders, sub-agents and hooks of each agent |
+| [Guides](docs/guides/) | Add a skill, a stack or a ruleset |
+| [Plan and roadmap](docs/PLAN.md) | Design and next releases |
+| [Writing style](docs/writing-style.md) | Simplified Technical English rules |
+| [Changelog](CHANGELOG.md) | Changes in each release |
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md). All documentation and prompts use [Simplified Technical English](docs/writing-style.md).
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). All documentation and prompts use [Simplified Technical English](docs/writing-style.md).
+
+To report a bug or propose a change, [open an issue](https://github.com/quark-sri/qestack/issues/new/choose).
+
+## Security
+
+Do not open a public issue for a security problem. Read the [security policy](SECURITY.md).
 
 ## Acknowledgements
 
@@ -227,4 +303,4 @@ The skill structure, the description routing and the shared context convention (
 
 ## License
 
-[Apache License 2.0](LICENSE)
+qestack is licensed under the [Apache License 2.0](LICENSE).

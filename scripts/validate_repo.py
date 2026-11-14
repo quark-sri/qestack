@@ -346,12 +346,12 @@ for r in (DATA / "rulesets").glob("*.md"):
     if "Seeded faults for this layer" not in r.read_text(encoding="utf-8"):
         err(f"{r.relative_to(ROOT)}: section 'Seeded faults for this layer' missing")
 
-# Counts in the public descriptions agree with the files (they drift when a skill or persona is added)
+# Counts in the public descriptions agree with the files (they drift when a skill or persona is added).
+# The README gives no counts on purpose, so it is not in this list.
 n_library = sum(1 for d in skills if not gated(d.name))
 count_rx = re.compile(r"(\d+) Quality Engineering skills and (\d+) reviewer personas")
 for f, text in [("plugins/qestack/.claude-plugin/plugin.json", (PLUGIN / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")),
                 (".claude-plugin/marketplace.json", (ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")),
-                ("README.md", (ROOT / "README.md").read_text(encoding="utf-8")),
                 ("llms.txt", llms_text)]:
     found = count_rx.findall(text)
     if not found:

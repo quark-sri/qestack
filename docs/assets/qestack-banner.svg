@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+<title id="title">qestack</title>
+<desc id="desc">qestack: prove that AI-written tests catch bugs. AI-written tests pass through quality gates: trace, lint, red before green, mutation, hidden faults and an independent judge. The quality report says ACCEPT or ESCALATE, and a person reads it. Below: the QA library of skills for each test level, and the reviewer panel of independent personas.</desc>
+<style>@media (prefers-reduced-motion: reduce) { .mover { display: none; } }</style>
+<defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050816"/><stop offset="0.45" stop-color="#0b1240"/><stop offset="1" stop-color="#160a3a"/>
+    </linearGradient>
+    <radialGradient id="gViolet" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.85"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gCyan" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#22d3ee" stop-opacity="0.8"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gBlue" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#3b82f6" stop-opacity="0.75"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gDeep" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#7c3aed" stop-opacity="0.55"/><stop offset="1" stop-color="#7c3aed" stop-opacity="0"/></radialGradient>
+    <g id="blobs">
+      <ellipse cx="210" cy="150" rx="360" ry="280" fill="url(#gViolet)"/>
+      <ellipse cx="1090" cy="120" rx="380" ry="260" fill="url(#gCyan)"/>
+      <ellipse cx="660" cy="560" rx="460" ry="220" fill="url(#gBlue)"/>
+      <ellipse cx="1120" cy="560" rx="260" ry="200" fill="url(#gDeep)"/>
+      <ellipse cx="120" cy="560" rx="240" ry="180" fill="url(#gCyan)" opacity="0.6"/>
+    </g>
+    <filter id="frost" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="22"/></filter>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="textGlow" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="8" in="SourceAlpha" result="a"/><feFlood flood-color="#a5f3fc" flood-opacity="0.55"/>
+      <feComposite operator="in" in2="a" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="16"/><feOffset dy="14"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="glassFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.20"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="glassEdge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.75"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0.15"/><stop offset="1" stop-color="#a5f3fc" stop-opacity="0.45"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.32"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="stream" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="0.5" stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/>
+    </linearGradient>
+    <linearGradient id="streamV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#c084fc"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx="0.35" cy="0.35" r="0.65">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.4" stop-color="#a5f3fc"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+<clipPath id="c1"><rect x="240" y="22" width="800" height="148" rx="32"/></clipPath>
+<clipPath id="c5"><rect x="40" y="222" width="166" height="132" rx="22"/></clipPath>
+<clipPath id="c6"><rect x="236" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c7"><rect x="352" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c8"><rect x="468" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c9"><rect x="584" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c10"><rect x="700" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c11"><rect x="816" y="212" width="98" height="152" rx="18"/></clipPath>
+<clipPath id="c12"><rect x="950" y="212" width="290" height="152" rx="22"/></clipPath>
+<clipPath id="c13"><rect x="40" y="404" width="590" height="218" rx="24"/></clipPath>
+<clipPath id="c14"><rect x="650" y="404" width="590" height="218" rx="24"/></clipPath>
+<path id="p2" d="M206 288 H952"/>
+<path id="p3" d="M206 288 H952"/>
+<path id="p4" d="M206 288 H952"/>
+</defs>
+<rect width="1280" height="640" fill="url(#bg)"/><use href="#blobs" xlink:href="#blobs"/>
+<g stroke="#ffffff" stroke-opacity="0.035" stroke-width="1">
+  <path d="M0 80H1280M0 160H1280M0 240H1280M0 320H1280M0 400H1280M0 480H1280M0 560H1280"/>
+  <path d="M80 0V640M160 0V640M240 0V640M320 0V640M400 0V640M480 0V640M560 0V640M640 0V640M720 0V640M800 0V640M880 0V640M960 0V640M1040 0V640M1120 0V640M1200 0V640"/>
+</g>
+<g fill="#ffffff"><circle cx="96" cy="70" r="1.6" opacity="0.6"/><circle cx="1180" cy="40" r="1.4" opacity="0.5"/><circle cx="1010" cy="24" r="1.2" opacity="0.7"/><circle cx="160" cy="190" r="1.2" opacity="0.5"/><circle cx="1240" cy="190" r="1.3" opacity="0.5"/></g>
+<g filter="url(#shadow)"><g clip-path="url(#c1)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="240" y="22" width="800" height="148" fill="url(#glassFill)"/><rect x="240" y="22" width="800" height="56" fill="url(#sheen)"/></g>
+  <rect x="240.75" y="22.75" width="798.5" height="146.5" rx="31.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<text x="640" y="92" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="66" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-1.5" filter="url(#textGlow)">qestack</text>
+<text x="640" y="128" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="500" fill="#e0f2fe" text-anchor="middle">Prove that AI-written tests catch bugs</text>
+<text x="640" y="156" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#a5f3fc" text-anchor="middle" letter-spacing="2">QA SKILLS · REVIEWER PERSONAS · QUALITY GATES · CLAUDE CODE · CODEX</text>
+<text x="581" y="196" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#a5f3fc" text-anchor="middle" letter-spacing="2.5">GATED WORKFLOW · EVIDENCE, NOT OPINIONS</text>
+<path d="M206 288 H952" fill="none" stroke="url(#stream)" stroke-width="3" stroke-opacity="1" stroke-linecap="round" filter="url(#softGlow)"/>
+<circle class="mover" r="5" fill="url(#sphere)"><animateMotion dur="3.6s" begin="0s" repeatCount="indefinite"><mpath href="#p2" xlink:href="#p2"/></animateMotion></circle>
+<circle class="mover" r="5" fill="url(#sphere)"><animateMotion dur="3.6s" begin="1.2s" repeatCount="indefinite"><mpath href="#p3" xlink:href="#p3"/></animateMotion></circle>
+<circle class="mover" r="5" fill="url(#sphere)"><animateMotion dur="3.6s" begin="2.4s" repeatCount="indefinite"><mpath href="#p4" xlink:href="#p4"/></animateMotion></circle>
+<g filter="url(#shadow)"><g clip-path="url(#c5)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="40" y="222" width="166" height="132" fill="url(#glassFill)"/><rect x="40" y="222" width="166" height="52.800000000000004" fill="url(#sheen)"/></g>
+  <rect x="40.75" y="222.75" width="164.5" height="130.5" rx="21.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<g transform="translate(105 240) scale(1.4166666666666667)" fill="none" stroke="#a5f3fc" stroke-width="1.4117647058823528" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"><rect x="4" y="7" width="16" height="13" rx="3"/><path d="M12 7 V3 M9 13 V14 M15 13 V14 M9 17 H15"/><circle cx="12" cy="2.5" r="1"/></g>
+<text x="123" y="304" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">AI-written</text>
+<text x="123" y="328" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">tests</text>
+<g filter="url(#shadow)"><g clip-path="url(#c6)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="236" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="236" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="236.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="285.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(275.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2 H15 L20 7 V22 H5 Z"/><path d="M9 12 H16 M9 17 H14"/></g>
+<text x="285.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Trace</text>
+<text x="285.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">100% reqs</text>
+<g filter="url(#shadow)"><g clip-path="url(#c7)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="352" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="352" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="352.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="401.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(391.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L10 18 L20 6"/></g>
+<text x="401.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Lint</text>
+<text x="401.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">0 hollow</text>
+<g filter="url(#shadow)"><g clip-path="url(#c8)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="468" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="468" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="468.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="517.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(507.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10 V7 C8 2 16 2 16 7 V10"/></g>
+<text x="517.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Red first</text>
+<text x="517.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">fail → pass</text>
+<g filter="url(#shadow)"><g clip-path="url(#c9)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="584" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="584" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="584.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="633.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(623.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13" rx="6" ry="8"/><path d="M12 5 V21 M6 10 H2 M6 16 H2 M18 10 H22 M18 16 H22 M9 5 L7 2 M15 5 L17 2"/></g>
+<text x="633.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Mutation</text>
+<text x="633.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">≥ 75%</text>
+<g filter="url(#shadow)"><g clip-path="url(#c10)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="700" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="700" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="700.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="749.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(739.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1 L21 5 V12 C21 17 17 21 12 23 C7 21 3 17 3 12 V5 Z"/><path d="M8 12 L11 15 L16 9"/></g>
+<text x="749.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Hidden</text>
+<text x="749.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">faults ≥ 90%</text>
+<g filter="url(#shadow)"><g clip-path="url(#c11)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="816" y="212" width="98" height="152" fill="url(#glassFill)"/><rect x="816" y="212" width="98" height="56" fill="url(#sheen)"/></g>
+  <rect x="816.75" y="212.75" width="96.5" height="150.5" rx="17.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<circle cx="865.0" cy="242" r="17" fill="url(#badge)" filter="url(#softGlow)"/>
+<g transform="translate(855.0 232) scale(0.8333333333333334)" fill="none" stroke="#ffffff" stroke-width="2.64" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="865.0" y="294" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle">Judge</text>
+<text x="865.0" y="318" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="500" fill="#a5f3fc" text-anchor="middle">independent</text>
+<polygon points="344 283.2 351 288 344 292.8" fill="#818cf8" filter="url(#softGlow)"/>
+<polygon points="460 283.2 467 288 460 292.8" fill="#818cf8" filter="url(#softGlow)"/>
+<polygon points="576 283.2 583 288 576 292.8" fill="#818cf8" filter="url(#softGlow)"/>
+<polygon points="692 283.2 699 288 692 292.8" fill="#818cf8" filter="url(#softGlow)"/>
+<polygon points="808 283.2 815 288 808 292.8" fill="#818cf8" filter="url(#softGlow)"/>
+<g filter="url(#shadow)"><g clip-path="url(#c12)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="950" y="212" width="290" height="152" fill="url(#glassFill)"/><rect x="950" y="212" width="290" height="56" fill="url(#sheen)"/></g>
+  <rect x="950.75" y="212.75" width="288.5" height="150.5" rx="21.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<g transform="translate(972 230) scale(1.0)" fill="none" stroke="#a5f3fc" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"><path d="M3 21 H21 M7 21 V13 M12 21 V7 M17 21 V10"/></g>
+<text x="1006" y="250" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="21" font-weight="700" fill="#ffffff" text-anchor="start">Quality report</text>
+<rect x="972" y="270" width="103" height="32" rx="16.0" fill="#34d399" fill-opacity="0.18" stroke="#34d399" stroke-opacity="0.7" stroke-width="1.2"/>
+<g transform="translate(984 278.5) scale(0.625)" fill="none" stroke="#34d399" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L10 18 L20 6"/></g>
+<text x="1009" y="291.4" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start">ACCEPT</text>
+<rect x="1096" y="270" width="121" height="32" rx="16.0" fill="#fbbf24" fill-opacity="0.18" stroke="#fbbf24" stroke-opacity="0.7" stroke-width="1.2"/>
+<g transform="translate(1108 278.5) scale(0.625)" fill="none" stroke="#fbbf24" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6 L18 18 M18 6 L6 18"/></g>
+<text x="1133" y="291.4" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start">ESCALATE</text>
+<g transform="translate(972 322) scale(0.75)" fill="none" stroke="#6ee7b7" stroke-width="2.6666666666666665" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="998" y="337" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" fill="#dbeafe" text-anchor="start">A person reads the report</text>
+<polygon points="944 282.4 952 288 944 293.6" fill="#c084fc" filter="url(#softGlow)"/>
+<path d="M1095 364 C1095 384 1060 386 1000 386 H360 C320 386 304 380 304 366" fill="none" stroke="url(#stream)" stroke-width="2" stroke-opacity="0.7" stroke-linecap="round" stroke-dasharray="8 7" filter="url(#softGlow)"/>
+<polygon points="299.2 372 304 365 308.8 372" fill="#22d3ee" filter="url(#softGlow)"/>
+<text x="650" y="380" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#a5f3fc" fill-opacity="0.9" text-anchor="middle" letter-spacing="2">CONTINUE: THE WRITER IMPROVES THE TESTS</text>
+<g filter="url(#shadow)"><g clip-path="url(#c13)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="40" y="404" width="590" height="218" fill="url(#glassFill)"/><rect x="40" y="404" width="590" height="56" fill="url(#sheen)"/></g>
+  <rect x="40.75" y="404.75" width="588.5" height="216.5" rx="23.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<g transform="translate(62 422) scale(1.0)" fill="none" stroke="#a5f3fc" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"><path d="M5 2 H15 L20 7 V22 H5 Z"/><path d="M9 12 H16 M9 17 H14"/></g>
+<text x="96" y="442" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="start">QA library</text>
+<text x="64" y="470" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#dbeafe" text-anchor="start">Skills for each test level · any stack · no engine needed</text>
+<rect x="64" y="486" width="124" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="78" y="506.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Test strategy</text>
+<rect x="196.46" y="486" width="162" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="210.46" y="506.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Risk-based testing</text>
+<rect x="366.02" y="486" width="147" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="380.02" y="506.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Test case design</text>
+<rect x="64" y="524" width="102" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="78" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Unit tests</text>
+<rect x="174.2" y="524" width="95" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="188.2" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">API tests</text>
+<rect x="276.98" y="524" width="132" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="290.98" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Contract tests</text>
+<rect x="416.86" y="524" width="124" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="430.86" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">UI automation</text>
+<rect x="64" y="562" width="110" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="78" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Performance</text>
+<rect x="181.62" y="562" width="87" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="195.62" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Security</text>
+<rect x="276.98" y="562" width="124" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="290.98" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Accessibility</text>
+<rect x="409.44000000000005" y="562" width="110" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<text x="423.44000000000005" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Flaky tests</text>
+<g filter="url(#shadow)"><g clip-path="url(#c14)"><rect width="1280" height="640" fill="url(#bg)"/>
+  <use href="#blobs" xlink:href="#blobs" filter="url(#frost)"/><rect x="650" y="404" width="590" height="218" fill="url(#glassFill)"/><rect x="650" y="404" width="590" height="56" fill="url(#sheen)"/></g>
+  <rect x="650.75" y="404.75" width="588.5" height="216.5" rx="23.5" fill="none" stroke="url(#glassEdge)" stroke-opacity="1" stroke-width="1.5"/></g>
+<g transform="translate(672 422) scale(1.0)" fill="none" stroke="#a5f3fc" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="706" y="442" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="start">Reviewer panel</text>
+<text x="674" y="470" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#dbeafe" text-anchor="start">Independent personas review tests and code · no edit tools</text>
+<rect x="674" y="486" width="191" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(686 494.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="710" y="506.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">AI Behavior Auditor</text>
+<rect x="872.98" y="486" width="206" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(884.98 494.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="908.98" y="506.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Hallucination Checker</text>
+<rect x="674" y="524" width="146" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(686 532.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="710" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Domain Oracle</text>
+<rect x="828.46" y="524" width="109" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(840.46 532.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="864.46" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Saboteur</text>
+<rect x="945.82" y="524" width="184" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(957.82 532.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="981.82" y="544.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Flakiness Engineer</text>
+<rect x="674" y="562" width="154" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(686 570.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="710" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Test Architect</text>
+<rect x="835.88" y="562" width="161" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(847.88 570.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="871.88" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Maintainability</text>
+<rect x="1005.1800000000001" y="562" width="154" height="30" rx="15.0" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+<g transform="translate(1017.1800000000001 570.0) scale(0.5833333333333334)" fill="none" stroke="#a5f3fc" stroke-width="3.4285714285714284" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22 C4 15 20 15 20 22"/></g>
+<text x="1041.18" y="582.04" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="500" fill="#ffffff" text-anchor="start">Cost and Speed</text>
+</svg>
